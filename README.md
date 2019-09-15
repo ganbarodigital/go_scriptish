@@ -15,6 +15,10 @@ Bash         | Scriptish
 
 ## Sources
 
+Sources get data from outside the pipeline, and write it into the pipeline's stdout.
+
+Every pipeline normally begins with a source, and is then followed by one or more [filters](#filters).
+
 ### CatFile()
 
 `CatFile()` writes the contents of a file to the pipeline's stdout.
