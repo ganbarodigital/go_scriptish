@@ -43,7 +43,26 @@ import (
 	pipe "github.com/ganbarodigital/go_pipe"
 )
 
+// Pipeline is a wrapper around our underlying pipe library's pipeline,
+// so that we can extend it with extra functionality
+type Pipeline struct {
+	pipe.Pipeline
+}
+
 // NewPipeline creates a pipeline ready to be executed
-func NewPipeline(steps ...pipe.PipelineOperation) *pipe.Pipeline {
-	return pipe.NewPipeline(steps...)
+func NewPipeline(steps ...pipe.PipelineOperation) *Pipeline {
+	newPipe := pipe.NewPipeline(steps...)
+
+	return &Pipeline{*newPipe}
+}
+
+// Exec executes the current pipeline
+func (pl *Pipeline) Exec() *Pipeline {
+	// do we have a pipeline?
+	if pl == nil {
+		return pl
+	}
+
+	pl.Exec_()
+	return pl
 }
