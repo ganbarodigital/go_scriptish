@@ -10,7 +10,7 @@ echo "..." | `Echo(...)`
 
 ## Sources
 
-### Echo
+### Echo()
 
 `Echo()` writes a string to the pipeline's stdout.
 
@@ -20,7 +20,17 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-### EchoSlice
+### EchoArgs()
+
+`EchoArgs()` writes the program's arguments to the pipeline's stdout, one line per argument.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.EchoArgs()
+).Exec().String()
+```
+
+### EchoSlice()
 
 `EchoSlice()` writes an array of strings to the pipeline's stdout, one line per array entry.
 
@@ -29,5 +39,18 @@ myStrings := []string{"hello world", "have a nice day"}
 
 result, err := scriptish.NewPipeline(
     scriptish.EchoSlice(myStrings)
-).Exec.String()
+).Exec().String()
+```
+
+## Sinks()
+
+### ToStdout()
+
+`ToStdout()` writes the pipeline's stdin to the program's stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Echo("usage: simpleca <command>"),
+    scriptish.ToStdout()
+).Exec().String()
 ```

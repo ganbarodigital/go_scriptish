@@ -8,3 +8,5 @@
 * Sources:
   - added `Echo()`
   - added `EchoSlice()`
+* Sinks:
+  - added `ToStdout()`
