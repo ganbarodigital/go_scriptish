@@ -4,11 +4,12 @@
 
 Here's a handy table to help you quickly translate an action from a Bash shell script to the equivalent `scriptish` function.
 
-Bash       | Scriptish
------------|----------
-cat "..."  | `Cat(...)`
-echo "..." | `Echo(...)`
-echo "$@"  | `EchoArgs()`
+Bash         | Scriptish
+-------------|----------
+`cat "..."`  | `Cat(...)`
+`echo "..."` | `Echo(...)`
+`echo "$@"`  | `EchoArgs()`
+`ls -1 ...`  | `ListFiles(...)`
 
 ## Sources
 
@@ -61,6 +62,31 @@ myStrings := []string{"hello world", "have a nice day"}
 
 result, err := scriptish.NewPipeline(
     scriptish.EchoSlice(myStrings),
+).Exec().String()
+```
+
+### ListFiles()
+
+`ListFiles()` writes a list of matching files to the pipeline's stdout, one line per filename found.
+
+```go
+// list a single file, if it exists
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("path/to/file"),
+).Exec().String()
+```
+
+```go
+// list all files in a folder, if the folder exists
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("path/to/folder"),
+).Exec().String()
+```
+
+```go
+// list all files in a folder that match wildcards, if the folder exists
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("path/to/folder/*.txt"),
 ).Exec().String()
 ```
 

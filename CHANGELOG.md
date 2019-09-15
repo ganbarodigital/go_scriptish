@@ -11,6 +11,7 @@
   - added `Echo()`
   - added `EchoArgs()`
   - added `EchoSlice()`
+  - added `ListFiles()`
 * Sinks:
   - added `ToStderr()`
   - added `ToStdout()`
