@@ -6,4 +6,5 @@
 
 * Added `NewPipeline()` to create a new Pipeline to execute
 * Sources:
-  - added `Echo`
+  - added `Echo()`
+  - added `EchoSlice()`
