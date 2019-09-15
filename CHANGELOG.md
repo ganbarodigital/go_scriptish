@@ -23,3 +23,5 @@
 * Outputs:
   - added `CountLines()`
   - added `CountWords()`
+* Utilities:
+  - added `ParseRangeSpec()`
