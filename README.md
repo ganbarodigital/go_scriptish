@@ -102,6 +102,19 @@ Filters read the contents of the pipeline's stdin, do something to that data, an
 
 When you've finished adding filters to your pipeline, you should either add a [sink](#sinks), or call one of the [output functions](#outputs) to get the results back into your Golang code.
 
+### Basename()
+
+`Basename()` treats each line in the pipeline's stdin as a filepath. Any parent elements are stripped from the line, and the results written to the pipeline's stdout.
+
+Any blank lines are preserved.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.txt"),
+    scriptish.Basename()
+).Exec().Strings()
+```
+
 ### CountLines()
 
 `CountLines()` counts the number of lines in the pipeline's stdin, and writes that to the pipeline's stdout.

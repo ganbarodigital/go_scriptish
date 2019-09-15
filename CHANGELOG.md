@@ -13,6 +13,7 @@
   - added `EchoSlice()`
   - added `ListFiles()`
 * Filters:
+  - added `Basename()`
   - added `CountLines()`
   - added `CountWords()`
 * Sinks:
