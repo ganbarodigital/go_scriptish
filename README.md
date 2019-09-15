@@ -12,6 +12,7 @@ Bash         | Scriptish
 `ls -1 ...`  | `ListFiles(...)`
 `wc -l`      | `CountLines()`
 `wc -w`      | `CountWords()`
+`xargs cat`  | `XargsCat()`
 
 ## Sources
 
@@ -134,6 +135,17 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("path/to/file.txt"),
     scriptish.CountWords(),
+).Exec().String()
+```
+
+### XargsCat()
+
+`XargsCat()` treats each line in the pipeline's stdin as a filepath. The contents of each file are written to the pipeline's stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.txt"),
+    scriptish.XargsCat()
 ).Exec().String()
 ```
 
