@@ -107,6 +107,10 @@ result, err := scriptish.NewPipeline(
 
 ## Sinks
 
+Sinks take the contents of the pipeline's stdin, and write it to somewhere outside the pipeline.
+
+A sink should be the last operation in your pipeline. You can add more operations afterwards if you really want to. Just be aware that the first operation after any sink will be starting with an empty stdin.
+
 ### ToStderr()
 
 `ToStdout()` writes the pipeline's stdin to the program's stderr.
