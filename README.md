@@ -94,6 +94,10 @@ result, err := scriptish.NewPipeline(
 
 ## Filters
 
+Filters read the contents of the pipeline's stdin, do something to that data, and write the results out to the pipeline's stdout.
+
+When you've finished adding filters to your pipeline, you should either add a [sink](#sinks), or call one of the [output functions](#outputs) to get the results back into your Golang code.
+
 ### CountLines()
 
 `CountLines()` counts the number of lines in the pipeline's stdin, and writes that to the pipeline's stdout
