@@ -7,6 +7,7 @@ Here's a handy table to help you quickly translate an action from a Bash shell s
 Bash         | Scriptish
 -------------|----------
 `cat "..."`  | `Cat(...)`
+`cut -f`     | `CutFields()`
 `echo "..."` | `Echo(...)`
 `echo "$@"`  | `EchoArgs()`
 `ls -1 ...`  | `ListFiles(...)`
@@ -135,6 +136,17 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("path/to/file.txt"),
     scriptish.CountWords(),
+).Exec().String()
+```
+
+### CutFields()
+
+`CutFields()` retrieves only the fields specified on each line of the pipeline's stdin, and writes them to the pipeline's stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Echo("one two three four five"),
+    scriptish.CutFields("2-3,5")
 ).Exec().String()
 ```
 

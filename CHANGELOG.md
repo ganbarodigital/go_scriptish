@@ -8,6 +8,7 @@
 * Sources:
   - added `CatFile()`
   - added `CatStdin()`
+  - added `CutFields()`
   - added `Echo()`
   - added `EchoArgs()`
   - added `EchoSlice()`
