@@ -4,16 +4,18 @@
 
 Here's a handy table to help you quickly translate an action from a Bash shell script to the equivalent `scriptish` function.
 
-Bash         | Scriptish
--------------|----------
-`cat "..."`  | `Cat(...)`
-`cut -f`     | `CutFields()`
-`echo "..."` | `Echo(...)`
-`echo "$@"`  | `EchoArgs()`
-`ls -1 ...`  | `ListFiles(...)`
-`wc -l`      | `CountLines()`
-`wc -w`      | `CountWords()`
-`xargs cat`  | `XargsCat()`
+Bash           | Scriptish
+---------------|----------
+`basename ...` | `Basename()`
+`cat "..."`    | `Cat(...)`
+`cut -f`       | `CutFields()`
+`dirname ...`  | `Dirname()`
+`echo "..."`   | `Echo(...)`
+`echo "$@"`    | `EchoArgs()`
+`ls -1 ...`    | `ListFiles(...)`
+`wc -l`        | `CountLines()`
+`wc -w`        | `CountWords()`
+`xargs cat`    | `XargsCat()`
 
 ## Sources
 
@@ -148,6 +150,19 @@ result, err := scriptish.NewPipeline(
     scriptish.Echo("one two three four five"),
     scriptish.CutFields("2-3,5")
 ).Exec().String()
+```
+
+### Dirname
+
+`Dirname()` treats each line in the pipeline's stdin as a filepath. The last element is stripped from the line, and the results written to the pipeline's stdout.
+
+Any blank lines are turned in '.'
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.txt"),
+    scriptish.Dirname()
+).Exec().Strings()
 ```
 
 ### XargsCat()

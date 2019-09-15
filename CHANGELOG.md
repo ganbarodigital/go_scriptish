@@ -17,6 +17,7 @@
   - added `Basename()`
   - added `CountLines()`
   - added `CountWords()`
+  - added `Dirname()`
   - added `XargsCat()`
 * Sinks:
   - added `ToStderr()`
