@@ -44,6 +44,17 @@ result, err := scriptish.NewPipeline(
 
 ## Sinks()
 
+### ToStderr()
+
+`ToStdout()` writes the pipeline's stdin to the program's stderr.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Echo("usage: simpleca <command>"),
+    scriptish.ToStderr()
+).Exec().String()
+```
+
 ### ToStdout()
 
 `ToStdout()` writes the pipeline's stdin to the program's stdout.

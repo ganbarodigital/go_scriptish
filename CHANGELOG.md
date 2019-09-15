@@ -9,4 +9,5 @@
   - added `Echo()`
   - added `EchoSlice()`
 * Sinks:
+  - added `ToStderr()`
   - added `ToStdout()`
