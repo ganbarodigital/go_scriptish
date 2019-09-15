@@ -7,6 +7,7 @@ Here's a handy table to help you quickly translate an action from a Bash shell s
 Bash       | Scriptish
 -----------|----------
 echo "..." | `Echo(...)`
+echo "$@"  | `EchoArgs()`
 
 ## Sources
 

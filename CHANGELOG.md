@@ -7,6 +7,7 @@
 * Added `NewPipeline()` to create a new Pipeline to execute
 * Sources:
   - added `Echo()`
+  - added `EchoArgs()`
   - added `EchoSlice()`
 * Sinks:
   - added `ToStderr()`
