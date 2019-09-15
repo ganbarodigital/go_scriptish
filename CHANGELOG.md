@@ -6,6 +6,7 @@
 
 * Added `NewPipeline()` to create a new Pipeline to execute
 * Sources:
+  - added `CatFile()`
   - added `CatStdin()`
   - added `Echo()`
   - added `EchoArgs()`

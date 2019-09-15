@@ -6,10 +6,21 @@ Here's a handy table to help you quickly translate an action from a Bash shell s
 
 Bash       | Scriptish
 -----------|----------
+cat "..."  | `Cat(...)`
 echo "..." | `Echo(...)`
 echo "$@"  | `EchoArgs()`
 
 ## Sources
+
+### CatFile()
+
+`CatFile()` writes the contents of a file to the pipeline's stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("a/file.txt"),
+).Exec().String()
+```
 
 ### CatStdin()
 
