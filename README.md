@@ -11,13 +11,23 @@ echo "$@"  | `EchoArgs()`
 
 ## Sources
 
+### CatStdin()
+
+`CatStdin()` copies the program's stdin to the pipeline's stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatStdin(),
+).Exec().String()
+```
+
 ### Echo()
 
 `Echo()` writes a string to the pipeline's stdout.
 
 ```go
 result, err := scriptish.NewPipeline(
-    scriptish.Echo("hello world")
+    scriptish.Echo("hello world"),
 ).Exec().String()
 ```
 
@@ -27,7 +37,7 @@ result, err := scriptish.NewPipeline(
 
 ```go
 result, err := scriptish.NewPipeline(
-    scriptish.EchoArgs()
+    scriptish.EchoArgs(),
 ).Exec().String()
 ```
 
@@ -39,7 +49,7 @@ result, err := scriptish.NewPipeline(
 myStrings := []string{"hello world", "have a nice day"}
 
 result, err := scriptish.NewPipeline(
-    scriptish.EchoSlice(myStrings)
+    scriptish.EchoSlice(myStrings),
 ).Exec().String()
 ```
 
@@ -52,7 +62,7 @@ result, err := scriptish.NewPipeline(
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.Echo("usage: simpleca <command>"),
-    scriptish.ToStderr()
+    scriptish.ToStderr(),
 ).Exec().String()
 ```
 
@@ -63,6 +73,6 @@ result, err := scriptish.NewPipeline(
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.Echo("usage: simpleca <command>"),
-    scriptish.ToStdout()
+    scriptish.ToStdout(),
 ).Exec().String()
 ```
