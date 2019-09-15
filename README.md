@@ -11,6 +11,7 @@ Bash         | Scriptish
 `echo "$@"`  | `EchoArgs()`
 `ls -1 ...`  | `ListFiles(...)`
 `wc -l`      | `CountLines()`
+`wc -w`      | `CountWords()`
 
 ## Sources
 
@@ -118,6 +119,18 @@ result, err := scriptish.NewPipeline(
 ## Outputs
 
 Outputs are methods available on each `Pipeline`. Some are inherited from the `pipe` package, and some are defined by `scriptish`.
+
+### CountWords()
+
+`CountWords()` returns the number of words in the pipeline's stdout.
+
+```go
+wordCount, err := scriptish.NewPipeline(
+    scriptish.ListFiles("."),
+).Exec().CountWords()
+```
+
+If the pipeline failed to complete, `wordCount` will be `0`, and `err` will be the pipeline's last error status.
 
 ### CountLines()
 

@@ -16,4 +16,5 @@
   - added `ToStderr()`
   - added `ToStdout()`
 * Outputs:
+  - added `CountWords()`
   - added `CountLines()`
