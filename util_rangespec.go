@@ -48,8 +48,8 @@ import (
 )
 
 type Range struct {
-	start int
-	end   int
+	Lo int
+	Hi int
 }
 
 var rangeRegex = regexp.MustCompile("([1-9][0-9]*){0,1}-([1-9][0-9]*){0,1}")
@@ -103,20 +103,20 @@ func parseSingleRange(spec string) (*Range, error) {
 		return nil, fmt.Errorf("invalid range: start and end cannot both be empty")
 	}
 
-	var start, end int
+	var lo, hi int
 
 	if len(matches[0][1]) > 0 {
-		start, _ = strconv.Atoi(matches[0][1])
+		lo, _ = strconv.Atoi(matches[0][1])
 	} else {
-		start = 1
+		lo = 1
 	}
 
 	if len(matches[0][2]) > 0 {
-		end, _ = strconv.Atoi(matches[0][2])
+		hi, _ = strconv.Atoi(matches[0][2])
 	}
-	if (start > 0) && end == 0 {
-		end = math.MaxInt64
+	if (lo > 0) && hi == 0 {
+		hi = math.MaxInt64
 	}
 
-	return &Range{start, end}, nil
+	return &Range{lo, hi}, nil
 }
