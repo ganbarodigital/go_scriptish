@@ -12,9 +12,11 @@
   - added `EchoArgs()`
   - added `EchoSlice()`
   - added `ListFiles()`
+* Filters:
+  - added `CountLines()`
 * Sinks:
   - added `ToStderr()`
   - added `ToStdout()`
 * Outputs:
-  - added `CountWords()`
   - added `CountLines()`
+  - added `CountWords()`

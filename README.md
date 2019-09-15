@@ -92,6 +92,19 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
+## Filters
+
+### CountLines()
+
+`CountLines()` counts the number of lines in the pipeline's stdin, and writes that to the pipeline's stdout
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("path/to/folder/*.txt"),
+    scriptish.CountLines(),
+).Exec().String()
+```
+
 ## Sinks
 
 ### ToStderr()
@@ -120,6 +133,18 @@ result, err := scriptish.NewPipeline(
 
 Outputs are methods available on each `Pipeline`. Some are inherited from the `pipe` package, and some are defined by `scriptish`.
 
+### CountLines()
+
+`CountLines()` returns the number of lines in the pipeline's stdout.
+
+```go
+lineCount, err := scriptish.NewPipeline(
+    scriptish.ListFiles("."),
+).Exec().CountLines()
+```
+
+If the pipeline failed to complete, `lineCount` will be `0`, and `err` will be the pipeline's last error status.
+
 ### CountWords()
 
 `CountWords()` returns the number of words in the pipeline's stdout.
@@ -132,14 +157,3 @@ wordCount, err := scriptish.NewPipeline(
 
 If the pipeline failed to complete, `wordCount` will be `0`, and `err` will be the pipeline's last error status.
 
-### CountLines()
-
-`CountLines()` returns the number of lines in the pipeline's stdout.
-
-```go
-lineCount, err := scriptish.NewPipeline(
-    scriptish.ListFiles("."),
-).Exec().CountLines()
-```
-
-If the pipeline failed to complete, `lineCount` will be `0`, and `err` will be the pipeline's last error status.
