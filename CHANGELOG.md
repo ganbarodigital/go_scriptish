@@ -14,6 +14,7 @@
   - added `ListFiles()`
 * Filters:
   - added `CountLines()`
+  - added `CountWords()`
 * Sinks:
   - added `ToStderr()`
   - added `ToStdout()`

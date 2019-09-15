@@ -104,12 +104,23 @@ When you've finished adding filters to your pipeline, you should either add a [s
 
 ### CountLines()
 
-`CountLines()` counts the number of lines in the pipeline's stdin, and writes that to the pipeline's stdout
+`CountLines()` counts the number of lines in the pipeline's stdin, and writes that to the pipeline's stdout.
 
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.ListFiles("path/to/folder/*.txt"),
     scriptish.CountLines(),
+).Exec().String()
+```
+
+### CountWords()
+
+`CountWords()` counts the number of words in the pipeline's stdin, and writes that to the pipeline's stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("path/to/file.txt"),
+    scriptish.CountWords(),
 ).Exec().String()
 ```
 
