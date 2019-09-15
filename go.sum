@@ -4,6 +4,8 @@ github.com/ganbarodigital/go_pipe v1.0.1 h1:RkMgvxPdSYeaP3Yu55W9hvp+bA0w6Q4e6Arl
 github.com/ganbarodigital/go_pipe v1.0.1/go.mod h1:Ty4U96oL3nkeyfJRWuR7v3z2qE9bMrW4WuXmO6g4t8o=
 github.com/ganbarodigital/go_pipe v1.0.2 h1:fweG64TozZrH370a9rHxdoIVk0yFl85WHFdLSPZM6jA=
 github.com/ganbarodigital/go_pipe v1.0.2/go.mod h1:Ty4U96oL3nkeyfJRWuR7v3z2qE9bMrW4WuXmO6g4t8o=
+github.com/ganbarodigital/go_pipe v1.1.0 h1:FbeQazoOS8kTkho4sK/yy/4gEFEkvvxKqDyJbcokxgA=
+github.com/ganbarodigital/go_pipe v1.1.0/go.mod h1:Ty4U96oL3nkeyfJRWuR7v3z2qE9bMrW4WuXmO6g4t8o=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
