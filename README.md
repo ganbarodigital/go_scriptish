@@ -10,6 +10,7 @@ Bash         | Scriptish
 `echo "..."` | `Echo(...)`
 `echo "$@"`  | `EchoArgs()`
 `ls -1 ...`  | `ListFiles(...)`
+`wc -l`      | `CountLines()`
 
 ## Sources
 
@@ -90,7 +91,7 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-## Sinks()
+## Sinks
 
 ### ToStderr()
 
@@ -113,3 +114,19 @@ result, err := scriptish.NewPipeline(
     scriptish.ToStdout(),
 ).Exec().String()
 ```
+
+## Outputs
+
+Outputs are methods available on each `Pipeline`. Some are inherited from the `pipe` package, and some are defined by `scriptish`.
+
+### CountLines()
+
+`CountLines()` returns the number of lines in the pipeline's stdout.
+
+```go
+lineCount, err := scriptish.NewPipeline(
+    scriptish.ListFiles("."),
+).Exec().CountLines()
+```
+
+If the pipeline failed to complete, `lineCount` will be `0`, and `err` will be the pipeline's last error status.

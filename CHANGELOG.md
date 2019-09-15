@@ -15,3 +15,5 @@
 * Sinks:
   - added `ToStderr()`
   - added `ToStdout()`
+* Outputs:
+  - added `CountLines()`
