@@ -26,6 +26,7 @@
   - added `StripExtension()`
   - added `Tail()`
   - added `Tr()`
+  - added `TrimSuffix()`
   - added `TrimWhitespace()`
   - added `Uniq()`
   - added `XargsCat()`

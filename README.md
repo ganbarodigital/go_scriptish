@@ -7,6 +7,7 @@ Here's a handy table to help you quickly translate an action from a Bash shell s
 Bash           | Scriptish
 ---------------|----------
 `${x%.*}`      | `StripExtension()`
+`${x%$y}`      | `TrimSuffix()`
 `basename ...` | `Basename()`
 `cat "..."`    | `Cat(...)`
 `cut -f`       | `CutFields()`
@@ -85,7 +86,10 @@ result, err := scriptish.NewPipeline(
 
 ### ListFiles()
 
-`ListFiles()` writes a list of matching files to the pipeline's stdout, one line per filename found.
+`ListFiles()` writes a list of matching files to the pipeline's stdout, one line per filename found.// TrimSuffix removes the given suffix from each line of the pipeline.
+//
+// Use it to emulate basename(1)'s `[suffix]` parameter.
+
 
 ```go
 // list a single file, if it exists
@@ -286,6 +290,19 @@ result, err := scriptish.NewPipeline(
 ).Exec().Strings()
 
 // err is an ErrMismatchedInputs, and result is empty
+```
+
+### TrimSuffix()
+
+`TrimSuffix()` removes the given suffix from each line of the pipeline.
+
+Use it to emulate basename(1)'s `[suffix]` parameter.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/"),
+    scriptish.TrimSuffix(".txt")
+).Exec().Strings()
 ```
 
 ### TrimWhitespace()
