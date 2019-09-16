@@ -28,5 +28,7 @@
 * Outputs:
   - added `CountLines()`
   - added `CountWords()`
+* Errors:
+  - added `ErrMismatchedInputs`
 * Utilities:
   - added `ParseRangeSpec()`

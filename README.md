@@ -274,3 +274,8 @@ wordCount, err := scriptish.NewPipeline(
 
 If the pipeline failed to complete, `wordCount` will be `0`, and `err` will be the pipeline's last error status.
 
+## Errors
+
+### ErrMismatchedInputs
+
+`ErrMismatchedInputs` is returned whenever two input arrays aren't the same length.
