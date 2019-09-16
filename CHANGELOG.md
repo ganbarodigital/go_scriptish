@@ -25,6 +25,7 @@
   - added `Sort()`
   - added `Tail()`
   - added `Tr()`
+  - added `TrimWhitespace()`
   - added `XargsCat()`
 * Sinks:
   - added `ToStderr()`

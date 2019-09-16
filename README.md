@@ -275,6 +275,17 @@ result, err := scriptish.NewPipeline(
 // err is an ErrMismatchedInputs, and result is empty
 ```
 
+### TrimWhitespace()
+
+`TrimWhitespace()` removes any whitespace from the front and end of the line.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.TrimWhitespace(),
+).Exec().Strings()
+```
+
 ### XargsCat()
 
 `XargsCat()` treats each line in the pipeline's stdin as a filepath. The contents of each file are written to the pipeline's stdout.
