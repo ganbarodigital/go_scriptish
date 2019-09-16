@@ -26,6 +26,7 @@
   - added `Tail()`
   - added `Tr()`
   - added `TrimWhitespace()`
+  - added `Uniq()`
   - added `XargsCat()`
 * Sinks:
   - added `ToStderr()`

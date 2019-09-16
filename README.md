@@ -19,6 +19,7 @@ Bash           | Scriptish
 `sort -r`      | `Rsort()`
 `tail -n X`    | `Tail(X)`
 `tr old new`   | `Tr(old, new)`
+`uniq`         | `Uniq()`
 `wc -l`        | `CountLines()`
 `wc -w`        | `CountWords()`
 `xargs cat`    | `XargsCat()`
@@ -283,6 +284,17 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.TrimWhitespace(),
+).Exec().Strings()
+```
+
+### Uniq()
+
+`Uniq()` removes duplicated lines from the pipeline.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.Uniq(),
 ).Exec().Strings()
 ```
 
