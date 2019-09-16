@@ -13,6 +13,7 @@
   - added `EchoArgs()`
   - added `EchoSlice()`
   - added `ListFiles()`
+  - added `MkTempDir()`
   - added `MkTempFile()`
 * Filters:
   - added `Basename()`
