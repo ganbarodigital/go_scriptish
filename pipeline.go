@@ -66,3 +66,10 @@ func (pl *Pipeline) Exec() *Pipeline {
 	pl.Exec_()
 	return pl
 }
+
+// ExecPipeline creates and runs a pipeline. Use this for short, throwaway
+// actions.
+func ExecPipeline(steps ...pipe.PipelineOperation) *Pipeline {
+	pipeline := NewPipeline(steps...).Exec()
+	return pipeline
+}

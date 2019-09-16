@@ -63,3 +63,26 @@ func TestNewPipelineCreatesEmptyPipeline(t *testing.T) {
 	assert.Equal(t, "", pipeline.Pipe.Stdout.String())
 	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
 }
+
+func ExecPipelineCreatesAndRunsAPipeline(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := "hello world\n"
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := ExecPipeline(Echo("hello world!"))
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, "", pipeline.Pipe.Stdin.String())
+	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.String())
+	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
+
+	assert.Nil(t, pipeline.Error())
+}
