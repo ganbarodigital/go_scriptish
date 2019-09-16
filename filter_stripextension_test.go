@@ -64,7 +64,7 @@ func TestStripExtension(t *testing.T) {
 
 	pipeline := NewPipeline(
 		EchoSlice(testData),
-		StripExtenion(),
+		StripExtension(),
 	)
 
 	// ----------------------------------------------------------------
