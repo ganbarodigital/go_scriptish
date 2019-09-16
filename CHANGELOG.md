@@ -20,6 +20,7 @@
   - added `Dirname()`
   - added `DropEmptyLines()`
   - added `Head()`
+  - added `RunPipeline()`
   - added `XargsCat()`
 * Sinks:
   - added `ToStderr()`

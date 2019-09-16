@@ -12,6 +12,7 @@ Bash           | Scriptish
 `dirname ...`  | `Dirname()`
 `echo "..."`   | `Echo(...)`
 `echo "$@"`    | `EchoArgs()`
+`function`     | `RunPipeline()`
 `head -n X`    | `Head(X)`
 `ls -1 ...`    | `ListFiles(...)`
 `wc -l`        | `CountLines()`
@@ -188,6 +189,22 @@ result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Head(100),
 ).Exec().Strings()
+```
+
+### RunPipeline()
+
+`RunPipeline()` allows you to call one pipeline from another. Use it to create reusable pipelines, a bit like shell script functions.
+
+```go
+getWordCount := scriptish.NewPipeline(
+    scriptish.SplitWords(),
+    scriptish.CountLines(),
+)
+
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.RunPipeline(getWordCount),
+).Exec().Int()
 ```
 
 ### XargsCat()
