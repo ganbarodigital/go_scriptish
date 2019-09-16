@@ -18,6 +18,7 @@
   - added `CountLines()`
   - added `CountWords()`
   - added `Dirname()`
+  - added `DropEmptyLines()`
   - added `XargsCat()`
 * Sinks:
   - added `ToStderr()`

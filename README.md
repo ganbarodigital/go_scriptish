@@ -165,6 +165,17 @@ result, err := scriptish.NewPipeline(
 ).Exec().Strings()
 ```
 
+### DropEmptyLines()
+
+`DropEmptyLines()` removes any lines that are blank, or that only contain whitespace.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.DropEmptyLines()
+).Exec().Strings()
+```
+
 ### XargsCat()
 
 `XargsCat()` treats each line in the pipeline's stdin as a filepath. The contents of each file are written to the pipeline's stdout.
