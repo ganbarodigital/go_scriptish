@@ -23,6 +23,7 @@
   - added `Rsort()`
   - added `RunPipeline()`
   - added `Sort()`
+  - added `Tail()`
   - added `Tr()`
   - added `XargsCat()`
 * Sinks:

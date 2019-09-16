@@ -17,6 +17,7 @@ Bash           | Scriptish
 `ls -1 ...`    | `ListFiles(...)`
 `sort`         | `Sort()`
 `sort -r`      | `Rsort()`
+`tail -n X`    | `Tail(X)`
 `tr old new`   | `Tr(old, new)`
 `wc -l`        | `CountLines()`
 `wc -w`        | `CountWords()`
@@ -230,6 +231,17 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Sort(),
+).Exec.Strings()
+```
+
+### Tail()
+
+`Tail()` copies the last N lines from the pipeline's stdin to its stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.Tail(50),
 ).Exec.Strings()
 ```
 
