@@ -265,7 +265,7 @@ getWordCount := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.RunPipeline(getWordCount),
-).Exec().Int()
+).Exec().ParseInt()
 ```
 
 ### Sort()
