@@ -15,6 +15,7 @@ Bash           | Scriptish
 `function`     | `RunPipeline()`
 `head -n X`    | `Head(X)`
 `ls -1 ...`    | `ListFiles(...)`
+`tr old new`   | `Tr(old, new)`
 `wc -l`        | `CountLines()`
 `wc -w`        | `CountWords()`
 `xargs cat`    | `XargsCat()`
@@ -205,6 +206,37 @@ result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.RunPipeline(getWordCount),
 ).Exec().Int()
+```
+
+### Tr()
+
+`Tr()` replaces all occurances of one string with another.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.Tr([]string{"one","two"}, []string{"1","2"}),
+).Exec.Strings()
+```
+
+If the second parameter is a string slice of length 1, everything from the first parameter will be replaced by that slice.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.Tr([]string{"one","two"}, []string{"numberwang"}),
+).Exec.Strings()
+```
+
+If the first and second parameters are different lengths, `Tr()` will return an `scriptish.ErrMismatchedInputs`.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.Tr([]string{"one","two"}, []string{"1","2"}),
+).Exec.Strings()
+
+// err is an ErrMismatchedInputs, and result is empty
 ```
 
 ### XargsCat()
