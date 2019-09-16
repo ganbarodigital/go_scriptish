@@ -23,6 +23,7 @@
   - added `Rsort()`
   - added `RunPipeline()`
   - added `Sort()`
+  - added `StripExtension()`
   - added `Tail()`
   - added `Tr()`
   - added `TrimWhitespace()`

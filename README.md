@@ -6,6 +6,7 @@ Here's a handy table to help you quickly translate an action from a Bash shell s
 
 Bash           | Scriptish
 ---------------|----------
+`${x%.*}`      | `StripExtension()`
 `basename ...` | `Basename()`
 `cat "..."`    | `Cat(...)`
 `cut -f`       | `CutFields()`
@@ -231,6 +232,17 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Sort(),
+).Exec().Strings()
+```
+
+### StripExtension()
+
+`StripExtension()` treats every line in the pipeline as a filepath. It removes the extension from each filepath.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder"),
+    scriptish.StripExtension(),
 ).Exec().Strings()
 ```
 
