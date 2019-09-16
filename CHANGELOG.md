@@ -33,6 +33,7 @@
   - added `TrimWhitespace()`
   - added `Uniq()`
   - added `XargsCat()`
+  - added `XargsTruncateFiles()`
 * Sinks:
   - added `ToStderr()`
   - added `ToStdout()`

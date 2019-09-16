@@ -378,6 +378,21 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
+### XargsTruncateFiles()
+
+`XargsTruncatesFiles()` treats each line of the pipeline's stdin as a filepath. The contents of each file are truncated. If the file does not exist, it is created.
+
+Each filepath is written to the pipeline's stdout, for use by the next operation in the pipeline.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/files"),
+    scriptish.XargsTruncateFiles(),
+).Exec().Strings()
+
+// result now contains a list of the files that have been truncated
+```
+
 ## Sinks
 
 Sinks take the contents of the pipeline's stdin, and write it to somewhere outside the pipeline.
