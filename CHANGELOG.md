@@ -13,6 +13,7 @@
   - added `EchoArgs()`
   - added `EchoSlice()`
   - added `ListFiles()`
+  - added `MkTempFile()`
 * Filters:
   - added `Basename()`
   - added `CountLines()`

@@ -17,6 +17,7 @@ Bash           | Scriptish
 `function`     | `RunPipeline()`
 `head -n X`    | `Head(X)`
 `ls -1 ...`    | `ListFiles(...)`
+`mktemp`       | `MkTempFile()`
 `sort`         | `Sort()`
 `sort -r`      | `Rsort()`
 `tail -n X`    | `Tail(X)`
@@ -110,6 +111,16 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.ListFiles("path/to/folder/*.txt"),
 ).Exec().String()
+```
+
+### MkTempFile()
+
+`MkTempFile()` creates a temporary file, and writes the filename to the pipeline's stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.MkTempFile(os.TempDir(), "scriptish-*")
+).Exec.String()
 ```
 
 ## Filters
