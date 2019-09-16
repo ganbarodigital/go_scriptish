@@ -21,6 +21,7 @@
   - added `DropEmptyLines()`
   - added `Head()`
   - added `RunPipeline()`
+  - added `Sort()`
   - added `Tr()`
   - added `XargsCat()`
 * Sinks:

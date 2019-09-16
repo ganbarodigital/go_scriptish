@@ -15,6 +15,7 @@ Bash           | Scriptish
 `function`     | `RunPipeline()`
 `head -n X`    | `Head(X)`
 `ls -1 ...`    | `ListFiles(...)`
+`sort`         | `Sort()`
 `tr old new`   | `Tr(old, new)`
 `wc -l`        | `CountLines()`
 `wc -w`        | `CountWords()`
@@ -206,6 +207,17 @@ result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.RunPipeline(getWordCount),
 ).Exec().Int()
+```
+
+### Sort()
+
+`Sort()` sorts the contents of the pipeline into ascending alphabetical order.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.Sort(),
+).Exec.Strings()
 ```
 
 ### Tr()
