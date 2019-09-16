@@ -4,29 +4,30 @@
 
 Here's a handy table to help you quickly translate an action from a Bash shell script to the equivalent `scriptish` function.
 
-Bash           | Scriptish
----------------|----------
-`${x%.*}`      | `StripExtension()`
-`${x%$y}`      | `TrimSuffix()`
-`basename ...` | `Basename()`
-`cat "..."`    | `Cat(...)`
-`cut -f`       | `CutFields()`
-`dirname ...`  | `Dirname()`
-`echo "..."`   | `Echo(...)`
-`echo "$@"`    | `EchoArgs()`
-`function`     | `RunPipeline()`
-`head -n X`    | `Head(X)`
-`ls -1 ...`    | `ListFiles(...)`
-`mktemp`       | `MkTempFile()`
-`mktemp -d`    | `MkTempDir()`
-`sort`         | `Sort()`
-`sort -r`      | `Rsort()`
-`tail -n X`    | `Tail(X)`
-`tr old new`   | `Tr(old, new)`
-`uniq`         | `Uniq()`
-`wc -l`        | `CountLines()`
-`wc -w`        | `CountWords()`
-`xargs cat`    | `XargsCat()`
+Bash                 | Scriptish
+---------------------|----------
+`${x%.*}`            | `StripExtension()`
+`${x%$y}`            | `TrimSuffix()`
+`basename ...`       | `Basename()`
+`cat "..."`          | `Cat(...)`
+`cat /dev/null > $x` | `TruncateFile($x)`
+`cut -f`             | `CutFields()`
+`dirname ...`        | `Dirname()`
+`echo "..."`         | `Echo(...)`
+`echo "$@"`          | `EchoArgs()`
+`function`           | `RunPipeline()`
+`head -n X`          | `Head(X)`
+`ls -1 ...`          | `ListFiles(...)`
+`mktemp`             | `MkTempFile()`
+`mktemp -d`          | `MkTempDir()`
+`sort`               | `Sort()`
+`sort -r`            | `Rsort()`
+`tail -n X`          | `Tail(X)`
+`tr old new`         | `Tr(old, new)`
+`uniq`               | `Uniq()`
+`wc -l`              | `CountLines()`
+`wc -w`              | `CountWords()`
+`xargs cat`          | `XargsCat()`
 
 ## Sources
 
@@ -385,6 +386,18 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.Echo("usage: simpleca <command>"),
     scriptish.ToStdout(),
+).Exec().String()
+```
+
+### TruncateFile()
+
+`TruncateFile()` removes the contents of the given file.
+
+If the file does not exist, it is created.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.TruncateFile("/tmp/scriptish-test"),
 ).Exec().String()
 ```
 

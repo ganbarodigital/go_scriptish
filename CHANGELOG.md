@@ -35,6 +35,7 @@
 * Sinks:
   - added `ToStderr()`
   - added `ToStdout()`
+  - added `TruncateFile()`
 * Outputs:
   - added `CountLines()`
   - added `CountWords()`
