@@ -203,9 +203,8 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Rsort(),
-).Exec.Strings()
+).Exec().Strings()
 ```
-
 
 ### RunPipeline()
 
@@ -231,7 +230,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Sort(),
-).Exec.Strings()
+).Exec().Strings()
 ```
 
 ### Tail()
@@ -242,7 +241,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Tail(50),
-).Exec.Strings()
+).Exec().Strings()
 ```
 
 ### Tr()
@@ -253,7 +252,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Tr([]string{"one","two"}, []string{"1","2"}),
-).Exec.Strings()
+).Exec().Strings()
 ```
 
 If the second parameter is a string slice of length 1, everything from the first parameter will be replaced by that slice.
@@ -262,7 +261,7 @@ If the second parameter is a string slice of length 1, everything from the first
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Tr([]string{"one","two"}, []string{"numberwang"}),
-).Exec.Strings()
+).Exec().Strings()
 ```
 
 If the first and second parameters are different lengths, `Tr()` will return an `scriptish.ErrMismatchedInputs`.
@@ -271,7 +270,7 @@ If the first and second parameters are different lengths, `Tr()` will return an 
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Tr([]string{"one","two"}, []string{"1","2"}),
-).Exec.Strings()
+).Exec().Strings()
 
 // err is an ErrMismatchedInputs, and result is empty
 ```
