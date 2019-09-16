@@ -12,6 +12,7 @@ Bash           | Scriptish
 `dirname ...`  | `Dirname()`
 `echo "..."`   | `Echo(...)`
 `echo "$@"`    | `EchoArgs()`
+`head -n X`    | `Head(X)`
 `ls -1 ...`    | `ListFiles(...)`
 `wc -l`        | `CountLines()`
 `wc -w`        | `CountWords()`
@@ -173,6 +174,19 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.DropEmptyLines()
+).Exec().Strings()
+```
+
+### Head()
+
+`Head()` copies the first N lines of the pipeline's stdin to its stdout.
+
+If N is zero or negative, `Head()` copies no lines.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.Head(100),
 ).Exec().Strings()
 ```
 
