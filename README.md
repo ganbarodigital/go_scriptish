@@ -16,6 +16,7 @@ Bash           | Scriptish
 `head -n X`    | `Head(X)`
 `ls -1 ...`    | `ListFiles(...)`
 `sort`         | `Sort()`
+`sort -r`      | `Rsort()`
 `tr old new`   | `Tr(old, new)`
 `wc -l`        | `CountLines()`
 `wc -w`        | `CountWords()`
@@ -192,6 +193,18 @@ result, err := scriptish.NewPipeline(
     scriptish.Head(100),
 ).Exec().Strings()
 ```
+
+### Rsort()
+
+`Rsort()` sorts the contents of the pipeline into descending alphabetical order.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.Rsort(),
+).Exec.Strings()
+```
+
 
 ### RunPipeline()
 

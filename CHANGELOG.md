@@ -20,6 +20,7 @@
   - added `Dirname()`
   - added `DropEmptyLines()`
   - added `Head()`
+  - added `Rsort()`
   - added `RunPipeline()`
   - added `Sort()`
   - added `Tr()`
