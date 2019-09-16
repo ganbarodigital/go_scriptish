@@ -8,6 +8,7 @@ Bash                 | Scriptish
 ---------------------|----------
 `${x%.*}`            | `StripExtension()`
 `${x%$y}`            | `TrimSuffix()`
+`> $file`            | `WriteToFile()`
 `basename ...`       | `Basename()`
 `cat "..."`          | `Cat(...)`
 `cat /dev/null > $x` | `TruncateFile($x)`
@@ -431,6 +432,19 @@ If the file does not exist, it is created.
 result, err := scriptish.NewPipeline(
     scriptish.TruncateFile("/tmp/scriptish-test"),
 ).Exec().String()
+```
+
+### WriteToFile()
+
+`WriteToFile()` writes the contents of the pipe's stdin to the given file. The existing contents of the file are replaced.
+
+If the file does not exist, it is created.
+
+```go
+err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.WriteToFile("/path/to/new_file.txt"),
+).Exec().Error()
 ```
 
 ## Outputs
