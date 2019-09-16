@@ -141,6 +141,23 @@ Filters read the contents of the pipeline's stdin, do something to that data, an
 
 When you've finished adding filters to your pipeline, you should either add a [sink](#sinks), or call one of the [output functions](#outputs) to get the results back into your Golang code.
 
+### AppendToTempFile()
+
+`AppendToTempFile()` writes the contents of the pipeline's stdin to a
+temporary file. The temporary file's filename is then written to
+the pipeline's stdout.
+
+If the file does not exist, it is created.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.AppendToTempFile(os.TempDir(), "scriptish-*"),
+).Exec.String()
+
+// result now contains the temporary filename
+```
+
 ### Basename()
 
 `Basename()` treats each line in the pipeline's stdin as a filepath. Any parent elements are stripped from the line, and the results written to the pipeline's stdout.

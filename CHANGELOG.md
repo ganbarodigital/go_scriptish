@@ -16,6 +16,7 @@
   - added `MkTempDir()`
   - added `MkTempFile()`
 * Filters:
+  - added `AppendToTempFile()`
   - added `Basename()`
   - added `CountLines()`
   - added `CountWords()`
