@@ -15,7 +15,15 @@ result, err := scriptish.NewPipeline(
 
 ## Why Use Scriptish?
 
-Scriptish makes it easy to do UNIX shell script-like things in Golang.
+We've built Scriptish for anyone who needs to replace UNIX shell scripts with compiled Golang binaries.
+
+We're going to be doing that ourselves, for some of our projects:
+
+* Dockhand - Docker management utility
+* HubFlow - the GitFlow extension for Git
+* SimpleCA - local TLS certificate authority for internal infrastructure
+
+We'll add links to those projects when they're available.
 
 ## Why UNIX Shell Scripts?
 
