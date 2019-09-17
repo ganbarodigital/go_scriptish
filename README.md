@@ -567,7 +567,7 @@ result, err := scriptish.NewPipeline(
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-")
-).Exec.String()
+).Exec().String()
 ```
 
 ### MkTempFile()
@@ -577,7 +577,7 @@ result, err := scriptish.NewPipeline(
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-*")
-).Exec.String()
+).Exec().String()
 ```
 
 ## Filters
@@ -598,7 +598,7 @@ If the file does not exist, it is created.
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.AppendToTempFile(os.TempDir(), "scriptish-*"),
-).Exec.String()
+).Exec().String()
 
 // result now contains the temporary filename
 ```
