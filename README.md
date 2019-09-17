@@ -850,10 +850,10 @@ A sink should be the last command in your pipeline. You can add more commands af
 If the file does not exist, it is created.
 
 ```go
-result, err := scriptish.NewPipeline(
+err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.AppendToFile("my-app.log"),
-).Exec().String()
+).Exec().Error()
 ```
 
 ### RmFile()
@@ -899,9 +899,9 @@ err := scriptish.NewPipeline(
 If the file does not exist, it is created.
 
 ```go
-result, err := scriptish.NewPipeline(
+err := scriptish.NewPipeline(
     scriptish.TruncateFile("/tmp/scriptish-test"),
-).Exec().String()
+).Exec().Error()
 ```
 
 ### WriteToFile()
