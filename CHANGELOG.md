@@ -36,6 +36,7 @@
   - added `XargsCat()`
   - added `XargsTruncateFiles()`
 * Sinks:
+  - added `AppendToFile()`
   - added `ToStderr()`
   - added `ToStdout()`
   - added `TruncateFile()`

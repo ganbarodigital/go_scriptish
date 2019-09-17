@@ -9,6 +9,7 @@ Bash                 | Scriptish
 `${x%.*}`            | `StripExtension()`
 `${x%$y}`            | `TrimSuffix()`
 `> $file`            | `WriteToFile()`
+`>> $file`           | `AppendToFile()`
 `basename ...`       | `Basename()`
 `cat "..."`          | `Cat(...)`
 `cat /dev/null > $x` | `TruncateFile($x)`
@@ -399,6 +400,19 @@ result, err := scriptish.NewPipeline(
 Sinks take the contents of the pipeline's stdin, and write it to somewhere outside the pipeline.
 
 A sink should be the last operation in your pipeline. You can add more operations afterwards if you really want to. Just be aware that the first operation after any sink will be starting with an empty stdin.
+
+### AppendToFile()
+
+`AppendToFile()` writes the contents of the pipeline's stdin to the given file
+
+If the file does not exist, it is created.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.AppendToFile("my-app.log"),
+).Exec().String()
+```
 
 ### ToStderr()
 
