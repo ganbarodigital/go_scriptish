@@ -110,7 +110,7 @@ Each Scriptish command works the same way:
 * they write any error messages out to the pipeline's `stderr`
 * they return a status code and a Golang error to indicate what happened
 
-When a single command has finished, it's `stdout` becomes the `stdin` for the next command in the pipeline.
+When a single command has finished, its `stdout` becomes the `stdin` for the next command in the pipeline.
 
 ### How Are Errors Handled?
 
