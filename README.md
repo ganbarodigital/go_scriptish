@@ -186,7 +186,7 @@ pipeline := scriptish.ExecPipeline(
 
 Behind the scenes, it simply does a `scriptish.NewPipeline(...).Exec()` for you.
 
-You can then use any of the output methods to find out what happened:
+You can then use any of the [output methods](#outputs) to find out what happened:
 
 ```go
 result, err = pipeline.ParseInt()
