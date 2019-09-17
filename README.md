@@ -33,7 +33,7 @@ UNIX shell scripts are one of the most practical inventions in computer programm
 * They're very powerful.
 * They treat everything as text.
 
-They're fantastic for knocking up utilities, automating things, and gluing things together.
+They're fantastic for knocking up utilities in a matter of minutes, for automating things, and for gluing things together. Our hard drives are littered with little shell scripts - and some large ones too! - and we create new ones all the time.
 
 If you're using any sort of UNIX system (Linux, or MacOS), shell scripting is a must-have skill - whether you're a developer or a sysadmin.
 
