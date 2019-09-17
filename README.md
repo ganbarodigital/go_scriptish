@@ -87,8 +87,9 @@ Scriptish works the same way. You create a pipeline of Scriptish commands:
 
 ```go
 pipeline := scriptish.NewPipeline(
-    scriptish.CatFile("/path/to/file.txt"),
-    scriptish.CountWords()
+    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Grep("^[* ]"),
+    scriptish.Tr([]string{"* "}, []string{""}),
 )
 ```
 
