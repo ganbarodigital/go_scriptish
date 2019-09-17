@@ -17,9 +17,19 @@ result, err := scriptish.NewPipeline(
 
 Scriptish makes it easy to do UNIX shell script-like things in Golang.
 
-### Why Not Use UNIX Shell Scripts?
+## Why UNIX Shell Scripts?
 
-UNIX shell scripts are very quick to write. They're perfect for tiny utilities and almost throw-away commands.
+UNIX shell scripts are one of the most practical inventions in computer programming.
+
+* They're very quick to write.
+* They're very powerful.
+* They treat everything as text.
+
+They're fantastic for knocking up utilities, automating things, and gluing things together.
+
+If you're using any sort of UNIX system (Linux, or MacOS), shell scripting is a must-have skill - whether you're a developer or a sysadmin.
+
+### Why Not Use UNIX Shell Scripts?
 
 They're just not a great choice if you want to distribute your work outside your team, organisation or community.
 
