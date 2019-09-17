@@ -875,10 +875,10 @@ err := scriptish.NewPipeline(
 `ToStdout()` writes the pipeline's `Stdin` to the program's `stderr` (`os.Stderr` in Golang terms).
 
 ```go
-result, err := scriptish.NewPipeline(
+err := scriptish.NewPipeline(
     scriptish.Echo("usage: simpleca <command>"),
     scriptish.ToStderr(),
-).Exec().String()
+).Exec().Error()
 ```
 
 ### ToStdout()
@@ -886,10 +886,10 @@ result, err := scriptish.NewPipeline(
 `ToStdout()` writes the pipeline's `Stdin` to the program's `Stdout` (`os.Stdout` in Golang terms).
 
 ```go
-result, err := scriptish.NewPipeline(
+err := scriptish.NewPipeline(
     scriptish.Echo("usage: simpleca <command>"),
     scriptish.ToStdout(),
-).Exec().String()
+).Exec().Error()
 ```
 
 ### TruncateFile()
