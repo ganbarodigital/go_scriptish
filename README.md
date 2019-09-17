@@ -215,7 +215,7 @@ fileExistsFunc := scriptish.PipelineFunc(
 )
 ```
 
-Whenever you call the function, the pipeline executes. The function returns a `*Pipeline`. Use any of the output methods to find out what happened when the pipeline executed.
+Whenever you call the function, the pipeline executes. The function returns a `*Pipeline`. Use any of the [output methods](#outputs) to find out what happened when the pipeline executed.
 
 ```go
 fileExists, err := fileExistsFunc().Okay()
