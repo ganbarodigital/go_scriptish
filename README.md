@@ -1,5 +1,178 @@
 # Welcome to scriptish
 
+## Creating A Pipeline
+
+You can create a pipeline in several ways.
+
+Pipeline         | Produces
+-----------------|--------------------------------------
+`NewPipeline()`  | Pipeline that's ready to run
+`ExecPipeline()` | Pipeline that has been run once
+`PipelineFunc()` | Function that will run your pipeline
+
+### NewPipeline()
+
+Call `NewPipeline()` when you want to build a pipeline:
+
+```go
+pipeline := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+)
+```
+
+`pipeline` can now be executed as often as you want.
+
+```go
+result, err := pipeline.Exec().ParseInt()
+```
+
+### ExecPipeline()
+
+`ExecPipeline()` builds a pipeline and executes it in a single step.
+
+```go
+pipeline := scriptish.ExecPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+)
+```
+
+Behind the scenes, it simply does a `scriptish.NewPipeline(...).Exec()` for you.
+
+You can then use any of the output methods to find out what happened:
+
+```go
+result, err = pipeline.ParseInt()
+```
+
+You can re-use the resulting pipeline as often as you want.
+
+### PipelineFunc()
+
+`PipelineFunc()` builds the pipeline and turns it into a function.
+
+```go
+fileExistsFunc := scriptish.PipelineFunc(
+    scriptish.FileExists("/path/to/file")
+)
+```
+
+Whenever you call the function, the pipeline executes. The function returns a `*Pipeline`. Use any of the output methods to find out what happened when the pipeline executed.
+
+```go
+fileExists, err := fileExistsFunc().Okay()
+```
+
+You can re-use the function as often as you want.
+
+## Running An Existing Pipeline
+
+Once you have built a pipeline, call the `Exec()` method to execute it:
+
+```go
+pipeline := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+)
+pipeline.Exec()
+```
+
+`Exec()` always returns a pointer to the same pipeline, so that you can use method chaining to create nicer-looking code.
+
+```go
+// in this example, `pipeline` is available to be used more than once
+pipeline := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+)
+result, err := pipeline.Exec().String()
+```
+
+```go
+// in this example, we don't keep a reference to the pipeline
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+).Exec().String()
+```
+
+## Calling A Pipeline From Another Pipeline
+
+UNIX shell scripts can be broken up into functions to make them easier to maintain. You can do something close to that in Scriptish, by calling a pipeline from another pipeline:
+
+```go
+// this will parse the output of Git to find the selected branch
+//
+// the selected branch depends on the Git command called
+filterSelectedBranch := scriptish.NewPipeline(
+    scriptish.Grep("^[*]"),
+    scriptish.Tr([]string{"* "}, []string{""}),
+)
+
+// which local branch are we working on?
+localBranch, err := scriptish.NewPipeline(
+    scriptish.Exec("git branch --no-color"),
+    scriptish.RunPipeline(filterSelectedBranch),
+).Exec().TrimmedString()
+
+// what's the tracking branch?
+remoteBranch, err := scriptish.NewPipeline(
+    scriptish.Exec("git branch -av --no-color"),
+    scriptish.RunPipeline(filterSelectedBranch),
+).Exec().TrimmedString()
+```
+
+## Getting A Result
+
+If you're familiar with UNIX shell scripting, you'll know that every shell command creates three different outputs:
+
+* stdout - normal text output
+* stderr - any error messages
+* status code - an integer representing what happened. 0 (zero) means success, any other value means an error occurred.
+
+Scriptish commands work the same way. They also track any Golang errors that occur when the commands run.
+
+Property              | Description
+----------------------| -------------------
+`pipeline.Stdout`     | normal text output
+`pipeline.Stderr`     | an error messages (this is normally blank, because we have Golang errors too)
+`pipeline.Err`        | Golang errors
+`pipeline.StatusCode` | an integer representing what happened. Normally 0 for success
+
+When the pipeline has executed, you can call one of [the output functions](#outputs) to find out what happened:
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+).Exec().String()
+
+// if the pipeline worked ...
+// - result now contains the number of words in the file
+// - err is nil
+//
+// and if the pipeline didn't work ...
+// - result is 0
+// - err contains a Golang error
+```
+
+If you want to run a Scriptish command and you don't care about the output, call `Pipeline.Okay()`:
+
+```go
+success, err := scriptish.NewPipeline(
+    scriptish.RmFile("/path/to/file.txt")
+).Exec()
+
+// if the pipeline worked ...
+// - success is `true`
+// - err is `nil`
+//
+// and if the pipeline didn't work ...
+// - success is `false`
+// - err contains a Golang error
+```
+
 ## From Bash To Scriptish
 
 Here's a handy table to help you quickly translate an action from a Bash shell script to the equivalent `scriptish` function.
