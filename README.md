@@ -1087,13 +1087,11 @@ We started out using (and contributing to) Script, but ran into a few things tha
 
     We want it to take as little thinking as possible to port UNIX shell scripts over to Golang - especially for casual or lapsed Golang programmers!
 
-    That means (amongst other things) using function names that are similar to the UNIX shell command that they emulate, and emulating UNIX behaviour as closely as is practical.
-
-    One key difference is that _scriptish_ supports both UNIX shell command status codes and `stderr`.
+    That means (amongst other things) using function names that are similar to the UNIX shell command that they emulate, and emulating UNIX behaviour as closely as is practical, including UNIX features like status codes and `stderr`.
 
 * Extensibility
 
-    _script operations_ are methods on the `script.Pipe` struct. We found that this makes it very hard to extend `script` with your own methods.
+    _script operations_ are methods on the `script.Pipe` struct. We found that this makes it very hard to extend `script` with your own methods, because Golang doesn't support inheritance, and the method chaining prevents Golang embedding from working.
 
     In contrast, _script commands_ are first-order functions that take the Pipe as a function parameter. You can create your own Scriptish commands, and they can live in your own Golang package.
 
@@ -1101,6 +1099,8 @@ We started out using (and contributing to) Script, but ran into a few things tha
 
     There's currently no way to call one pipeline from another using _script_ alone. You can achieve that by writing your own Golang boiler plate code.
 
-    _scriptish_ builds pipelines that you can run, pass around as values, and call from other _scriptish_ pipelines.
+    _scriptish_ builds first-order pipelines that you can run, pass around as values, and call from other _scriptish_ pipelines.
 
-We were originally attracted to _script_ because of how easy it is to use. There's a lot to like about it, and we've definitely tried to deliver that in _scriptish_ too. You should definitely check [script](https://github.com/bitfield/script) out if you think that _scriptish_ is too much for what you need.
+We were originally attracted to _script_ because of how incredibly easy it is to use. There's a lot to like about it, and we've definitely tried to create the same feel in _scriptish_ too. We've borrowed concepts such as [sources](#sources), [filters](#filters) and [sinks](#sinks) from _script_, because they're such a great way to describe how different Scriptish commands behave.
+
+You should definitely check [script](https://github.com/bitfield/script) out if you think that _scriptish_ is too much for what you need.
