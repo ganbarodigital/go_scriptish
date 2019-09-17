@@ -1,5 +1,142 @@
 # Welcome to scriptish
 
+## Introduction
+
+Scriptish is a Golang library. It helps you port UNIX shell scripts to Golang.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountLines(),
+).Exec().ParseInt()
+```
+
+## Why Use Scriptish?
+
+Scriptish makes it easy to do UNIX shell script-like things in Golang.
+
+### Why Not Use UNIX Shell Scripts?
+
+UNIX shell scripts are very quick to write. They're perfect for tiny utilities and almost throw-away commands.
+
+They're just not a great choice if you want to distribute your work outside your team, organisation or community.
+
+* If someone else is going to run your shell scripts, they need to make sure that they've installed all the commands that your shell scripts call. This can end up being a trial-and-error process.
+
+* Creating portable shell scripts (e.g. scripts that run on both Linux and MacOS) isn't always easy, and is very difficult (if not impossible) to test via a CI process.
+
+* Shell scripts don't work on a vanilla Windows box.
+
+### In Comparison ...
+
+You can use Scriptish to create small Golang binaries.
+
+* There's one binary to ship to your users.
+* Scriptish is self-contained. No need to worry about installing additional commands (unless you call [scriptish.Exec()](#exec) ...)
+* Use Golang's `go test` to create tests for your tools.
+* Use the power of Golang to cross-compile binaries for Linux, MacOS and Windows.
+
+## How Does It Work?
+
+### Getting Started
+
+Import Scriptish into your Golang code:
+
+```go
+import scriptish "github.com/ganbarodigital/go_scriptish"
+```
+
+Create a pipeline, and provide it with a list of operations:
+
+```go
+pipeline := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+)
+```
+
+Once you have your pipeline, run it:
+
+```go
+pipeline.Exec()
+```
+
+Once you've run your pipeline, call one of the [output methods](#outputs) to find out what happened:
+
+```go
+result, err := pipeline.ParseInt()
+```
+
+### What Is A Pipeline?
+
+UNIX shell scripts compose UNIX commands into a pipeline:
+
+```bash
+cat /path/to/file.txt | wc -w
+```
+
+Scriptish works the same way. You create a pipeline of Scriptish commands:
+
+```go
+pipeline := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+)
+```
+
+and then you run it.
+
+### What Happens When A Pipeline Runs?
+
+UNIX commands in a pipeline:
+
+* read text input from `stdin`
+* write their results (as text!) to `stdout`
+* write any errors (as text!) out to `stderr`
+* return a status code to indicate what happened
+
+Each Scriptish command works the same way:
+
+* they read text input from the pipeline's `stdin`
+* they write their results to the pipeline's `stdout`
+* they write any error messages out to the pipeline's `stderr`
+* they return a status code and a Golang error to indicate what happened
+
+When a single command has finished, it's `stdout` becomes the `stdin` for the next command in the pipeline.
+
+### How Are Errors Handled?
+
+One difference between UNIX commands and Golang is error handling. Scriptish combines the best of both.
+
+* UNIX commands return a status code to indicate what happened. A status code of 0 (zero) means success.
+* Scriptish commands return the UNIX-like status code, and any Golang error that has occurred.
+
+If you're calling external commands using `scriptish.Exec()`, you've still got access to the UNIX status code exactly like a shell script does. And you've always got access to any Golang errors that have occurred too.
+
+Just like UNIX shell scripts, a Scriptish pipeline stops executing if any command returns an error.
+
+### Sources, Filters, Sinks and Outputs
+
+Scriptish commands fall into one of three categories:
+
+* [Sources](#sources) create content in the pipeline, e.g. `scriptish.CatFile()`. They ignore whatever's already in the pipeline.
+* [Filters](#filters) do something with (or to) the pipeline's content, and they write the results back into the pipeline. These results form the input content for the next pipeline command.
+* [Sinks](#sinks) do something with (or two) the pipeline's content, and don't write any new content back into the pipeline.
+
+A pipeline normally:
+
+* starts with a `source`
+* applies one or more `filters`
+* finishes with a `sink` to send the results somewhere
+
+But what if we want to get the results back into our Golang code, to reuse in some way? Instead of using a [sink](#sinks), use an [output](#outputs) instead.
+
+An output isn't a Scriptish command. It's a method on the `Pipeline` struct:
+
+```go
+fileExists, _ = ExecPipeline(scriptish.FilepathExists("/path/to/file.txt")).Okay()
+```
+
 ## Creating A Pipeline
 
 You can create a pipeline in several ways.
