@@ -83,7 +83,6 @@ result, err := scriptish.NewPipeline(
   - [String()](#string)
   - [Strings()](#strings)
   - [TrimmedString()](#trimmedstring)
-  - [String()](#string-1)
 - [Errors](#errors)
   - [ErrMismatchedInputs](#errmismatchedinputs)
 - [Inspirations](#inspirations)
@@ -1036,8 +1035,6 @@ If the pipeline's `Stdout` is empty, an empty string slice will be returned.
 If the pipeline didn't execute successfully, the contents of the pipeline's `Stderr` will be returned. We might change this behaviour in the future.
 
 ### TrimmedString()
-
-### String()
 
 `TrimmedString()` returns the pipeline's `Stdout` as a single string, with leading and trailing whitespace removed:
 
