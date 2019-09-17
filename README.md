@@ -275,7 +275,7 @@ UNIX shell scripts can be broken up into functions to make them easier to mainta
 //
 // the selected branch depends on the Git command called
 filterSelectedBranch := scriptish.NewPipeline(
-    scriptish.Grep("^[*]"),
+    scriptish.Grep("^[*] "),
     scriptish.Tr([]string{"* "}, []string{""}),
 )
 
