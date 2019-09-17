@@ -249,11 +249,11 @@ fileExists, _ = ExecPipeline(scriptish.FilepathExists("/path/to/file.txt")).Okay
 
 You can create a pipeline in several ways.
 
-Pipeline         | Produces                             | Best For
------------------|--------------------------------------|---------------------------------
-`NewPipeline()`  | Pipeline that's ready to run         | Reusable pipelines
-`ExecPipeline()` | Pipeline that has been run once      | Throwaway pipelines
-`PipelineFunc()` | Function that will run your pipeline | Getting results back into Golang
+Pipeline                   | Produces                             | Best For
+---------------------------|--------------------------------------|---------------------------------
+`scriptish.NewPipeline()`  | Pipeline that's ready to run         | Reusable pipelines
+`scriptish.ExecPipeline()` | Pipeline that has been run once      | Throwaway pipelines
+`scriptish.PipelineFunc()` | Function that will run your pipeline | Getting results back into Golang
 
 ### NewPipeline()
 
@@ -443,35 +443,35 @@ success, err := scriptish.NewPipeline(
 
 ## From Bash To Scriptish
 
-Here's a handy table to help you quickly translate an action from a Bash shell script to the equivalent `scriptish` function.
+Here's a handy table to help you quickly translate an action from a Bash shell script to the equivalent Scriptish command.
 
 Bash                 | Scriptish
 ---------------------|----------
-`${x%.*}`            | [`StripExtension()`](#stripextension)
-`${x%$y}`            | [`TrimSuffix()`](#trimsuffix)
-`> $file`            | [`WriteToFile()`](#writetofile)
-`>> $file`           | [`AppendToFile()`](#appendtofile)
-`basename ...`       | [`Basename()`](#basename)
-`cat "..."`          | [`CatFile(...)`](#catfile)
-`cat /dev/null > $x` | [`TruncateFile($x)`](#truncatefile)
-`cut -f`             | [`CutFields()`](#cutfields)
-`dirname ...`        | [`Dirname()`](#dirname)
-`echo "..."`         | [`Echo(...)`](#echo)
-`echo "$@"`          | [`EchoArgs()`](#echoargs)
-`function`           | [`RunPipeline()`](#runpipeline)
-`head -n X`          | [`Head(X)`](#head)
-`ls -1 ...`          | [`ListFiles(...)`](#listfiles)
-`mktemp`             | [`MkTempFile()`](#mktempfile)
-`mktemp -d`          | [`MkTempDir()`](#mktempdir)
-`rm -f`              | [`RmFile()`](#rmfile)
-`sort`               | [`Sort()`](#sort)
-`sort -r`            | [`Rsort()`](#rsort)
-`tail -n X`          | [`Tail(X)`](#tail)
-`tr old new`         | [`Tr(old, new)`](#tr)
-`uniq`               | [`Uniq()`](#uniq)
-`wc -l`              | [`CountLines()`](#countlines)
-`wc -w`              | [`CountWords()`](#countwords)
-`xargs cat`          | [`XargsCat()`](#xargscat)
+`${x%.*}`            | [`scriptish.StripExtension()`](#stripextension)
+`${x%$y}`            | [`scriptish.TrimSuffix()`](#trimsuffix)
+`> $file`            | [`scriptish.WriteToFile()`](#writetofile)
+`>> $file`           | [`scriptish.AppendToFile()`](#appendtofile)
+`basename ...`       | [`scriptish.Basename()`](#basename)
+`cat "..."`          | [`scriptish.CatFile(...)`](#catfile)
+`cat /dev/null > $x` | [`scriptish.TruncateFile($x)`](#truncatefile)
+`cut -f`             | [`scriptish.CutFields()`](#cutfields)
+`dirname ...`        | [`scriptish.Dirname()`](#dirname)
+`echo "..."`         | [`scriptish.Echo(...)`](#echo)
+`echo "$@"`          | [`scriptish.EchoArgs()`](#echoargs)
+`function`           | [`scriptish.RunPipeline()`](#runpipeline)
+`head -n X`          | [`scriptish.Head(X)`](#head)
+`ls -1 ...`          | [`scriptish.ListFiles(...)`](#listfiles)
+`mktemp`             | [`scriptish.MkTempFile()`](#mktempfile)
+`mktemp -d`          | [`scriptish.MkTempDir()`](#mktempdir)
+`rm -f`              | [`scriptish.RmFile()`](#rmfile)
+`sort`               | [`scriptish.Sort()`](#sort)
+`sort -r`            | [`scriptish.Rsort()`](#rsort)
+`tail -n X`          | [`scriptish.Tail(X)`](#tail)
+`tr old new`         | [`scriptish.Tr(old, new)`](#tr)
+`uniq`               | [`scriptish.Uniq()`](#uniq)
+`wc -l`              | [`scriptish.CountLines()`](#countlines)
+`wc -w`              | [`scriptish.CountWords()`](#countwords)
+`xargs cat`          | [`scriptish.XargsCat()`](#xargscat)
 
 ## Sources
 
