@@ -75,6 +75,14 @@ UNIX shell scripts compose UNIX commands into a pipeline:
 cat /path/to/file.txt | wc -w
 ```
 
+The UNIX commands execute from left to right. The output (known as `stdout`) of each command becomes the input (known as `stdin`) of the next command.
+
+The output of the final command can be captured by your shell script to become the value of a variable:
+
+```bash
+current_branch=$(git branch --no-color | grep "^[*] " | sed -e 's/^[*] //')
+```
+
 Scriptish works the same way. You create a pipeline of Scriptish commands:
 
 ```go
