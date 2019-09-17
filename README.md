@@ -28,14 +28,14 @@ result, err := scriptish.NewPipeline(
   - [What Is A Pipeline?](#what-is-a-pipeline)
   - [What Happens When A Pipeline Runs?](#what-happens-when-a-pipeline-runs)
   - [How Are Errors Handled?](#how-are-errors-handled)
-  - [Sources, Filters, Sinks and Outputs](#sources-filters-sinks-and-outputs)
+  - [Sources, Filters, Sinks and Capture Methods](#sources-filters-sinks-and-capture-methods)
 - [Creating A Pipeline](#creating-a-pipeline)
   - [NewPipeline()](#newpipeline)
   - [ExecPipeline()](#execpipeline)
   - [PipelineFunc()](#pipelinefunc)
 - [Running An Existing Pipeline](#running-an-existing-pipeline)
 - [Calling A Pipeline From Another Pipeline](#calling-a-pipeline-from-another-pipeline)
-- [Getting A Result](#getting-a-result)
+- [Capturing The Output](#capturing-the-output)
 - [From Bash To Scriptish](#from-bash-to-scriptish)
 - [Sources](#sources)
   - [CatFile()](#catfile)
@@ -73,7 +73,7 @@ result, err := scriptish.NewPipeline(
   - [ToStdout()](#tostdout)
   - [TruncateFile()](#truncatefile)
   - [WriteToFile()](#writetofile)
-- [Outputs](#outputs)
+- [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
   - [CountLines()](#countlines-1)
   - [CountWords()](#countwords-1)
@@ -159,7 +159,7 @@ Once you have your pipeline, run it:
 pipeline.Exec()
 ```
 
-Once you've run your pipeline, call one of the [output methods](#outputs) to find out what happened:
+Once you've run your pipeline, call one of the [capture methods](#capture-methods) to find out what happened:
 
 ```go
 result, err := pipeline.ParseInt()
@@ -191,7 +191,17 @@ pipeline := scriptish.NewPipeline(
 )
 ```
 
-and then you run it.
+and then you run it:
+
+```go
+pipeline.Exec()
+```
+
+The output of the final command can be captured by your Golang code to become the value of a variable, using [capture methods](#capture-methods):
+
+```
+current_branch, err := pipeline.TrimmedString()
+```
 
 ### What Happens When A Pipeline Runs?
 
@@ -222,7 +232,7 @@ If you're calling external commands using `scriptish.Exec()`, you've still got a
 
 Just like UNIX shell scripts, a Scriptish pipeline stops executing if any command returns an error.
 
-### Sources, Filters, Sinks and Outputs
+### Sources, Filters, Sinks and Capture Methods
 
 Scriptish commands fall into one of three categories:
 
@@ -236,9 +246,9 @@ A pipeline normally:
 * applies one or more _filters_
 * finishes with a _sink_ to send the results somewhere
 
-But what if we want to get the results back into our Golang code, to reuse in some way? Instead of using a [sink](#sinks), use an [output](#outputs) instead.
+But what if we want to get the results back into our Golang code, to reuse in some way? Instead of using a [sink](#sinks), use a [capture method](#capture-methods) instead.
 
-An output isn't a Scriptish command. It's a method on the `Pipeline` struct:
+A capture method isn't a Scriptish command. It's a method on the `Pipeline` struct:
 
 ```go
 fileExists, _ = ExecPipeline(scriptish.FilepathExists("/path/to/file.txt")).Okay()
@@ -286,7 +296,7 @@ pipeline := scriptish.ExecPipeline(
 
 Behind the scenes, it simply does a `scriptish.NewPipeline(...).Exec()` for you.
 
-You can then use any of the [output methods](#outputs) to find out what happened:
+You can then use any of the [capture methods](#capture-methods) to find out what happened:
 
 ```go
 result, err = pipeline.ParseInt()
@@ -313,7 +323,7 @@ fileExistsFunc := scriptish.PipelineFunc(
 )
 ```
 
-Whenever you call the function, the pipeline executes. The function returns a `*Pipeline`. Use any of the [output methods](#outputs) to find out what happened when the pipeline executed.
+Whenever you call the function, the pipeline executes. The function returns a `*Pipeline`. Use any of the [capture methods](#capture-methods) to find out what happened when the pipeline executed.
 
 ```go
 fileExists, err := fileExistsFunc().Okay()
@@ -390,7 +400,7 @@ remoteBranch, err := scriptish.NewPipeline(
 ).Exec().TrimmedString()
 ```
 
-## Getting A Result
+## Capturing The Output
 
 If you're familiar with UNIX shell scripting, you'll know that every shell command creates three different outputs:
 
@@ -407,7 +417,7 @@ Property              | Description
 `pipeline.Err`        | Golang errors
 `pipeline.StatusCode` | an integer representing what happened. Normally 0 for success
 
-When the pipeline has executed, you can call one of [the output functions](#outputs) to find out what happened:
+When the pipeline has executed, you can call one of [the capture methods](#capture-methods) to find out what happened:
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -424,12 +434,12 @@ result, err := scriptish.NewPipeline(
 // - err contains a Golang error
 ```
 
-If you want to run a Scriptish command and you don't care about the output, call `Pipeline.Okay()`:
+If you want to run a Scriptish command and you don't care about capturing the output, call `Pipeline.Okay()`:
 
 ```go
 success, err := scriptish.NewPipeline(
     scriptish.RmFile("/path/to/file.txt")
-).Exec()
+).Exec().Okay()
 
 // if the pipeline worked ...
 // - success is `true`
@@ -583,7 +593,7 @@ result, err := scriptish.NewPipeline(
 
 Filters read the contents of the pipeline's `Stdin`, do something to that data, and write the results out to the pipeline's `Stdout`.
 
-When you've finished adding filters to your pipeline, you should either add a [sink](#sinks), or call one of the [output functions](#outputs) to get the results back into your Golang code.
+When you've finished adding filters to your pipeline, you should either add a [sink](#sinks), or call one of the [capture methods](#capture-methods) to get the results back into your Golang code.
 
 ### AppendToTempFile()
 
@@ -791,7 +801,7 @@ result, err := scriptish.NewPipeline(
 
 ### TrimWhitespace()
 
-`TrimWhitespace()` removes any whitespace from the front and end of the line.
+`TrimWhitespace()` removes any whitespace from the front and end of each line in the pipeline.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -917,9 +927,9 @@ err := scriptish.NewPipeline(
 ).Exec().Error()
 ```
 
-## Outputs
+## Capture Methods
 
-Outputs are methods available on each `Pipeline`. Use them to get the results from the pipeline.
+Capture methods available on each `Pipeline`. Use them to get the output from the pipeline.
 
 Don't forget to run your pipeline first, if you haven't already!
 
@@ -1011,7 +1021,7 @@ contents, err := ExecPipeline(
 ).String()
 ```
 
-The string *will* be terminated by a linefeed `\n` character. See [TrimmedString()](#trimmedstring) below if that's not what you want.
+**The string will be terminated by a linefeed `\n` character.** `String()` is a good choice if you want to get content into your Golang code. If you just want a single-line value, see [TrimmedString()](#trimmedstring) below.
 
 If the pipeline's `Stdout` is empty, an empty string will be returned.
 
@@ -1046,7 +1056,7 @@ localBranch, err := ExecPipeline(
 ).TrimmedString()
 ```
 
-Any leading and trailing whitespace will be removed from the returned string. This is very useful for getting results back into your Golang code!
+`TrimmedString()` is the right choice if you're expecting a single line of text back. This is very useful for getting results back into your Golang code!
 
 If the pipeline's `Stdout` is empty, an empty string will be returned.
 
