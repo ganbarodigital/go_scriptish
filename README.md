@@ -151,7 +151,7 @@ fileExists, _ = ExecPipeline(scriptish.FilepathExists("/path/to/file.txt")).Okay
 You can create a pipeline in several ways.
 
 Pipeline         | Produces                             | Best For
------------------|------------------------------------------------
+-----------------|------------------------------------------------------------------------
 `NewPipeline()`  | Pipeline that's ready to run         | Reusable pipelines
 `ExecPipeline()` | Pipeline that has been run once      | Throwaway pipelines
 `PipelineFunc()` | Function that will run your pipeline | Getting results back into Golang
