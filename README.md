@@ -4,6 +4,8 @@
 
 Scriptish is a Golang library. It helps you port UNIX shell scripts to Golang.
 
+It is released under the 3-clause New BSD license. See [LICENSE.md](LICENSE.md) for details.
+
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
