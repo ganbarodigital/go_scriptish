@@ -106,12 +106,12 @@ UNIX commands in a pipeline:
 
 Each Scriptish command works the same way:
 
-* they read text input from the pipeline's `stdin`
-* they write their results to the pipeline's `stdout`
-* they write any error messages out to the pipeline's `stderr`
+* they read text input from the pipeline's `Stdin`
+* they write their results to the pipeline's `Stdout`
+* they write any error messages out to the pipeline's `Stderr`
 * they return a status code and a Golang error to indicate what happened
 
-When a single command has finished, its `stdout` becomes the `stdin` for the next command in the pipeline.
+When a single command has finished, its `Stdout` becomes the `Stdin` for the next command in the pipeline.
 
 ### How Are Errors Handled?
 
@@ -296,8 +296,8 @@ remoteBranch, err := scriptish.NewPipeline(
 
 If you're familiar with UNIX shell scripting, you'll know that every shell command creates three different outputs:
 
-* stdout - normal text output
-* stderr - any error messages
+* `stdout` - normal text output
+* `stderr` - any error messages
 * status code - an integer representing what happened. 0 (zero) means success, any other value means an error occurred.
 
 Scriptish commands work the same way. They also track any Golang errors that occur when the commands run.
@@ -376,13 +376,13 @@ Bash                 | Scriptish
 
 ## Sources
 
-Sources get data from outside the pipeline, and write it into the pipeline's stdout.
+Sources get data from outside the pipeline, and write it into the pipeline's `Stdout`.
 
 Every pipeline normally begins with a source, and is then followed by one or more [filters](#filters).
 
 ### CatFile()
 
-`CatFile()` writes the contents of a file to the pipeline's stdout.
+`CatFile()` writes the contents of a file to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -392,7 +392,7 @@ result, err := scriptish.NewPipeline(
 
 ### CatStdin()
 
-`CatStdin()` copies the program's stdin to the pipeline's stdout.
+`CatStdin()` copies the program's `stdin` (`os.Stdin` in Golang terms) to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -402,7 +402,7 @@ result, err := scriptish.NewPipeline(
 
 ### Echo()
 
-`Echo()` writes a string to the pipeline's stdout.
+`Echo()` writes a string to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -412,7 +412,7 @@ result, err := scriptish.NewPipeline(
 
 ### EchoArgs()
 
-`EchoArgs()` writes the program's arguments to the pipeline's stdout, one line per argument.
+`EchoArgs()` writes the program's arguments to the pipeline's `Stdout`, one line per argument.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -422,7 +422,7 @@ result, err := scriptish.NewPipeline(
 
 ### EchoSlice()
 
-`EchoSlice()` writes an array of strings to the pipeline's stdout, one line per array entry.
+`EchoSlice()` writes an array of strings to the pipeline's `Stdout`, one line per array entry.
 
 ```go
 myStrings := []string{"hello world", "have a nice day"}
@@ -434,7 +434,7 @@ result, err := scriptish.NewPipeline(
 
 ### ListFiles()
 
-`ListFiles()` writes a list of matching files to the pipeline's stdout, one line per filename found.// TrimSuffix removes the given suffix from each line of the pipeline.
+`ListFiles()` writes a list of matching files to the pipeline's `Stdout`, one line per filename found.// TrimSuffix removes the given suffix from each line of the pipeline.
 //
 // Use it to emulate `basename(1)`'s `[suffix]` parameter.
 
@@ -462,7 +462,7 @@ result, err := scriptish.NewPipeline(
 
 ### MkTempDir()
 
-`MkTempDir()` creates a temporary folder, and writes the filename to the pipeline's stdout.
+`MkTempDir()` creates a temporary folder, and writes the filename to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -472,7 +472,7 @@ result, err := scriptish.NewPipeline(
 
 ### MkTempFile()
 
-`MkTempFile()` creates a temporary file, and writes the filename to the pipeline's stdout.
+`MkTempFile()` creates a temporary file, and writes the filename to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -482,15 +482,15 @@ result, err := scriptish.NewPipeline(
 
 ## Filters
 
-Filters read the contents of the pipeline's stdin, do something to that data, and write the results out to the pipeline's stdout.
+Filters read the contents of the pipeline's `Stdin`, do something to that data, and write the results out to the pipeline's `Stdout`.
 
 When you've finished adding filters to your pipeline, you should either add a [sink](#sinks), or call one of the [output functions](#outputs) to get the results back into your Golang code.
 
 ### AppendToTempFile()
 
-`AppendToTempFile()` writes the contents of the pipeline's stdin to a
+`AppendToTempFile()` writes the contents of the pipeline's `Stdin` to a
 temporary file. The temporary file's filename is then written to
-the pipeline's stdout.
+the pipeline's `Stdout`.
 
 If the file does not exist, it is created.
 
@@ -505,7 +505,7 @@ result, err := scriptish.NewPipeline(
 
 ### Basename()
 
-`Basename()` treats each line in the pipeline's stdin as a filepath. Any parent elements are stripped from the line, and the results written to the pipeline's stdout.
+`Basename()` treats each line in the pipeline's `Stdin` as a filepath. Any parent elements are stripped from the line, and the results written to the pipeline's `Stdout`.
 
 Any blank lines are preserved.
 
@@ -518,7 +518,7 @@ result, err := scriptish.NewPipeline(
 
 ### CountLines()
 
-`CountLines()` counts the number of lines in the pipeline's stdin, and writes that to the pipeline's stdout.
+`CountLines()` counts the number of lines in the pipeline's `Stdin`, and writes that to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -529,7 +529,7 @@ result, err := scriptish.NewPipeline(
 
 ### CountWords()
 
-`CountWords()` counts the number of words in the pipeline's stdin, and writes that to the pipeline's stdout.
+`CountWords()` counts the number of words in the pipeline's `Stdin`, and writes that to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -540,7 +540,7 @@ result, err := scriptish.NewPipeline(
 
 ### CutFields()
 
-`CutFields()` retrieves only the fields specified on each line of the pipeline's stdin, and writes them to the pipeline's stdout.
+`CutFields()` retrieves only the fields specified on each line of the pipeline's `Stdin`, and writes them to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -551,7 +551,7 @@ result, err := scriptish.NewPipeline(
 
 ### Dirname
 
-`Dirname()` treats each line in the pipeline's stdin as a filepath. The last element is stripped from the line, and the results written to the pipeline's stdout.
+`Dirname()` treats each line in the pipeline's `Stdin` as a filepath. The last element is stripped from the line, and the results written to the pipeline's `Stdout`.
 
 Any blank lines are turned in '.'
 
@@ -575,7 +575,7 @@ result, err := scriptish.NewPipeline(
 
 ### Head()
 
-`Head()` copies the first N lines of the pipeline's stdin to its stdout.
+`Head()` copies the first N lines of the pipeline's `Stdin` to its `Stdout`.
 
 If N is zero or negative, `Head()` copies no lines.
 
@@ -637,7 +637,7 @@ result, err := scriptish.NewPipeline(
 
 ### Tail()
 
-`Tail()` copies the last N lines from the pipeline's stdin to its stdout.
+`Tail()` copies the last N lines from the pipeline's `Stdin` to its `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -714,7 +714,7 @@ result, err := scriptish.NewPipeline(
 
 ### XargsCat()
 
-`XargsCat()` treats each line in the pipeline's stdin as a filepath. The contents of each file are written to the pipeline's stdout.
+`XargsCat()` treats each line in the pipeline's `Stdin` as a filepath. The contents of each file are written to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -725,9 +725,9 @@ result, err := scriptish.NewPipeline(
 
 ### XargsTruncateFiles()
 
-`XargsTruncatesFiles()` treats each line of the pipeline's stdin as a filepath. The contents of each file are truncated. If the file does not exist, it is created.
+`XargsTruncatesFiles()` treats each line of the pipeline's `Stdin` as a filepath. The contents of each file are truncated. If the file does not exist, it is created.
 
-Each filepath is written to the pipeline's stdout, for use by the next command in the pipeline.
+Each filepath is written to the pipeline's `Stdout`, for use by the next command in the pipeline.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -740,13 +740,13 @@ result, err := scriptish.NewPipeline(
 
 ## Sinks
 
-Sinks take the contents of the pipeline's stdin, and write it to somewhere outside the pipeline.
+Sinks take the contents of the pipeline's `Stdin`, and write it to somewhere outside the pipeline.
 
-A sink should be the last command in your pipeline. You can add more commands afterwards if you really want to. Just be aware that the first command after any sink will be starting with an empty stdin.
+A sink should be the last command in your pipeline. You can add more commands afterwards if you really want to. Just be aware that the first command after any sink will be starting with an empty `Stdin`.
 
 ### AppendToFile()
 
-`AppendToFile()` writes the contents of the pipeline's stdin to the given file
+`AppendToFile()` writes the contents of the pipeline's `Stdin` to the given file
 
 If the file does not exist, it is created.
 
@@ -773,7 +773,7 @@ err := scriptish.NewPipeline(
 
 ### ToStderr()
 
-`ToStdout()` writes the pipeline's stdin to the program's stderr.
+`ToStdout()` writes the pipeline's `Stdin` to the program's `stderr` (`os.Stderr` in Golang terms).
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -784,7 +784,7 @@ result, err := scriptish.NewPipeline(
 
 ### ToStdout()
 
-`ToStdout()` writes the pipeline's stdin to the program's stdout.
+`ToStdout()` writes the pipeline's `Stdin` to the program's `Stdout` (`os.Stdout` in Golang terms).
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -807,7 +807,7 @@ result, err := scriptish.NewPipeline(
 
 ### WriteToFile()
 
-`WriteToFile()` writes the contents of the pipe's stdin to the given file. The existing contents of the file are replaced.
+`WriteToFile()` writes the contents of the pipeline's `Stdin` to the given file. The existing contents of the file are replaced.
 
 If the file does not exist, it is created.
 
@@ -836,7 +836,7 @@ Normally, you wouldn't call this yourself.
 
 ### CountLines()
 
-`CountLines()` returns the number of lines in the pipeline's stdout.
+`CountLines()` returns the number of lines in the pipeline's `Stdout`.
 
 ```go
 lineCount, err := scriptish.NewPipeline(
@@ -848,7 +848,7 @@ If the pipeline failed to complete, `lineCount` will be `0`, and `err` will be t
 
 ### CountWords()
 
-`CountWords()` returns the number of words in the pipeline's stdout.
+`CountWords()` returns the number of words in the pipeline's `Stdout`.
 
 ```go
 wordCount, err := scriptish.NewPipeline(
@@ -889,7 +889,7 @@ It's a toss up as to whether you should call `Error()` or `Okay()` throughout yo
 
 ### ParseInt()
 
-`ParseInt()` returns the pipeline's `stdout` as an `int` value:
+`ParseInt()` returns the pipeline's `Stdout` as an `int` value:
 
 ```go
 lineCount, err := ExecPipeline(
@@ -898,13 +898,13 @@ lineCount, err := ExecPipeline(
 ).ParseInt()
 ```
 
-If the pipeline's `stdout` can't be turned into an integer, then it will return `0` and the parsing error from Golang's `strconv.ParseInt()`.
+If the pipeline's `Stdout` can't be turned into an integer, then it will return `0` and the parsing error from Golang's `strconv.ParseInt()`.
 
 If the pipeline didn't execute successfully, it will return `0` and the pipeline's current Golang error status.
 
 ### String()
 
-`String()` returns the pipeline's `stdout` as a single string:
+`String()` returns the pipeline's `Stdout` as a single string:
 
 ```go
 contents, err := ExecPipeline(
@@ -914,13 +914,13 @@ contents, err := ExecPipeline(
 
 The string *will* be terminated by a linefeed `\n` character. See [TrimmedString()](#trimmedstring) below if that's not what you want.
 
-If the pipeline's `stdout` is empty, an empty string will be returned.
+If the pipeline's `Stdout` is empty, an empty string will be returned.
 
-If the pipeline didn't execute successfully, the contents of the pipeline's `stderr` will be returned. We might change this behaviour in the future.
+If the pipeline didn't execute successfully, the contents of the pipeline's `Stderr` will be returned. We might change this behaviour in the future.
 
 ### Strings()
 
-`Strings()` returns the pipeline's `stdout` as an array of strings (aka a string slice):
+`Strings()` returns the pipeline's `Stdout` as an array of strings (aka a string slice):
 
 ```go
 files, err := ExecPipeline(
@@ -931,15 +931,15 @@ files, err := ExecPipeline(
 
 Each string will *not* be terminated by a linefeed `\n` character.
 
-If the pipeline's `stdout` is empty, an empty string slice will be returned.
+If the pipeline's `Stdout` is empty, an empty string slice will be returned.
 
-If the pipeline didn't execute successfully, the contents of the pipeline's `stderr` will be returned. We might change this behaviour in the future.
+If the pipeline didn't execute successfully, the contents of the pipeline's `Stderr` will be returned. We might change this behaviour in the future.
 
 ### TrimmedString()
 
 ### String()
 
-`TrimmedString()` returns the pipeline's `stdout` as a single string, with leading and trailing whitespace removed:
+`TrimmedString()` returns the pipeline's `Stdout` as a single string, with leading and trailing whitespace removed:
 
 ```go
 localBranch, err := ExecPipeline(
@@ -951,9 +951,9 @@ localBranch, err := ExecPipeline(
 
 Any leading and trailing whitespace will be removed from the returned string. This is very useful for getting results back into your Golang code!
 
-If the pipeline's `stdout` is empty, an empty string will be returned.
+If the pipeline's `Stdout` is empty, an empty string will be returned.
 
-If the pipeline didn't execute successfully, the contents of the pipeline's `stderr` will be returned. We might change this behaviour in the future.
+If the pipeline didn't execute successfully, the contents of the pipeline's `Stderr` will be returned. We might change this behaviour in the future.
 
 ## Errors
 
