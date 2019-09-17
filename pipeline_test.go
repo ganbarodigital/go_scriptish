@@ -86,3 +86,26 @@ func ExecPipelineCreatesAndRunsAPipeline(t *testing.T) {
 
 	assert.Nil(t, pipeline.Error())
 }
+
+func PipelineFuncCreatesAPipelineAsAFunction(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := "hello world\n"
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := PipelineFunc(Echo("hello world!"))()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, "", pipeline.Pipe.Stdin.String())
+	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.String())
+	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
+
+	assert.Nil(t, pipeline.Error())
+}

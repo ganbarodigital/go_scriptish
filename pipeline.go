@@ -73,3 +73,12 @@ func ExecPipeline(steps ...pipe.PipelineOperation) *Pipeline {
 	pipeline := NewPipeline(steps...).Exec()
 	return pipeline
 }
+
+// PipelineFunc creates a pipeline, and wraps it in a function to make
+// it easier to call.
+func PipelineFunc(steps ...pipe.PipelineOperation) func() *Pipeline {
+	newPipe := NewPipeline(steps...)
+	return func() *Pipeline {
+		return newPipe.Exec()
+	}
+}
