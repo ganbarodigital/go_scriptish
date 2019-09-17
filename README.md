@@ -11,6 +11,8 @@ result, err := scriptish.NewPipeline(
 ).Exec().ParseInt()
 ```
 
+(We're going to create Scriptish for other languages too, and we'll update this README when those are available!)
+
 ## Why Use Scriptish?
 
 Scriptish makes it easy to do UNIX shell script-like things in Golang.
