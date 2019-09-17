@@ -41,17 +41,17 @@ If you're using any sort of UNIX system (Linux, or MacOS), _shell scripting is a
 
 ### Why Not Use UNIX Shell Scripts?
 
-They're just not a great choice if you want to distribute your work outside your team, organisation or community.
+UNIX shell scripts are great until you want to share them with other people. They're just not a great choice if you want to distribute your work outside your team, organisation or community.
 
-* If someone else is going to run your shell scripts, they need to make sure that they've installed all the commands that your shell scripts call. This can end up being a trial-and-error process.
+* If someone else is going to run your shell scripts, they need to make sure that they've installed all the commands that your shell scripts call. This can end up being a trial-and-error process. And what happens if they can't install those commands for any reason?
 
 * Creating portable shell scripts (e.g. scripts that run on both Linux and MacOS) isn't always easy, and is very difficult (if not impossible) to test via a CI process.
 
-* Shell scripts don't work on a vanilla Windows box.
+* What about your Windows users? UNIX shell scripts don't work on a vanilla Windows box.
 
-### In Comparison ...
+### Enter Scriptish
 
-You can use Scriptish to create small Golang binaries.
+If you want to distribute shell scripts, it's best not to write them as shell scripts. Use Scriptish to quickly do the same thing in Golang:
 
 * There's one binary to ship to your users.
 * Scriptish is self-contained. No need to worry about installing additional commands (unless you call [scriptish.Exec()](#exec) ...)
