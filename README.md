@@ -46,7 +46,7 @@ Import Scriptish into your Golang code:
 import scriptish "github.com/ganbarodigital/go_scriptish"
 ```
 
-Create a pipeline, and provide it with a list of operations:
+Create a pipeline, and provide it with a list of commands:
 
 ```go
 pipeline := scriptish.NewPipeline(
