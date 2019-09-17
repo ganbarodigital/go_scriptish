@@ -150,11 +150,11 @@ fileExists, _ = ExecPipeline(scriptish.FilepathExists("/path/to/file.txt")).Okay
 
 You can create a pipeline in several ways.
 
-Pipeline         | Produces
------------------|--------------------------------------
-`NewPipeline()`  | Pipeline that's ready to run
-`ExecPipeline()` | Pipeline that has been run once
-`PipelineFunc()` | Function that will run your pipeline
+Pipeline         | Produces                             | Best For
+-----------------|------------------------------------------------
+`NewPipeline()`  | Pipeline that's ready to run         | Reusable pipelines
+`ExecPipeline()` | Pipeline that has been run once      | Throwaway pipelines
+`PipelineFunc()` | Function that will run your pipeline | Getting results back into Golang
 
 ### NewPipeline()
 
@@ -172,6 +172,8 @@ pipeline := scriptish.NewPipeline(
 ```go
 result, err := pipeline.Exec().ParseInt()
 ```
+
+Most of the examples in this README (and most of the unit tests) use `scriptish.NewPipeline()`.
 
 ### ExecPipeline()
 
@@ -194,6 +196,15 @@ result, err = pipeline.ParseInt()
 
 You can re-use the resulting pipeline as often as you want.
 
+`ExecPipeline()` is great for pipelines that you want to throw away after use:
+
+```go
+result, err := scriptish.ExecPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.CountWords()
+).ParseInt()
+```
+
 ### PipelineFunc()
 
 `PipelineFunc()` builds the pipeline and turns it into a function.
@@ -211,6 +222,18 @@ fileExists, err := fileExistsFunc().Okay()
 ```
 
 You can re-use the function as often as you want.
+
+`PipelineFunc()` is great for pipelines where you want to get the results back into your Golang code:
+
+```go
+getCurrentBranch := scriptish.PipelineFunc(
+    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Grep("^[* ]"),
+    scriptish.Tr([]string{"* "}, []string{""}),
+)
+
+currentBranch, err := getCurrentBranch().TrimmedString()
+```
 
 ## Running An Existing Pipeline
 
