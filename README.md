@@ -598,7 +598,7 @@ If the file does not exist, it is created.
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.AppendToTempFile(os.TempDir(), "scriptish-*"),
-).Exec().String()
+).Exec().TrimmedString()
 
 // result now contains the temporary filename
 ```
@@ -670,7 +670,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.DropEmptyLines()
-).Exec().Strings()
+).Exec().String()
 ```
 
 ### Head()
@@ -683,7 +683,7 @@ If N is zero or negative, `Head()` copies no lines.
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Head(100),
-).Exec().Strings()
+).Exec().String()
 ```
 
 ### Rsort()
@@ -694,7 +694,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Rsort(),
-).Exec().Strings()
+).Exec().String()
 ```
 
 ### RunPipeline()
@@ -721,7 +721,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Sort(),
-).Exec().Strings()
+).Exec().String()
 ```
 
 ### StripExtension()
@@ -743,7 +743,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Tail(50),
-).Exec().Strings()
+).Exec().String()
 ```
 
 ### Tr()
@@ -754,7 +754,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Tr([]string{"one","two"}, []string{"1","2"}),
-).Exec().Strings()
+).Exec().String()
 ```
 
 If the second parameter is a string slice of length 1, everything from the first parameter will be replaced by that slice.
@@ -763,7 +763,7 @@ If the second parameter is a string slice of length 1, everything from the first
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Tr([]string{"one","two"}, []string{"numberwang"}),
-).Exec().Strings()
+).Exec().String()
 ```
 
 If the first and second parameters are different lengths, `Tr()` will return an `scriptish.ErrMismatchedInputs`.
@@ -772,7 +772,7 @@ If the first and second parameters are different lengths, `Tr()` will return an 
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Tr([]string{"one","two"}, []string{"1","2"}),
-).Exec().Strings()
+).Exec().String()
 
 // err is an ErrMismatchedInputs, and result is empty
 ```
@@ -798,7 +798,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.TrimWhitespace(),
-).Exec().Strings()
+).Exec().String()
 ```
 
 ### Uniq()
