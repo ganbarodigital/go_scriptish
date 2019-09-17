@@ -820,7 +820,19 @@ err := scriptish.NewPipeline(
 
 ## Outputs
 
-Outputs are methods available on each `Pipeline`. Some are inherited from the `pipe` package, and some are defined by `scriptish`.
+Outputs are methods available on each `Pipeline`. Use them to get the results from the pipeline.
+
+Don't forget to run your pipeline first, if you haven't already!
+
+### Bytes()
+
+`Bytes()` is the standard interface's `io.Reader` `Bytes()` method.
+
+* It writes the contents of the pipeline's `Stdout` into the byte slice that you provide.
+* It returns the number of bytes written.
+* It also returns the pipeline's current Golang error value.
+
+Normally, you wouldn't call this yourself.
 
 ### CountLines()
 
@@ -845,6 +857,103 @@ wordCount, err := scriptish.NewPipeline(
 ```
 
 If the pipeline failed to complete, `wordCount` will be `0`, and `err` will be the pipeline's last error status.
+
+### Error()
+
+`Error()` returns the pipeline's current Golang error status, which may be `nil`.
+
+```go
+err := ExecPipeline(scriptish.RmFile("/path/to/file")).Error()
+```
+
+It's mostly there for checking on pipelines that produce no output. It's a toss up as to whether you should call `Error()` or `Okay()`.
+
+### Okay()
+
+`Okay()` returns the pipeline's current UNIX status code, and its current Golang error status.
+
+```go
+success, err := ExecPipeline(scriptish.Exec("git push")).Okay()
+```
+
+`success` is a `bool`:
+
+* `false` if the pipeline's `StatusCode` property is *not* 0
+* `true` otherwise
+
+All Scriptish commands set the pipeline's `StatusCode`, so it's safe to use `Okay()` to check any pipeline you create.
+
+It's mostly there if you're calling [`scriptish.Exec()`](#exec) and you want to explicitly check that the shell command did return a status code of 0.
+
+It's a toss up as to whether you should call `Error()` or `Okay()` throughout your code.
+
+### ParseInt()
+
+`ParseInt()` returns the pipeline's `stdout` as an `int` value:
+
+```go
+lineCount, err := ExecPipeline(
+    scriptish.CatFile("/path/to/file"),
+    scriptish.CountLines(),
+).ParseInt()
+```
+
+If the pipeline's `stdout` can't be turned into an integer, then it will return `0` and the parsing error from Golang's `strconv.ParseInt()`.
+
+If the pipeline didn't execute successfully, it will return `0` and the pipeline's current Golang error status.
+
+### String()
+
+`String()` returns the pipeline's `stdout` as a single string:
+
+```go
+contents, err := ExecPipeline(
+    scriptish.CatFile("/path/to/file")
+).String()
+```
+
+The string *will* be terminated by a linefeed `\n` character. See [TrimmedString()](#trimmedstring) below if that's not what you want.
+
+If the pipeline's `stdout` is empty, an empty string will be returned.
+
+If the pipeline didn't execute successfully, the contents of the pipeline's `stderr` will be returned. We might change this behaviour in the future.
+
+### Strings()
+
+`Strings()` returns the pipeline's `stdout` as an array of strings (aka a string slice):
+
+```go
+files, err := ExecPipeline(
+    scriptish.ListFiles("/path/to/folder"),
+    scriptish.Basename(),
+).Strings()
+```
+
+Each string will *not* be terminated by a linefeed `\n` character.
+
+If the pipeline's `stdout` is empty, an empty string slice will be returned.
+
+If the pipeline didn't execute successfully, the contents of the pipeline's `stderr` will be returned. We might change this behaviour in the future.
+
+### TrimmedString()
+
+### String()
+
+`TrimmedString()` returns the pipeline's `stdout` as a single string, with leading and trailing whitespace removed:
+
+```go
+localBranch, err := ExecPipeline(
+    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Grep("^[* ]"),
+    scriptish.Tr([]string{"* "}, []string{""}),
+).TrimmedString()
+```
+
+Any leading and trailing whitespace will be removed from the returned string. This is very useful for getting results back into your Golang code!
+
+If the pipeline's `stdout` is empty, an empty string will be returned.
+
+If the pipeline didn't execute successfully, the contents of the pipeline's `stderr` will be returned. We might change this behaviour in the future.
 
 ## Errors
 
