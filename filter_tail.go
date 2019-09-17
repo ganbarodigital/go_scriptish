@@ -41,22 +41,20 @@ package scriptish
 
 import (
 	"container/ring"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // Tail copies the last N lines from the pipeline's Stdin to its Stdout
 func Tail(n int) Command {
 	// special case - deal with horrible values of n
 	if n < 1 {
-		return func(p *pipe.Pipe) (int, error) {
+		return func(p *Pipe) (int, error) {
 			// do nothing
-			return pipe.OK, nil
+			return OK, nil
 		}
 	}
 
 	// general case
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// we'll use the ring buffer for this
 		buf := ring.New(n)
 
@@ -82,6 +80,6 @@ func Tail(n int) Command {
 		})
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

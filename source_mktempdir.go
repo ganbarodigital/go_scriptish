@@ -41,19 +41,17 @@ package scriptish
 
 import (
 	"io/ioutil"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // MkTempDir creates a temporary directory, and writes the filepath to
 // the pipeline's stdout.
 func MkTempDir(dir string, prefix string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// create the file
 		name, err := ioutil.TempDir(dir, prefix)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// write the file's name out
@@ -61,6 +59,6 @@ func MkTempDir(dir string, prefix string) Command {
 		p.Stdout.WriteRune('\n')
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

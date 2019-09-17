@@ -41,8 +41,6 @@ package scriptish
 
 import (
 	"os"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // TruncateFile removes the contents of the given file.
@@ -50,17 +48,17 @@ import (
 // If the file does not exist, it is created.
 func TruncateFile(filename string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// open / create the file
 		fh, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// we're done here
 		fh.Close()
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

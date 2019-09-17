@@ -41,15 +41,13 @@ package scriptish
 
 import (
 	"strconv"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // CountWords counts the number of words in the pipe's stdin, and writes
 // the overall count to the pipe's stdout
 func CountWords() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		count := 0
 		for range p.Stdin.ReadWords() {
 			count++
@@ -58,6 +56,6 @@ func CountWords() Command {
 		p.Stdout.WriteString(strconv.Itoa(count))
 		p.Stdout.WriteRune('\n')
 
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

@@ -50,6 +50,24 @@ import (
 // in conversation and in documentaton.
 type Command = pipe.PipelineOperation
 
+// Pipe is an alias for the underlying pipe library's Pipe
+//
+// It just saves us having to import the pipe library into every single
+// file in the project.
+type Pipe = pipe.Pipe
+
+// OK is an alias for the underlying pipe library's OK
+//
+// It just saves us having to import the pipe library into every single
+// file in the project.
+const OK = pipe.OK
+
+// NOT_OK is an alias for the underlying pipe library's NOT_OK
+//
+// It just saves us having to import the pipe library into every single
+// file in the project.
+const NOT_OK = pipe.NOT_OK
+
 // Pipeline is a wrapper around our underlying pipe library's pipeline,
 // so that we can extend it with extra functionality
 type Pipeline struct {

@@ -41,14 +41,12 @@ package scriptish
 
 import (
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // TrimWhitespace removes any whitespace from the front and end of each line
 func TrimWhitespace() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			newLine := strings.TrimSpace(line)
 
@@ -57,6 +55,6 @@ func TrimWhitespace() Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

@@ -42,8 +42,6 @@ package scriptish
 import (
 	"path/filepath"
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // Dirname treats every line in the pipeline as a filepath.
@@ -52,7 +50,7 @@ import (
 // If a line is blank, Dirname returns a '.'
 func Dirname() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			// special case:
 			//
@@ -71,6 +69,6 @@ func Dirname() Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

@@ -42,15 +42,13 @@ package scriptish
 import (
 	"path/filepath"
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // StripExtension treats every line in the pipeline as a filepath.
 // It removes the extension from each filepath.
 func StripExtension() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			// what extension does this filepath have?
 			fileExt := filepath.Ext(line)
@@ -61,6 +59,6 @@ func StripExtension() Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

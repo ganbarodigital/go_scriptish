@@ -41,15 +41,13 @@ package scriptish
 
 import (
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // DropEmptyLines removes any lines that are blank, or that only contain
 // whitespace
 func DropEmptyLines() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			// what does the line look like if we remove all
 			// leading and trailing whitespace?
@@ -61,6 +59,6 @@ func DropEmptyLines() Command {
 			}
 		}
 
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

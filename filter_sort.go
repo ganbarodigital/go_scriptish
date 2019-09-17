@@ -41,14 +41,12 @@ package scriptish
 
 import (
 	"sort"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // Sort sorts the contents of the pipeline into ascending alphabetical order
 func Sort() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		lines := p.Stdin.Strings()
 		sort.Strings(lines)
 
@@ -57,6 +55,6 @@ func Sort() Command {
 			p.Stdout.WriteRune('\n')
 		}
 
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

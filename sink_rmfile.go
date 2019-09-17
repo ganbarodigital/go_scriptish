@@ -41,8 +41,6 @@ package scriptish
 
 import (
 	"os"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // RmFile deletes the given file.
@@ -53,13 +51,13 @@ import (
 // Golang os.Remove() behaves that way.
 func RmFile(filepath string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		err := os.Remove(filepath)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

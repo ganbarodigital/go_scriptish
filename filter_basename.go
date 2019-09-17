@@ -42,15 +42,13 @@ package scriptish
 import (
 	"path/filepath"
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // Basename treats every line in the pipe as a filepath.
 // It removes any parent elements from the line.
 func Basename() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// process each filepath in the pipeline
 		for line := range p.Stdin.ReadLines() {
 			var basename string
@@ -69,6 +67,6 @@ func Basename() Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

@@ -41,15 +41,13 @@ package scriptish
 
 import (
 	"strconv"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // CountLines counts the number of lines in the pipeline's stdin, and writes
 // the overall count to the pipeline's stdout
 func CountLines() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		count := 0
 		for range p.Stdin.ReadLines() {
 			count++
@@ -58,6 +56,6 @@ func CountLines() Command {
 		p.Stdout.WriteString(strconv.Itoa(count))
 		p.Stdout.WriteRune('\n')
 
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

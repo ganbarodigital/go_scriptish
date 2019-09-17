@@ -43,7 +43,6 @@ import (
 	"os"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -140,6 +139,6 @@ func TestRmFileDoesNotRespectFilePermissions(t *testing.T) {
 	// test the results
 
 	assert.Nil(t, err)
-	assert.Equal(t, pipe.OK, pipeline.StatusCode)
+	assert.Equal(t, OK, pipeline.StatusCode)
 	assert.Empty(t, actualResult)
 }

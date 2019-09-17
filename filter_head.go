@@ -39,24 +39,20 @@
 
 package scriptish
 
-import (
-	pipe "github.com/ganbarodigital/go_pipe"
-)
-
 // Head copies the first N lines from the pipeline's Stdin to its Stdout
 //
 // If `n` is less than 1 (ie 0, or negative), no lines are copied
 func Head(n int) Command {
 	// special case - negative n
 	if n < 1 {
-		return func(p *pipe.Pipe) (int, error) {
+		return func(p *Pipe) (int, error) {
 			// do nothing
-			return pipe.OK, nil
+			return OK, nil
 		}
 	}
 
 	// general case
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		count := 0
 		for line := range p.Stdin.ReadLines() {
 			p.Stdout.WriteString(line)
@@ -69,6 +65,6 @@ func Head(n int) Command {
 			}
 		}
 
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

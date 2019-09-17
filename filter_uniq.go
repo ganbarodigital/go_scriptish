@@ -39,14 +39,10 @@
 
 package scriptish
 
-import (
-	pipe "github.com/ganbarodigital/go_pipe"
-)
-
 // Uniq removes duplicated lines from the pipeline
 func Uniq() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// keep track of which lines we have already seen
 		var seen = make(map[string]bool)
 
@@ -61,6 +57,6 @@ func Uniq() Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

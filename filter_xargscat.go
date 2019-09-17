@@ -42,21 +42,19 @@ package scriptish
 import (
 	"io/ioutil"
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // XargsCat treats each line in the pipeline's stdin as a filepath.
 // It reads each file, and writes them to the pipeline's stdout.
 func XargsCat() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// treat each line as a valid filepath
 		for line := range p.Stdin.ReadLines() {
 			// can we read the file?
 			contents, err := ioutil.ReadFile(line)
 			if err != nil {
-				return pipe.NOT_OK, err
+				return NOT_OK, err
 			}
 
 			// add the file contents to the pipeline
@@ -71,6 +69,6 @@ func XargsCat() Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

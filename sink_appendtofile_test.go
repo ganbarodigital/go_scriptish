@@ -143,7 +143,7 @@ func TestAppendToFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 
 	assert.NotNil(t, err)
 	assert.Error(t, err)
-	assert.Equal(t, pipe.NOT_OK, statusCode)
+	assert.Equal(t, NOT_OK, statusCode)
 
 	// AppendToFile() is a sink, Stdout should be empty
 	assert.Empty(t, actualResult)

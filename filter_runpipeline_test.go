@@ -43,7 +43,6 @@ import (
 	"errors"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -87,8 +86,8 @@ func TestRunPipelineReturnsSubPipelinesError(t *testing.T) {
 	// setup your test
 
 	expectedError := errors.New("this is the error from our sub-pipeline")
-	op1 := func(p *pipe.Pipe) (int, error) {
-		return pipe.NOT_OK, expectedError
+	op1 := func(p *Pipe) (int, error) {
+		return NOT_OK, expectedError
 	}
 
 	subPipeline := NewPipeline(

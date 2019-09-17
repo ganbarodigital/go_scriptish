@@ -44,8 +44,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // ListFiles is the equivalent of `ls -1 <path>`.
@@ -58,7 +56,7 @@ import (
 // to the pipeline's stdout.
 func ListFiles(path string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// special case: user wants a list of files that match a wildcard
 		if strings.ContainsAny(path, "[]^*?\\{}!") {
 			return globFiles(p, path)
@@ -67,7 +65,7 @@ func ListFiles(path string) Command {
 		// general case: user has given us a path with no wildcards
 		info, err := os.Stat(path)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// what are we looking at?
@@ -80,11 +78,11 @@ func ListFiles(path string) Command {
 	}
 }
 
-func globFiles(p *pipe.Pipe, path string) (int, error) {
+func globFiles(p *Pipe, path string) (int, error) {
 	// can we find any files?
 	filenames, err := filepath.Glob(path)
 	if err != nil {
-		return pipe.NOT_OK, err
+		return NOT_OK, err
 	}
 
 	// we have something to pass on
@@ -94,21 +92,21 @@ func globFiles(p *pipe.Pipe, path string) (int, error) {
 	}
 
 	// all done
-	return pipe.OK, nil
+	return OK, nil
 }
 
-func listFile(p *pipe.Pipe, path string) (int, error) {
+func listFile(p *Pipe, path string) (int, error) {
 	p.Stdout.WriteString(path)
 	p.Stdout.WriteRune('\n')
 
-	return pipe.OK, nil
+	return OK, nil
 }
 
-func listFolder(p *pipe.Pipe, path string) (int, error) {
+func listFolder(p *Pipe, path string) (int, error) {
 	// can we read what's in the folder?
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		return pipe.NOT_OK, err
+		return NOT_OK, err
 	}
 
 	// we have some filenames to pass on
@@ -118,5 +116,5 @@ func listFolder(p *pipe.Pipe, path string) (int, error) {
 	}
 
 	// all done
-	return pipe.OK, nil
+	return OK, nil
 }

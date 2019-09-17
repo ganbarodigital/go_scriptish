@@ -124,7 +124,7 @@ func TestAppendToTempFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 
 	assert.NotNil(t, err)
 	assert.Error(t, err)
-	assert.Equal(t, pipe.NOT_OK, statusCode)
+	assert.Equal(t, NOT_OK, statusCode)
 
 	// the name of the tempfile DOES exist in the pipe's stdout
 	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))

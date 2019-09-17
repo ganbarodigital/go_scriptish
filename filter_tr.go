@@ -41,14 +41,12 @@ package scriptish
 
 import (
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // Tr replaces all occurances of one string with another
 func Tr(old []string, new []string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// special case - we want to replace *everything* in old with
 		// whatever is in new
 		if len(old) > 1 && len(new) == 1 {
@@ -57,7 +55,7 @@ func Tr(old []string, new []string) Command {
 			}
 		} else if len(old) != len(new) {
 			// we don't know what to do
-			return pipe.NOT_OK, ErrMismatchedInputs{"old", len(old), "new", len(new)}
+			return NOT_OK, ErrMismatchedInputs{"old", len(old), "new", len(new)}
 		}
 
 		// let's get the replacement done
@@ -70,6 +68,6 @@ func Tr(old []string, new []string) Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

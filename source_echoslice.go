@@ -41,15 +41,13 @@ package scriptish
 
 import (
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // EchoSlice writes an array of strings to the pipeline's stdout,
 // one line per array entry
 func EchoSlice(input []string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// send the slice to the pipe
 		for _, line := range input {
 			p.Stdout.WriteString(line)
@@ -61,6 +59,6 @@ func EchoSlice(input []string) Command {
 		}
 
 		// all done
-		return 0, nil
+		return OK, nil
 	}
 }

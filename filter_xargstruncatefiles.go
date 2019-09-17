@@ -41,8 +41,6 @@ package scriptish
 
 import (
 	"os"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // XargsTruncatesFiles treats each line of the pipeline's stdin as a filepath.
@@ -53,12 +51,12 @@ import (
 // operation in the pipeline.
 func XargsTruncateFiles() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			// open / create the file
 			fh, err := os.OpenFile(line, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
-				return pipe.NOT_OK, err
+				return NOT_OK, err
 			}
 
 			// we're done here
@@ -71,6 +69,6 @@ func XargsTruncateFiles() Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

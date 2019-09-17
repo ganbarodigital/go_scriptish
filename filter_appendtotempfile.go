@@ -42,8 +42,6 @@ package scriptish
 import (
 	"io"
 	"io/ioutil"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // AppendToTempFile writes the contents of the pipeline's stdin to a
@@ -53,11 +51,11 @@ import (
 // If the file does not exist, it is created.
 func AppendToTempFile(dir string, pattern string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// create the temporary file
 		fh, err := ioutil.TempFile(dir, pattern)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// remember to automatically close the file when we've finished
@@ -72,10 +70,10 @@ func AppendToTempFile(dir string, pattern string) Command {
 		// write to the file
 		_, err = io.Copy(fh, p.Stdin)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

@@ -42,21 +42,19 @@ package scriptish
 import (
 	"fmt"
 	"os"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // ToStderr writes the contents of the pipeline's stdin to
 // the program's stderr
 func ToStderr() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// send everything to stdout
 		for line := range p.Stdin.ReadLines() {
 			fmt.Fprintf(os.Stderr, "%s\n", line)
 		}
 
 		// all done
-		return 0, nil
+		return OK, nil
 	}
 }

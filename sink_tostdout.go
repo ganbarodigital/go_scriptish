@@ -41,20 +41,18 @@ package scriptish
 
 import (
 	"fmt"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // ToStdout writes the contents of the pipeline's stdin to the program's stdout
 func ToStdout() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// send everything to stdout
 		for line := range p.Stdin.ReadLines() {
 			fmt.Printf("%s\n", line)
 		}
 
 		// all done
-		return 0, nil
+		return OK, nil
 	}
 }

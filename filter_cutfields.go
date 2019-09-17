@@ -41,18 +41,16 @@ package scriptish
 
 import (
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // CutFields emulates `cut -f`
 func CutFields(spec string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// which columns do we want?
 		columnsSpec, err := ParseRangeSpec(spec)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// go and get those columns
@@ -81,6 +79,6 @@ func CutFields(spec string) Command {
 		}
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

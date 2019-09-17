@@ -42,8 +42,6 @@ package scriptish
 import (
 	"io"
 	"os"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // WriteToFile writes the contents of the pipe's stdin to the given file.
@@ -52,21 +50,21 @@ import (
 // If the file does not exist, it is created.
 func WriteToFile(filename string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// open / create the file
 		fh, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 		defer fh.Close()
 
 		// write to the file
 		_, err = io.Copy(fh, p.Stdin)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// all done
-		return pipe.OK, err
+		return OK, err
 	}
 }

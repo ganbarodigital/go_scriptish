@@ -41,8 +41,6 @@ package scriptish
 
 import (
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // TrimSuffix removes the given suffix from each line of the pipeline.
@@ -50,7 +48,7 @@ import (
 // Use it to emulate basename(1)'s `[suffix]` parameter.
 func TrimSuffix(ext string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			newPath := strings.TrimSuffix(line, ext)
 
@@ -58,6 +56,6 @@ func TrimSuffix(ext string) Command {
 			p.Stdout.WriteRune('\n')
 		}
 
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

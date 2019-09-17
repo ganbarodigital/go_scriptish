@@ -39,16 +39,12 @@
 
 package scriptish
 
-import (
-	pipe "github.com/ganbarodigital/go_pipe"
-)
-
 // RunPipeline allows you to call one pipeline from another.
 //
 // Use this to create reusable pipelines.
 func RunPipeline(pl *Pipeline) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// copy the pipeline's content into our sub pipeline
 		for line := range p.Stdin.ReadLines() {
 			pl.Pipe.Stdout.WriteString(line)
@@ -60,13 +56,13 @@ func RunPipeline(pl *Pipeline) Command {
 
 		// did anything go wrong?
 		if pl.Err != nil {
-			return pipe.NOT_OK, pl.Err
+			return NOT_OK, pl.Err
 		}
 
 		// copy our pipeline's stdout to become the pipe's next stdin
 		p.Stdout = pl.Pipe.Stdout
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

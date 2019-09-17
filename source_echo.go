@@ -41,14 +41,12 @@ package scriptish
 
 import (
 	"strings"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
 // Echo writes a string to the pipeline's stdout
 func Echo(input string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		p.Stdout.WriteString(input)
 
 		// make sure we don't accidentally create a blank line
@@ -57,6 +55,6 @@ func Echo(input string) Command {
 		}
 
 		// all done
-		return 0, nil
+		return OK, nil
 	}
 }

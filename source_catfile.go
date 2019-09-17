@@ -48,11 +48,11 @@ import (
 // CatFile writes the contents of a file to the pipeline's stdout
 func CatFile(filename string) Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// can we open the file?
 		f, err := os.Open(filename)
 		if err != nil {
-			return pipe.NOT_OK, err
+			return NOT_OK, err
 		}
 
 		// copy the file into our pipeline
@@ -60,6 +60,6 @@ func CatFile(filename string) Command {
 		p.DrainStdin()
 
 		// all done
-		return pipe.OK, nil
+		return OK, nil
 	}
 }

@@ -49,7 +49,7 @@ import (
 // the pipeline's stdout
 func CatStdin() Command {
 	// build our Scriptish command
-	return func(p *pipe.Pipe) (int, error) {
+	return func(p *Pipe) (int, error) {
 		// attach the program's stdin to our pipe
 		p.Stdin = pipe.NewSourceFromReader(os.Stdin)
 
@@ -57,6 +57,6 @@ func CatStdin() Command {
 		p.DrainStdin()
 
 		// all done
-		return 0, nil
+		return OK, nil
 	}
 }
