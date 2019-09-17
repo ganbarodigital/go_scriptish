@@ -22,6 +22,7 @@ Bash                 | Scriptish
 `ls -1 ...`          | `ListFiles(...)`
 `mktemp`             | `MkTempFile()`
 `mktemp -d`          | `MkTempDir()`
+`rm -f`              | `RmFile()`
 `sort`               | `Sort()`
 `sort -r`            | `Rsort()`
 `tail -n X`          | `Tail(X)`
@@ -412,6 +413,20 @@ result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.AppendToFile("my-app.log"),
 ).Exec().String()
+```
+
+### RmFile()
+
+`RmFile()` deletes the given file.
+
+It ignores the contents of the pipeline.
+
+It ignores the file's file permissions, because the underlying Golang os.Remove() behaves that way.
+
+```go
+err := scriptish.NewPipeline(
+    scriptish.RmFile("/path/to/file"),
+).Exec().Error()
 ```
 
 ### ToStderr()
