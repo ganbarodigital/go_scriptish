@@ -134,9 +134,9 @@ Scriptish commands fall into one of three categories:
 
 A pipeline normally:
 
-* starts with a `source`
-* applies one or more `filters`
-* finishes with a `sink` to send the results somewhere
+* starts with a _source_
+* applies one or more _filters_
+* finishes with a _sink_ to send the results somewhere
 
 But what if we want to get the results back into our Golang code, to reuse in some way? Instead of using a [sink](#sinks), use an [output](#outputs) instead.
 
