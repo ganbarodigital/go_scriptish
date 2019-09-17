@@ -624,7 +624,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.ListFiles("path/to/folder/*.txt"),
     scriptish.CountLines(),
-).Exec().String()
+).Exec().ParseInt()
 ```
 
 ### CountWords()
@@ -635,7 +635,7 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("path/to/file.txt"),
     scriptish.CountWords(),
-).Exec().String()
+).Exec().ParseInt()
 ```
 
 ### CutFields()
