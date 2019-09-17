@@ -960,3 +960,48 @@ If the pipeline didn't execute successfully, the contents of the pipeline's `std
 ### ErrMismatchedInputs
 
 `ErrMismatchedInputs` is returned whenever two input arrays aren't the same length.
+
+## Inspirations
+
+Scriptish is inspired by:
+
+* [Labix's Pipe package](http://labix.org/pipe)
+* [John Arundel / Bitfield's Script package](https://github.com/bitfield/script)
+
+### Compared To Labix's Pipe
+
+_Pipe_ is a bit more low level, and seems to be aimed predominantly at executing external commands, as a more powerful alternative to Golang's `exec` package.
+
+If that's what you need, definitely check it out!
+
+### Compared To Bitfield's Script
+
+We started out using (and contributing to) Script, but ran into a few things that didn't suit what we were doing:
+
+* Built for different purposes
+
+    _script_ is aimed at doing minimal shell-like operations from a Golang app.
+
+    _scriptish_ is more about providing everything necessary to recreate any size UNIX shell script - including powerful ones like the HubFlow extension for Git - to Golang, without having to port everything to Golang.
+
+* Aimed at different people
+
+    We want it to take as little thinking as possible to port UNIX shell scripts over to Golang - especially for casual or lapsed Golang programmers!
+
+    That means (amongst other things) using function names that are similar to the UNIX shell command that they emulate, and emulating UNIX behaviour as closely as is practical.
+
+    One key difference is that _scriptish_ supports both UNIX shell command status codes and `stderr`.
+
+* Extensibility
+
+    _script operations_ are methods on the `script.Pipe` struct. We found that this makes it very hard to extend `script` with your own methods.
+
+    In contrast, _script commands_ are first-order functions that take the Pipe as a function parameter. You can create your own Scriptish commands, and they can live in your own Golang package.
+
+* Reusability
+
+    There's currently no way to call one pipeline from another using _script_ alone. You can achieve that by writing your own Golang boiler plate code.
+
+    _scriptish_ builds pipelines that you can run, pass around as values, and call from other _scriptish_ pipelines.
+
+We were originally attracted to _script_ because of how easy it is to use. There's a lot to like about it, and we've definitely tried to deliver that in _scriptish_ too. You should definitely check [script](https://github.com/bitfield/script) out if you think that _scriptish_ is too much for what you need.
