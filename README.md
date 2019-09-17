@@ -15,9 +15,11 @@ result, err := scriptish.NewPipeline(
 
 ## Why Use Scriptish?
 
+### Who Is Scriptish For?
+
 We've built Scriptish for anyone who needs to replace UNIX shell scripts with compiled Golang binaries.
 
-We're going to be doing that ourselves, for some of our projects:
+We're going to be doing that ourselves for some of our projects:
 
 * Dockhand - Docker management utility
 * HubFlow - the GitFlow extension for Git
@@ -25,7 +27,7 @@ We're going to be doing that ourselves, for some of our projects:
 
 We'll add links to those projects when they're available.
 
-## Why UNIX Shell Scripts?
+### Why UNIX Shell Scripts?
 
 UNIX shell scripts are one of the most practical inventions in computer programming.
 
