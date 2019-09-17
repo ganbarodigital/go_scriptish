@@ -436,7 +436,7 @@ result, err := scriptish.NewPipeline(
 
 `ListFiles()` writes a list of matching files to the pipeline's stdout, one line per filename found.// TrimSuffix removes the given suffix from each line of the pipeline.
 //
-// Use it to emulate basename(1)'s `[suffix]` parameter.
+// Use it to emulate `basename(1)`'s `[suffix]` parameter.
 
 
 ```go
