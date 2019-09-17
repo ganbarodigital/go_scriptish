@@ -268,7 +268,7 @@ result, err := scriptish.NewPipeline(
 
 ## Calling A Pipeline From Another Pipeline
 
-UNIX shell scripts can be broken up into functions to make them easier to maintain. You can do something close to that in Scriptish, by calling a pipeline from another pipeline:
+UNIX shell scripts can be broken up into functions to make them easier to maintain. You can do something similar in Scriptish, by calling a pipeline from another pipeline:
 
 ```go
 // this will parse the output of Git to find the selected branch
