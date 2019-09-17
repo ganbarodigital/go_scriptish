@@ -48,8 +48,8 @@ import (
 
 // Basename treats every line in the pipe as a filepath.
 // It removes any parent elements from the line.
-func Basename() pipe.PipelineOperation {
-	// build our PipelineOperation
+func Basename() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// process each filepath in the pipeline
 		for line := range p.Stdin.ReadLines() {

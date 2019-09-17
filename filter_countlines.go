@@ -47,7 +47,8 @@ import (
 
 // CountLines counts the number of lines in the pipeline's stdin, and writes
 // the overall count to the pipeline's stdout
-func CountLines() pipe.PipelineOperation {
+func CountLines() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		count := 0
 		for range p.Stdin.ReadLines() {

@@ -46,8 +46,8 @@ import (
 // RunPipeline allows you to call one pipeline from another.
 //
 // Use this to create reusable pipelines.
-func RunPipeline(pl *Pipeline) pipe.PipelineOperation {
-	// build our pipeline operation
+func RunPipeline(pl *Pipeline) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// copy the pipeline's content into our sub pipeline
 		for line := range p.Stdin.ReadLines() {

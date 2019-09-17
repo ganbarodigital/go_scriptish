@@ -47,7 +47,8 @@ import (
 
 // CountWords counts the number of words in the pipe's stdin, and writes
 // the overall count to the pipe's stdout
-func CountWords() pipe.PipelineOperation {
+func CountWords() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		count := 0
 		for range p.Stdin.ReadWords() {

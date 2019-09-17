@@ -47,8 +47,8 @@ import (
 
 // CatStdin writes the contents of the program's stdin to
 // the pipeline's stdout
-func CatStdin() pipe.PipelineOperation {
-	// build our pipeline operation
+func CatStdin() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// attach the program's stdin to our pipe
 		p.Stdin = pipe.NewSourceFromReader(os.Stdin)

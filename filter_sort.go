@@ -46,7 +46,8 @@ import (
 )
 
 // Sort sorts the contents of the pipeline into ascending alphabetical order
-func Sort() pipe.PipelineOperation {
+func Sort() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		lines := p.Stdin.Strings()
 		sort.Strings(lines)

@@ -47,8 +47,8 @@ import (
 
 // MkTempDir creates a temporary directory, and writes the filepath to
 // the pipeline's stdout.
-func MkTempDir(dir string, prefix string) pipe.PipelineOperation {
-	// build our pipeline operation
+func MkTempDir(dir string, prefix string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// create the file
 		name, err := ioutil.TempDir(dir, prefix)

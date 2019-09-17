@@ -46,7 +46,7 @@ import (
 // Head copies the first N lines from the pipeline's Stdin to its Stdout
 //
 // If `n` is less than 1 (ie 0, or negative), no lines are copied
-func Head(n int) pipe.PipelineOperation {
+func Head(n int) Command {
 	// special case - negative n
 	if n < 1 {
 		return func(p *pipe.Pipe) (int, error) {
@@ -55,7 +55,7 @@ func Head(n int) pipe.PipelineOperation {
 		}
 	}
 
-	// build our pipe operation
+	// general case
 	return func(p *pipe.Pipe) (int, error) {
 		count := 0
 		for line := range p.Stdin.ReadLines() {

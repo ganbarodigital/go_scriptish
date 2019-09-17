@@ -51,8 +51,8 @@ import (
 //
 // Each filepath is written to the pipeline's stdout, for use by the next
 // operation in the pipeline.
-func XargsTruncateFiles() pipe.PipelineOperation {
-	// build our pipeline operation
+func XargsTruncateFiles() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			// open / create the file

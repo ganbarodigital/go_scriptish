@@ -48,8 +48,8 @@ import (
 // TruncateFile removes the contents of the given file.
 //
 // If the file does not exist, it is created.
-func TruncateFile(filename string) pipe.PipelineOperation {
-	// build our pipeline operation
+func TruncateFile(filename string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// open / create the file
 		fh, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)

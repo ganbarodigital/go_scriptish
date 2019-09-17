@@ -46,7 +46,8 @@ import (
 )
 
 // Tr replaces all occurances of one string with another
-func Tr(old []string, new []string) pipe.PipelineOperation {
+func Tr(old []string, new []string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// special case - we want to replace *everything* in old with
 		// whatever is in new

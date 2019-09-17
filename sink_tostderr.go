@@ -48,8 +48,8 @@ import (
 
 // ToStderr writes the contents of the pipeline's stdin to
 // the program's stderr
-func ToStderr() pipe.PipelineOperation {
-	// build our pipeline operation
+func ToStderr() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// send everything to stdout
 		for line := range p.Stdin.ReadLines() {

@@ -47,8 +47,8 @@ import (
 
 // DropEmptyLines removes any lines that are blank, or that only contain
 // whitespace
-func DropEmptyLines() pipe.PipelineOperation {
-	// build our pipeline operation
+func DropEmptyLines() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			// what does the line look like if we remove all

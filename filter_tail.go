@@ -46,7 +46,7 @@ import (
 )
 
 // Tail copies the last N lines from the pipeline's Stdin to its Stdout
-func Tail(n int) pipe.PipelineOperation {
+func Tail(n int) Command {
 	// special case - deal with horrible values of n
 	if n < 1 {
 		return func(p *pipe.Pipe) (int, error) {

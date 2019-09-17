@@ -49,8 +49,8 @@ import (
 // AppendToFile writes the contents of the pipeline's stdin to the given file
 //
 // If the file does not exist, it is created.
-func AppendToFile(filename string) pipe.PipelineOperation {
-	// build our pipeline operation
+func AppendToFile(filename string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// open / create the file
 		fh, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)

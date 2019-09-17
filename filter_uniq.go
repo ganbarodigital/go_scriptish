@@ -44,7 +44,8 @@ import (
 )
 
 // Uniq removes duplicated lines from the pipeline
-func Uniq() pipe.PipelineOperation {
+func Uniq() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// keep track of which lines we have already seen
 		var seen = make(map[string]bool)

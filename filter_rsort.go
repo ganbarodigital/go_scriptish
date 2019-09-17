@@ -46,7 +46,8 @@ import (
 )
 
 // Rsort sorts the contents of the pipeline into descending alphabetical order
-func Rsort() pipe.PipelineOperation {
+func Rsort() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		lines := p.Stdin.Strings()
 		var strSlice sort.StringSlice = lines

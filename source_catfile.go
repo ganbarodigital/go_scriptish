@@ -46,8 +46,8 @@ import (
 )
 
 // CatFile writes the contents of a file to the pipeline's stdout
-func CatFile(filename string) pipe.PipelineOperation {
-	// build our PipelineOperation
+func CatFile(filename string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// can we open the file?
 		f, err := os.Open(filename)

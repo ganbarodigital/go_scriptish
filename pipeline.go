@@ -43,6 +43,13 @@ import (
 	pipe "github.com/ganbarodigital/go_pipe"
 )
 
+// Command is a wrapper around the underlying pipe library's
+// PipelineOperation.
+//
+// It's just easier to describe them as Commands
+// in conversation and in documentaton.
+type Command = pipe.PipelineOperation
+
 // Pipeline is a wrapper around our underlying pipe library's pipeline,
 // so that we can extend it with extra functionality
 type Pipeline struct {
@@ -50,7 +57,7 @@ type Pipeline struct {
 }
 
 // NewPipeline creates a pipeline ready to be executed
-func NewPipeline(steps ...pipe.PipelineOperation) *Pipeline {
+func NewPipeline(steps ...Command) *Pipeline {
 	newPipe := pipe.NewPipeline(steps...)
 
 	return &Pipeline{*newPipe}
@@ -69,14 +76,14 @@ func (pl *Pipeline) Exec() *Pipeline {
 
 // ExecPipeline creates and runs a pipeline. Use this for short, throwaway
 // actions.
-func ExecPipeline(steps ...pipe.PipelineOperation) *Pipeline {
+func ExecPipeline(steps ...Command) *Pipeline {
 	pipeline := NewPipeline(steps...).Exec()
 	return pipeline
 }
 
 // PipelineFunc creates a pipeline, and wraps it in a function to make
 // it easier to call.
-func PipelineFunc(steps ...pipe.PipelineOperation) func() *Pipeline {
+func PipelineFunc(steps ...Command) func() *Pipeline {
 	newPipe := NewPipeline(steps...)
 	return func() *Pipeline {
 		return newPipe.Exec()

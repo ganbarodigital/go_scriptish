@@ -41,12 +41,10 @@ package scriptish
 
 import (
 	"os"
-
-	pipe "github.com/ganbarodigital/go_pipe"
 )
 
-// Args echos the program's command-line arguments into the pipeline,
+// EchoArgs echos the program's command-line arguments into the pipeline,
 // one argument per line
-func EchoArgs() pipe.PipelineOperation {
+func EchoArgs() Command {
 	return EchoSlice(os.Args)
 }

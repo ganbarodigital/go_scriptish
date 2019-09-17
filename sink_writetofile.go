@@ -50,7 +50,8 @@ import (
 // The existing contents of the file are replaced.
 //
 // If the file does not exist, it is created.
-func WriteToFile(filename string) pipe.PipelineOperation {
+func WriteToFile(filename string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// open / create the file
 		fh, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)

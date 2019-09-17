@@ -46,8 +46,8 @@ import (
 )
 
 // CutFields emulates `cut -f`
-func CutFields(spec string) pipe.PipelineOperation {
-	// build our pipe operation
+func CutFields(spec string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// which columns do we want?
 		columnsSpec, err := ParseRangeSpec(spec)

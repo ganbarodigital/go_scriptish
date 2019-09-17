@@ -48,8 +48,8 @@ import (
 
 // XargsCat treats each line in the pipeline's stdin as a filepath.
 // It reads each file, and writes them to the pipeline's stdout.
-func XargsCat() pipe.PipelineOperation {
-	// build our pipeline operation
+func XargsCat() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// treat each line as a valid filepath
 		for line := range p.Stdin.ReadLines() {

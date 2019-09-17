@@ -48,7 +48,8 @@ import (
 
 // StripExtension treats every line in the pipeline as a filepath.
 // It removes the extension from each filepath.
-func StripExtension() pipe.PipelineOperation {
+func StripExtension() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			// what extension does this filepath have?

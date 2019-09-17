@@ -50,8 +50,8 @@ import (
 // It removes the last element from each filepath.
 //
 // If a line is blank, Dirname returns a '.'
-func Dirname() pipe.PipelineOperation {
-	// build our pipeline operation
+func Dirname() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			// special case:

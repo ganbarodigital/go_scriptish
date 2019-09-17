@@ -558,7 +558,7 @@ result, err := scriptish.NewPipeline(
 
 `XargsTruncatesFiles()` treats each line of the pipeline's stdin as a filepath. The contents of each file are truncated. If the file does not exist, it is created.
 
-Each filepath is written to the pipeline's stdout, for use by the next operation in the pipeline.
+Each filepath is written to the pipeline's stdout, for use by the next command in the pipeline.
 
 ```go
 result, err := scriptish.NewPipeline(
@@ -573,7 +573,7 @@ result, err := scriptish.NewPipeline(
 
 Sinks take the contents of the pipeline's stdin, and write it to somewhere outside the pipeline.
 
-A sink should be the last operation in your pipeline. You can add more operations afterwards if you really want to. Just be aware that the first operation after any sink will be starting with an empty stdin.
+A sink should be the last command in your pipeline. You can add more commands afterwards if you really want to. Just be aware that the first command after any sink will be starting with an empty stdin.
 
 ### AppendToFile()
 

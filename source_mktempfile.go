@@ -47,8 +47,8 @@ import (
 
 // MkTempFile creates a temporary file, and writes the filename to
 // the pipeline's stdout.
-func MkTempFile(dir string, pattern string) pipe.PipelineOperation {
-	// build our pipeline operation
+func MkTempFile(dir string, pattern string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// create the file
 		fh, err := ioutil.TempFile(dir, pattern)

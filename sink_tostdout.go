@@ -46,8 +46,8 @@ import (
 )
 
 // ToStdout writes the contents of the pipeline's stdin to the program's stdout
-func ToStdout() pipe.PipelineOperation {
-	// build our pipeline operation
+func ToStdout() Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// send everything to stdout
 		for line := range p.Stdin.ReadLines() {

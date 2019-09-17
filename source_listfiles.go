@@ -56,7 +56,8 @@ import (
 //
 // If `path` contains wildcards, ListFiles writes any files that matches
 // to the pipeline's stdout.
-func ListFiles(path string) pipe.PipelineOperation {
+func ListFiles(path string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// special case: user wants a list of files that match a wildcard
 		if strings.ContainsAny(path, "[]^*?\\{}!") {

@@ -46,8 +46,8 @@ import (
 )
 
 // Echo writes a string to the pipeline's stdout
-func Echo(input string) pipe.PipelineOperation {
-	// build our PipelineOperation
+func Echo(input string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		p.Stdout.WriteString(input)
 

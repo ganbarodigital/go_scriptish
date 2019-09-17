@@ -51,8 +51,8 @@ import (
 //
 // It ignores the file's file permissions, because the underlying
 // Golang os.Remove() behaves that way.
-func RmFile(filepath string) pipe.PipelineOperation {
-	// build our pipeline operation
+func RmFile(filepath string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		err := os.Remove(filepath)
 		if err != nil {

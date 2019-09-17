@@ -51,8 +51,8 @@ import (
 // the pipeline's stdout.
 //
 // If the file does not exist, it is created.
-func AppendToTempFile(dir string, pattern string) pipe.PipelineOperation {
-	// build our pipeline operation
+func AppendToTempFile(dir string, pattern string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		// create the temporary file
 		fh, err := ioutil.TempFile(dir, pattern)

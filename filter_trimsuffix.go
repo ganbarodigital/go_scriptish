@@ -48,7 +48,8 @@ import (
 // TrimSuffix removes the given suffix from each line of the pipeline.
 //
 // Use it to emulate basename(1)'s `[suffix]` parameter.
-func TrimSuffix(ext string) pipe.PipelineOperation {
+func TrimSuffix(ext string) Command {
+	// build our Scriptish command
 	return func(p *pipe.Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {
 			newPath := strings.TrimSuffix(line, ext)
