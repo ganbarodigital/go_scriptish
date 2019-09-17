@@ -118,7 +118,7 @@ When a single command has finished, its `stdout` becomes the `stdin` for the nex
 One difference between UNIX commands and Golang is error handling. Scriptish combines the best of both.
 
 * UNIX commands return a status code to indicate what happened. A status code of 0 (zero) means success.
-* Scriptish commands return the UNIX-like status code, and any Golang error that has occurred.
+* Scriptish commands return the UNIX-like status code, and any Golang error that has occurred. We store these in the pipeline.
 
 If you're calling external commands using `scriptish.Exec()`, you've still got access to the UNIX status code exactly like a shell script does. And you've always got access to any Golang errors that have occurred too.
 
