@@ -970,7 +970,7 @@ It's mostly there for checking on pipelines that produce no output. It's a toss 
 
 ### Okay()
 
-`Okay()` returns the pipeline's current UNIX status code, and its current Golang error status.
+`Okay()` returns `true|false` depending on the pipeline's current UNIX status code, and its current Golang error status.
 
 ```go
 success, err := ExecPipeline(scriptish.Exec("git push")).Okay()
