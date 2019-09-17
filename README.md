@@ -533,10 +533,11 @@ result, err := scriptish.NewPipeline(
 
 ### ListFiles()
 
-`ListFiles()` writes a list of matching files to the pipeline's `Stdout`, one line per filename found.// TrimSuffix removes the given suffix from each line of the pipeline.
-//
-// Use it to emulate `basename(1)`'s `[suffix]` parameter.
+`ListFiles()` writes a list of matching files to the pipeline's `Stdout`, one line per filename found.
 
+* If `path` is a file, ListFiles writes the file to the pipeline's stdout
+* If `path` is a folder, ListFiles writes the contents of the folder to the pipeline's stdout. The path to the folder is included.
+* If `path` contains wildcards, ListFiles writes any files that matches to the pipeline's stdout. `ListFiles()` uses Golang's `os.Glob()` to expand the wildcards.
 
 ```go
 // list a single file, if it exists
