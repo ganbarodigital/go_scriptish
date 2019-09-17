@@ -348,31 +348,31 @@ Here's a handy table to help you quickly translate an action from a Bash shell s
 
 Bash                 | Scriptish
 ---------------------|----------
-`${x%.*}`            | `StripExtension()`
-`${x%$y}`            | `TrimSuffix()`
-`> $file`            | `WriteToFile()`
-`>> $file`           | `AppendToFile()`
-`basename ...`       | `Basename()`
-`cat "..."`          | `Cat(...)`
-`cat /dev/null > $x` | `TruncateFile($x)`
-`cut -f`             | `CutFields()`
-`dirname ...`        | `Dirname()`
-`echo "..."`         | `Echo(...)`
-`echo "$@"`          | `EchoArgs()`
-`function`           | `RunPipeline()`
-`head -n X`          | `Head(X)`
-`ls -1 ...`          | `ListFiles(...)`
-`mktemp`             | `MkTempFile()`
-`mktemp -d`          | `MkTempDir()`
-`rm -f`              | `RmFile()`
-`sort`               | `Sort()`
-`sort -r`            | `Rsort()`
-`tail -n X`          | `Tail(X)`
-`tr old new`         | `Tr(old, new)`
-`uniq`               | `Uniq()`
-`wc -l`              | `CountLines()`
-`wc -w`              | `CountWords()`
-`xargs cat`          | `XargsCat()`
+`${x%.*}`            | [`StripExtension()`](#stripextension)
+`${x%$y}`            | [`TrimSuffix()`](#trimsuffix)
+`> $file`            | [`WriteToFile()`](#writetofile)
+`>> $file`           | [`AppendToFile()`](#appendtofile)
+`basename ...`       | [`Basename()`](#basename)
+`cat "..."`          | [`CatFile(...)`](#catfile)
+`cat /dev/null > $x` | [`TruncateFile($x)`](#truncatefile)
+`cut -f`             | [`CutFields()`](#cutfields)
+`dirname ...`        | [`Dirname()`](#dirname)
+`echo "..."`         | [`Echo(...)`](#echo)
+`echo "$@"`          | [`EchoArgs()`](#echoargs)
+`function`           | [`RunPipeline()`](#runpipeline)
+`head -n X`          | [`Head(X)`](#head)
+`ls -1 ...`          | [`ListFiles(...)`](#listfiles)
+`mktemp`             | [`MkTempFile()`](#mktempfile)
+`mktemp -d`          | [`MkTempDir()`](#mktempdir)
+`rm -f`              | [`RmFile()`](#rmfile)
+`sort`               | [`Sort()`](#sort)
+`sort -r`            | [`Rsort()`](#rsort)
+`tail -n X`          | [`Tail(X)`](#tail)
+`tr old new`         | [`Tr(old, new)`](#tr)
+`uniq`               | [`Uniq()`](#uniq)
+`wc -l`              | [`CountLines()`](#countlines)
+`wc -w`              | [`CountWords()`](#countwords)
+`xargs cat`          | [`XargsCat()`](#xargscat)
 
 ## Sources
 
