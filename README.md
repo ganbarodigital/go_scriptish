@@ -55,6 +55,7 @@ result, err := scriptish.NewPipeline(
   - [Dirname](#dirname)
   - [DropEmptyLines()](#dropemptylines)
   - [Grep()](#grep)
+  - [GrepV()](#grepv)
   - [Head()](#head)
   - [Rsort()](#rsort)
   - [RunPipeline()](#runpipeline)
@@ -470,6 +471,7 @@ Bash                 | Scriptish
 `echo "$@"`          | [`scriptish.EchoArgs()`](#echoargs)
 `function`           | [`scriptish.RunPipeline()`](#runpipeline)
 `grep ...`           | [`scriptish.Grep()`](#grep)
+`grep -v ..`         | [`scriptish.GrepV()`](#grepv)
 `head -n X`          | [`scriptish.Head(X)`](#head)
 `ls -1 ...`          | [`scriptish.ListFiles(...)`](#listfiles)
 `mktemp`             | [`scriptish.MkTempFile()`](#mktempfile)
@@ -692,6 +694,17 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Grep("second|third"),
+).Exec().String()
+```
+
+### GrepV()
+
+`GrepV()` filters out lines that match the given regex.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.GrepV("second|third"),
 ).Exec().String()
 ```
 
