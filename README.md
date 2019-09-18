@@ -77,8 +77,6 @@ result, err := scriptish.NewPipeline(
   - [WriteToFile()](#writetofile)
 - [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
-  - [CountLines()](#countlines-1)
-  - [CountWords()](#countwords-1)
   - [Error()](#error)
   - [Okay()](#okay)
   - [ParseInt()](#parseint)
@@ -365,7 +363,7 @@ pipeline := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.CountWords()
 )
-result, err := pipeline.Exec().String()
+result, err := pipeline.Exec().ParseInt()
 ```
 
 ```go
@@ -373,7 +371,7 @@ result, err := pipeline.Exec().String()
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.CountWords()
-).Exec().String()
+).Exec().ParseInt()
 ```
 
 ## Calling A Pipeline From Another Pipeline
@@ -425,7 +423,7 @@ When the pipeline has executed, you can call one of [the capture methods](#captu
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.CountWords()
-).Exec().String()
+).Exec().ParseInt()
 
 // if the pipeline worked ...
 // - result now contains the number of words in the file
@@ -968,30 +966,6 @@ Don't forget to run your pipeline first, if you haven't already!
 * It also returns the pipeline's current Golang error value.
 
 Normally, you wouldn't call this yourself.
-
-### CountLines()
-
-`CountLines()` returns the number of lines in the pipeline's `Stdout`.
-
-```go
-lineCount, err := scriptish.NewPipeline(
-    scriptish.ListFiles("."),
-).Exec().CountLines()
-```
-
-If the pipeline failed to complete, `lineCount` will be `0`, and `err` will be the pipeline's last error status.
-
-### CountWords()
-
-`CountWords()` returns the number of words in the pipeline's `Stdout`.
-
-```go
-wordCount, err := scriptish.NewPipeline(
-    scriptish.ListFiles("."),
-).Exec().CountWords()
-```
-
-If the pipeline failed to complete, `wordCount` will be `0`, and `err` will be the pipeline's last error status.
 
 ### Error()
 

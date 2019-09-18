@@ -45,9 +45,6 @@
   - added `ToStdout()`
   - added `TruncateFile()`
   - added `WriteToFile()`
-* Outputs:
-  - added `CountLines()`
-  - added `CountWords()`
 * Errors:
   - added `ErrMismatchedInputs`
 * Utilities:

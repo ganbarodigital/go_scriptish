@@ -59,11 +59,12 @@ func TestXargsTruncateFiles(t *testing.T) {
 	assert.Nil(t, err)
 	tmpFilename = strings.TrimSpace(tmpFilename)
 
-	lineCountPipe := NewPipeline(
+	lineCountFunc := PipelineFunc(
 		CatFile(tmpFilename),
+		CountLines(),
 	)
 
-	lineCount, err := lineCountPipe.Exec().CountLines()
+	lineCount, err := lineCountFunc().ParseInt()
 	assert.Nil(t, err)
 	assert.True(t, lineCount == 3)
 
@@ -85,7 +86,7 @@ func TestXargsTruncateFiles(t *testing.T) {
 	assert.Nil(t, pipeline.Err)
 
 	// the file should now be empty
-	lineCount, err = lineCountPipe.Exec().CountLines()
+	lineCount, err = lineCountFunc().ParseInt()
 	assert.Nil(t, err)
 	assert.Equal(t, 0, lineCount)
 }
