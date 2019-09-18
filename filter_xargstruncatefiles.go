@@ -43,7 +43,7 @@ import (
 	"os"
 )
 
-// XargsTruncatesFiles treats each line of the pipeline's stdin as a filepath.
+// XargsTruncateFiles treats each line of the pipeline's stdin as a filepath.
 // The contents of each file are truncated. If the file does not exist,
 // it is created.
 //
