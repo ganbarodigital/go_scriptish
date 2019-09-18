@@ -24,6 +24,7 @@
   - added `CountWords()`
   - added `Dirname()`
   - added `DropEmptyLines()`
+  - added 'Grep()`
   - added `Head()`
   - added `Rsort()`
   - added `RunPipeline()`
