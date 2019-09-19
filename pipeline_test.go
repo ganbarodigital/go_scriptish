@@ -109,3 +109,42 @@ func PipelineFuncCreatesAPipelineAsAFunction(t *testing.T) {
 
 	assert.Nil(t, pipeline.Error())
 }
+
+func ExecCopesWithANilPipelinePointer(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	var pipeline *Pipeline
+	pipeline = nil
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	// as long as the test doesn't crash, it has passed
+}
+
+func ExecCopesWithAnEmptyPipelineStruct(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	var pipeline Pipeline
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	// as long as the test doesn't crash, it has passed
+}

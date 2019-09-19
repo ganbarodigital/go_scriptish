@@ -83,11 +83,6 @@ func NewPipeline(steps ...Command) *Pipeline {
 
 // Exec executes the current pipeline
 func (pl *Pipeline) Exec() *Pipeline {
-	// do we have a pipeline?
-	if pl == nil {
-		return pl
-	}
-
 	pl.Exec_()
 	return pl
 }
