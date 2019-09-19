@@ -38,6 +38,7 @@
   - added `TrimWhitespace()`
   - added `Uniq()`
   - added `XargsCat()`
+  - added `XargsFilepathExists()`
   - added `XargsTruncateFiles()`
 * Sinks:
   - added `AppendToFile()`

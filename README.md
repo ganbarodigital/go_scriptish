@@ -68,6 +68,7 @@ result, err := scriptish.NewPipeline(
   - [TrimWhitespace()](#trimwhitespace)
   - [Uniq()](#uniq)
   - [XargsCat()](#xargscat)
+  - [XargsFilepathExists()](#xargsfilepathexists)
   - [XargsTruncateFiles()](#xargstruncatefiles)
 - [Sinks](#sinks)
   - [AppendToFile()](#appendtofile)
@@ -485,6 +486,7 @@ Bash                 | Scriptish
 `wc -l`              | [`scriptish.CountLines()`](#countlines)
 `wc -w`              | [`scriptish.CountWords()`](#countwords)
 `xargs cat`          | [`scriptish.XargsCat()`](#xargscat)
+`xargs test -e`      | [`scriptish.XargsFilepathExists()`](#xargsfilepathexists)
 
 ## Sources
 
@@ -868,6 +870,22 @@ result, err := scriptish.NewPipeline(
     scriptish.ListFiles("/path/to/folder/*.txt"),
     scriptish.XargsCat()
 ).Exec().String()
+```
+
+### XargsFilepathExists()
+
+`XargsFilepathExists()` treats each line in the pipeline as a filepath. It checks to see if the given filepath exists. If the filepath exists, it is written to the pipeline's stdout.
+
+It does not care what the filepath points at (file, folder, named pipe, and so on).
+
+```go
+// example: find all RAW photo files that also have a corresponding
+// JPEG file
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.raw"),
+    scriptish.SwapExtensions(".raw", ".jpeg"),
+    scriptish.XargsFilepathExists()
+).Exec().Strings()
 ```
 
 ### XargsTruncateFiles()
