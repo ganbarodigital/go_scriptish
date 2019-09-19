@@ -14,6 +14,7 @@
   - added `Echo()`
   - added `EchoArgs()`
   - added `EchoSlice()`
+  - added `FilepathExists()`
   - added `ListFiles()`
   - added `MkTempDir()`
   - added `MkTempFile()`

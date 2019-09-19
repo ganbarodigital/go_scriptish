@@ -43,6 +43,7 @@ result, err := scriptish.NewPipeline(
   - [Echo()](#echo)
   - [EchoArgs()](#echoargs)
   - [EchoSlice()](#echoslice)
+  - [FilepathExists()](#filepathexists)
   - [ListFiles()](#listfiles)
   - [MkTempDir()](#mktempdir)
   - [MkTempFile()](#mktempfile)
@@ -458,6 +459,7 @@ Bash                 | Scriptish
 ---------------------|----------
 `${x%.*}`            | [`scriptish.StripExtension()`](#stripextension)
 `${x%$y}`            | [`scriptish.TrimSuffix()`](#trimsuffix)
+`[[ -e $x ]]`        | [`scriptish.FilepathExists()`](#filepathexists)
 `> $file`            | [`scriptish.WriteToFile()`](#writetofile)
 `>> $file`           | [`scriptish.AppendToFile()`](#appendtofile)
 `basename ...`       | [`scriptish.Basename()`](#basename)
@@ -540,6 +542,18 @@ myStrings := []string{"hello world", "have a nice day"}
 result, err := scriptish.NewPipeline(
     scriptish.EchoSlice(myStrings),
 ).Exec().String()
+```
+
+### FilepathExists()
+
+`FilepathExists()` checks to see if the given filepath exists. If it does, the filepath is written to the pipeline's `Stdout`.
+
+* It does not care what the filepath points at (file, folder, named pipe, and so on).
+* It ignores the contents of the pipeline.
+* It follows symbolic links.
+
+```go
+fileExists, err := ExecPpipeline(FilepathExists("/path/to/file")).Okay()
 ```
 
 ### ListFiles()
