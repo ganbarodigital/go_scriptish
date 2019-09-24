@@ -17,6 +17,7 @@
   - added `EchoSlice()`
   - added `FilepathExists()`
   - added `ListFiles()`
+  - added `Lsmod()`
   - added `MkTempDir()`
   - added `MkTempFile()`
   - added `Which()`

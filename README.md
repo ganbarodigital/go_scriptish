@@ -46,6 +46,7 @@ result, err := scriptish.NewPipeline(
   - [EchoSlice()](#echoslice)
   - [FilepathExists()](#filepathexists)
   - [ListFiles()](#listfiles)
+  - [Lsmod()](#lsmod)
   - [MkTempDir()](#mktempdir)
   - [MkTempFile()](#mktempfile)
   - [Which()](#which)
@@ -461,42 +462,43 @@ success, err := scriptish.NewPipeline(
 
 Here's a handy table to help you quickly translate an action from a Bash shell script to the equivalent Scriptish command.
 
-Bash                 | Scriptish
----------------------|----------
-`${x%.*}`            | [`scriptish.StripExtension()`](#stripextension)
-`${x%$y}%z`          | [`scriptish.SwapExtensions()](#swapextensions)
-`${x%$y}`            | [`scriptish.TrimSuffix()`](#trimsuffix)
-`[[ -e $x ]]`        | [`scriptish.FilepathExists()`](#filepathexists)
-`> $file`            | [`scriptish.WriteToFile()`](#writetofile)
-`>> $file`           | [`scriptish.AppendToFile()`](#appendtofile)
-`basename ...`       | [`scriptish.Basename()`](#basename)
-`cat "..."`          | [`scriptish.CatFile(...)`](#catfile)
-`cat /dev/null > $x` | [`scriptish.TruncateFile($x)`](#truncatefile)
-`chmod`              | [`scriptish.Chmod()`](#chmod)
-`cut -f`             | [`scriptish.CutFields()`](#cutfields)
-`dirname ...`        | [`scriptish.Dirname()`](#dirname)
-`echo "..."`         | [`scriptish.Echo(...)`](#echo)
-`echo "$@"`          | [`scriptish.EchoArgs()`](#echoargs)
-`function`           | [`scriptish.RunPipeline()`](#runpipeline)
-`grep ...`           | [`scriptish.Grep()`](#grep)
-`grep -v ..`         | [`scriptish.GrepV()`](#grepv)
-`head -n X`          | [`scriptish.Head(X)`](#head)
-`ls -1 ...`          | [`scriptish.ListFiles(...)`](#listfiles)
-`mktemp`             | [`scriptish.MkTempFile()`](#mktempfile)
-`mktemp -d`          | [`scriptish.MkTempDir()`](#mktempdir)
-`rm -f`              | [`scriptish.RmFile()`](#rmfile)
-`rm -r`              | [`scriptish.RmDir()`](#rmdir)
-`sort`               | [`scriptish.Sort()`](#sort)
-`sort -r`            | [`scriptish.Rsort()`](#rsort)
-`tail -n X`          | [`scriptish.Tail(X)`](#tail)
-`tr old new`         | [`scriptish.Tr(old, new)`](#tr)
-`uniq`               | [`scriptish.Uniq()`](#uniq)
-`wc -l`              | [`scriptish.CountLines()`](#countlines)
-`wc -w`              | [`scriptish.CountWords()`](#countwords)
-`which`              | [`scriptish.Which()`](#which)
-`xargs cat`          | [`scriptish.XargsCat()`](#xargscat)
-`xargs rm`           | [`scriptish.XargsRmFile()`](#xargsrmfile)
-`xargs test -e`      | [`scriptish.XargsFilepathExists()`](#xargsfilepathexists)
+Bash                         | Scriptish
+-----------------------------|------------------------------------------------
+`${x%.*}`                    | [`scriptish.StripExtension()`](#stripextension)
+`${x%$y}%z`                  | [`scriptish.SwapExtensions()](#swapextensions)
+`${x%$y}`                    | [`scriptish.TrimSuffix()`](#trimsuffix)
+`[[ -e $x ]]`                | [`scriptish.FilepathExists()`](#filepathexists)
+`> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
+`>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
+`basename ...`               | [`scriptish.Basename()`](#basename)
+`cat "..."`                  | [`scriptish.CatFile(...)`](#catfile)
+`cat /dev/null > $x`         | [`scriptish.TruncateFile($x)`](#truncatefile)
+`chmod`                      | [`scriptish.Chmod()`](#chmod)
+`cut -f`                     | [`scriptish.CutFields()`](#cutfields)
+`dirname ...`                | [`scriptish.Dirname()`](#dirname)
+`echo "..."`                 | [`scriptish.Echo(...)`](#echo)
+`echo "$@"`                  | [`scriptish.EchoArgs()`](#echoargs)
+`function`                   | [`scriptish.RunPipeline()`](#runpipeline)
+`grep ...`                   | [`scriptish.Grep()`](#grep)
+`grep -v ..`                 | [`scriptish.GrepV()`](#grepv)
+`head -n X`                  | [`scriptish.Head(X)`](#head)
+`ls -1 ...`                  | [`scriptish.ListFiles(...)`](#listfiles)
+`ls -l | awk '{ print $1 }'` | [`scriptish.Lsmod()`](#lsmod)
+`mktemp`                     | [`scriptish.MkTempFile()`](#mktempfile)
+`mktemp -d`                  | [`scriptish.MkTempDir()`](#mktempdir)
+`rm -f`                      | [`scriptish.RmFile()`](#rmfile)
+`rm -r`                      | [`scriptish.RmDir()`](#rmdir)
+`sort`                       | [`scriptish.Sort()`](#sort)
+`sort -r`                    | [`scriptish.Rsort()`](#rsort)
+`tail -n X`                  | [`scriptish.Tail(X)`](#tail)
+`tr old new`                 | [`scriptish.Tr(old, new)`](#tr)
+`uniq`                       | [`scriptish.Uniq()`](#uniq)
+`wc -l`                      | [`scriptish.CountLines()`](#countlines)
+`wc -w`                      | [`scriptish.CountWords()`](#countwords)
+`which`                      | [`scriptish.Which()`](#which)
+`xargs cat`                  | [`scriptish.XargsCat()`](#xargscat)
+`xargs rm`                   | [`scriptish.XargsRmFile()`](#xargsrmfile)
+`xargs test -e`              | [`scriptish.XargsFilepathExists()`](#xargsfilepathexists)
 
 ## Sources
 
@@ -609,6 +611,21 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.ListFiles("path/to/folder/*.txt"),
 ).Exec().String()
+```
+
+### Lsmod()
+
+`Lsmod()` writes the permissions of the given filepath to the pipe's stdout.
+
+* Symlinks are followed.
+* Permissions are in the form '-rwxrwxrwx'.
+
+It ignores the contents of the pipeline.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Lsmod("/path/to/file"),
+).Exec().TrimmedString()
 ```
 
 ### MkTempDir()
