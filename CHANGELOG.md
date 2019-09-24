@@ -10,6 +10,7 @@
 * Sources:
   - added `CatFile()`
   - added `CatStdin()`
+  - added `Chmod()`
   - added `CutFields()`
   - added `Echo()`
   - added `EchoArgs()`

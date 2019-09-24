@@ -40,6 +40,7 @@ result, err := scriptish.NewPipeline(
 - [Sources](#sources)
   - [CatFile()](#catfile)
   - [CatStdin()](#catstdin)
+  - [Chmod()](#chmod)
   - [Echo()](#echo)
   - [EchoArgs()](#echoargs)
   - [EchoSlice()](#echoslice)
@@ -471,6 +472,7 @@ Bash                 | Scriptish
 `basename ...`       | [`scriptish.Basename()`](#basename)
 `cat "..."`          | [`scriptish.CatFile(...)`](#catfile)
 `cat /dev/null > $x` | [`scriptish.TruncateFile($x)`](#truncatefile)
+`chmod`              | [`scriptish.Chmod()`](#chmod)
 `cut -f`             | [`scriptish.CutFields()`](#cutfields)
 `dirname ...`        | [`scriptish.Dirname()`](#dirname)
 `echo "..."`         | [`scriptish.Echo(...)`](#echo)
@@ -519,6 +521,20 @@ result, err := scriptish.NewPipeline(
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.CatStdin(),
+).Exec().String()
+```
+
+### Chmod()
+
+`Chmod()` attempts to change the permissions on the given filepath.
+
+It ignores the contents of the pipeline.
+
+On success, it writes the filepath to the pipeline's stdout, in case anything else in the pipeline can use it.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Chmod("/path/to/file", 0644)
 ).Exec().String()
 ```
 
