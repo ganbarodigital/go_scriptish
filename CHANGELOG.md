@@ -33,6 +33,7 @@
   - added `RunPipeline()`
   - added `Sort()`
   - added `StripExtension()`
+  - added `SwapExtensions()`
   - added `Tail()`
   - added `Tr()`
   - added `TrimSuffix()`

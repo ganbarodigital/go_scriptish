@@ -63,6 +63,7 @@ result, err := scriptish.NewPipeline(
   - [RunPipeline()](#runpipeline)
   - [Sort()](#sort)
   - [StripExtension()](#stripextension)
+  - [SwapExtensions()](#swapextensions)
   - [Tail()](#tail)
   - [Tr()](#tr)
   - [TrimSuffix()](#trimsuffix)
@@ -460,6 +461,7 @@ Here's a handy table to help you quickly translate an action from a Bash shell s
 Bash                 | Scriptish
 ---------------------|----------
 `${x%.*}`            | [`scriptish.StripExtension()`](#stripextension)
+`${x%$y}%z`          | [`scriptish.SwapExtensions()](#swapextensions)
 `${x%$y}`            | [`scriptish.TrimSuffix()`](#trimsuffix)
 `[[ -e $x ]]`        | [`scriptish.FilepathExists()`](#filepathexists)
 `> $file`            | [`scriptish.WriteToFile()`](#writetofile)
@@ -796,6 +798,39 @@ result, err := scriptish.NewPipeline(
     scriptish.ListFiles("/path/to/folder"),
     scriptish.StripExtension(),
 ).Exec().Strings()
+```
+
+### SwapExtensions()
+
+`SwapExtensions()` treats every line in the pipeline as a filepath.
+
+It replaces every old extension with the corresponding new one.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder"),
+    scriptish.SwapExtensions([]string{"txt","yml"}, []string{"text","yaml"}),
+).Exec().Strings()
+```
+
+If the second parameter is a string slice of length 1, every old file extension will be replaced by that parameter.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder"),
+    scriptish.SwapExtensions([]string{"yml","YAML"}, []string{"yaml"}),
+).Exec().Strings()
+```
+
+If the first and second parameters are different lengths, `SwapExtensions()` will return an `scriptish.ErrMismatchedInputs`.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder"),
+    scriptish.SwapExtensions([]string{"one"}, []string{"1","2"}),
+).Exec().Strings()
+
+// err is an ErrMismatchedInputs, and result is empty
 ```
 
 ### Tail()
