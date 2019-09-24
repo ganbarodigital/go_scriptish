@@ -44,6 +44,7 @@ result, err := scriptish.NewPipeline(
   - [Echo()](#echo)
   - [EchoArgs()](#echoargs)
   - [EchoSlice()](#echoslice)
+  - [Exec()](#exec)
   - [FilepathExists()](#filepathexists)
   - [ListFiles()](#listfiles)
   - [Lsmod()](#lsmod)
@@ -464,6 +465,7 @@ Here's a handy table to help you quickly translate an action from a Bash shell s
 
 Bash                         | Scriptish
 -----------------------------|------------------------------------------------
+`$(...)`                     | [`scriptish.Exec()`](#exec)
 `${x%.*}`                    | [`scriptish.StripExtension()`](#stripextension)
 `${x%$y}%z`                  | [`scriptish.SwapExtensions()](#swapextensions)
 `${x%$y}`                    | [`scriptish.TrimSuffix()`](#trimsuffix)
@@ -571,6 +573,30 @@ result, err := scriptish.NewPipeline(
     scriptish.EchoSlice(myStrings),
 ).Exec().String()
 ```
+
+## Exec()
+
+`Exec()` executes an operating system command. The command's `stdin` will be the pipeline's `Stdin`, and it will write to the pipeline's `Stdout` and `Stderr`.
+
+The command's status code will be stored in the pipeline's `StatusCode`.
+
+```go
+localBranch, err := ExecPipeline(
+    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Grep("^[* ]"),
+    scriptish.Tr([]string{"* "}, []string{""}),
+).TrimmedString()
+```
+
+Use the [`.Okay()`](#okay) capture method if you simply want to know if the command worked or not:
+
+```go
+success, err := ExecPipeline(scriptish.Exec("git" "push")).Okay()
+```
+
+Golang will set `err` to an [`exec.ExitError`](https://golang.org/pkg/os/exec/#ExitError) if the command's status code is not 0 (zero).
+
+Golang will set `err` to an [`os.PathError`](https://golang.org/pkg/os/#PathError) if the command could not be found in the first place.
 
 ### FilepathExists()
 

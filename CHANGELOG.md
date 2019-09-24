@@ -15,6 +15,7 @@
   - added `Echo()`
   - added `EchoArgs()`
   - added `EchoSlice()`
+  - added `Exec()`
   - added `FilepathExists()`
   - added `ListFiles()`
   - added `Lsmod()`
