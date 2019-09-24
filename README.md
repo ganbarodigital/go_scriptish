@@ -834,7 +834,7 @@ If the first and second parameters are different lengths, `Tr()` will return an 
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
-    scriptish.Tr([]string{"one","two"}, []string{"1","2"}),
+    scriptish.Tr([]string{"one","two","three"}, []string{"1","2"}),
 ).Exec().String()
 
 // err is an ErrMismatchedInputs, and result is empty
