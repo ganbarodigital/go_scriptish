@@ -574,7 +574,7 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-## Exec()
+### Exec()
 
 `Exec()` executes an operating system command. The command's `stdin` will be the pipeline's `Stdin`, and it will write to the pipeline's `Stdout` and `Stderr`.
 
