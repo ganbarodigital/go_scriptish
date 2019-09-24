@@ -71,6 +71,7 @@ result, err := scriptish.NewPipeline(
   - [Uniq()](#uniq)
   - [XargsCat()](#xargscat)
   - [XargsFilepathExists()](#xargsfilepathexists)
+  - [XargsRmFile()](#xargsrmfile)
   - [XargsTruncateFiles()](#xargstruncatefiles)
 - [Sinks](#sinks)
   - [AppendToFile()](#appendtofile)
@@ -490,6 +491,7 @@ Bash                 | Scriptish
 `wc -w`              | [`scriptish.CountWords()`](#countwords)
 `which`              | [`scriptish.Which()`](#which)
 `xargs cat`          | [`scriptish.XargsCat()`](#xargscat)
+`xargs rm`           | [`scriptish.XargsRmFile()`](#xargsrmfile)
 `xargs test -e`      | [`scriptish.XargsFilepathExists()`](#xargsfilepathexists)
 
 ## Sources
@@ -935,6 +937,24 @@ result, err := scriptish.NewPipeline(
     scriptish.SwapExtensions(".raw", ".jpeg"),
     scriptish.XargsFilepathExists()
 ).Exec().Strings()
+```
+
+### XargsRmFile()
+
+`XargsRmFile()` treats every line in the pipeline as a filename. It attempts to delete each file.
+
+It stops at the first file that cannot be deleted.
+
+Each successfully-deleted filepath is written to the pipeline's `Stdout`, for use by the next command in the pipeline.
+
+```go
+err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/files"),
+    scriptish.XargsRmFile(),
+    scriptish.ForXIn(
+        scriptish.Printf("deleted file: $x")
+    )
+).Exec().Error()
 ```
 
 ### XargsTruncateFiles()

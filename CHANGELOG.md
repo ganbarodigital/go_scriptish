@@ -41,6 +41,7 @@
   - added `Uniq()`
   - added `XargsCat()`
   - added `XargsFilepathExists()`
+  - added `XargsRmFile()`
   - added `XargsTruncateFiles()`
 * Sinks:
   - added `AppendToFile()`
