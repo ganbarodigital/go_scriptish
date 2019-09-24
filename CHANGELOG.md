@@ -18,6 +18,7 @@
   - added `ListFiles()`
   - added `MkTempDir()`
   - added `MkTempFile()`
+  - added `Which()`
 * Filters:
   - added `AppendToTempFile()`
   - added `Basename()`

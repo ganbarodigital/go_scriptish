@@ -47,6 +47,7 @@ result, err := scriptish.NewPipeline(
   - [ListFiles()](#listfiles)
   - [MkTempDir()](#mktempdir)
   - [MkTempFile()](#mktempfile)
+  - [Which()](#which)
 - [Filters](#filters)
   - [AppendToTempFile()](#appendtotempfile)
   - [Basename()](#basename)
@@ -485,6 +486,7 @@ Bash                 | Scriptish
 `uniq`               | [`scriptish.Uniq()`](#uniq)
 `wc -l`              | [`scriptish.CountLines()`](#countlines)
 `wc -w`              | [`scriptish.CountWords()`](#countwords)
+`which`              | [`scriptish.Which()`](#which)
 `xargs cat`          | [`scriptish.XargsCat()`](#xargscat)
 `xargs test -e`      | [`scriptish.XargsFilepathExists()`](#xargsfilepathexists)
 
@@ -604,6 +606,18 @@ result, err := scriptish.NewPipeline(
 ```go
 result, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-*")
+).Exec().String()
+```
+
+### Which()
+
+`Which()` searches the current PATH to find the given path. If one is found, the command's path is written to the pipeline's `Stdout`.
+
+It ignores the contents of the pipeline.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Which("git"),
 ).Exec().String()
 ```
 
