@@ -56,19 +56,23 @@ func TestAppendToTempFileReturnsFilename(t *testing.T) {
 	// this is the pipeline we'll use to test TruncateFile()
 	pipeline := NewPipeline(
 		CatFile("testdata/truncatefile/content.txt"),
-		AppendToTempFile(os.TempDir(), "scriptify-*"),
+		AppendToTempFile(os.TempDir(), "scriptify-appendtotempfile-*"),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().String()
+	actualResult, err := pipeline.Exec().TrimmedString()
 
 	// ----------------------------------------------------------------
 	// test the results
 
 	assert.Nil(t, err)
 	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
+
+	// clean up after ourselves
+	err = ExecPipeline(RmFile(actualResult)).Error()
+	assert.Nil(t, err)
 }
 
 func TestAppendToTempFileSetsErrorWhenTempFileCannotBeCreated(t *testing.T) {
@@ -115,9 +119,9 @@ func TestAppendToTempFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	op := AppendToTempFile(os.TempDir(), "scriptify-*")
+	op := AppendToTempFile(os.TempDir(), "scriptify-appendtotempfile-*")
 	statusCode, err := op(singlePipe)
-	actualResult := singlePipe.Stdout.String()
+	actualResult := singlePipe.Stdout.TrimmedString()
 
 	// ----------------------------------------------------------------
 	// test the results
@@ -128,4 +132,7 @@ func TestAppendToTempFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 
 	// the name of the tempfile DOES exist in the pipe's stdout
 	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
+
+	// clean up after ourselves
+	ExecPipeline(RmFile(actualResult))
 }

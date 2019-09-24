@@ -52,19 +52,22 @@ func TestMkTempFileWritesFilenameToPipeline(t *testing.T) {
 	// setup your test
 
 	pipeline := NewPipeline(
-		MkTempFile(os.TempDir(), "scriptify-*"),
+		MkTempFile(os.TempDir(), "scriptify-mktempfile-*"),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, _ := pipeline.Exec().String()
-	actualResult = strings.TrimSpace(actualResult)
+	actualResult, _ := pipeline.Exec().TrimmedString()
 
 	// ----------------------------------------------------------------
 	// test the results
 
 	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
+
+	// clean up after ourselves
+	err := ExecPipeline(RmFile(actualResult)).Error()
+	assert.Nil(t, err)
 }
 
 func TestMkTempFileSetsErrorIfCannotCreateFile(t *testing.T) {
@@ -73,7 +76,7 @@ func TestMkTempFileSetsErrorIfCannotCreateFile(t *testing.T) {
 
 	expectedResult := ""
 	pipeline := NewPipeline(
-		MkTempFile("/does/not/exist", "scriptify-*"),
+		MkTempFile("/does/not/exist", "scriptify-mktempfile-*"),
 	)
 
 	// ----------------------------------------------------------------

@@ -51,7 +51,7 @@ func TestXargsRmFile(t *testing.T) {
 	// setup your test
 
 	// we need somewhere to create our temporary files
-	tmpDir, err := ExecPipeline(MkTempDir(os.TempDir(), "scriptify-")).TrimmedString()
+	tmpDir, err := ExecPipeline(MkTempDir(os.TempDir(), "scriptify-xargsrmfile-")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves

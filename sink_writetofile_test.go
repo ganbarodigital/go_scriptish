@@ -51,7 +51,7 @@ func TestWriteToFileWritesPipelineToGivenFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-writetofile-")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -89,7 +89,7 @@ func TestWriteToFileOverwritesExistingFileContents(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-writetofile-")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -158,7 +158,7 @@ func TestWriteToFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-writetofile-")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves

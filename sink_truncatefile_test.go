@@ -41,7 +41,6 @@ package scriptish
 
 import (
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -53,10 +52,12 @@ func TestTruncateFile(t *testing.T) {
 
 	// we need a file to truncate
 	tmpFilename, err := NewPipeline(
-		MkTempFile(os.TempDir(), "scriptify-*"),
-	).Exec().String()
+		MkTempFile(os.TempDir(), "scriptify-truncatefile-*"),
+	).Exec().TrimmedString()
 	assert.Nil(t, err)
-	tmpFilename = strings.TrimSpace(tmpFilename)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
 
 	// we need to make sure our test file has some content
 	_, err = NewPipeline(

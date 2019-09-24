@@ -41,7 +41,6 @@ package scriptish
 
 import (
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -54,10 +53,12 @@ func TestXargsTruncateFiles(t *testing.T) {
 	// we need a file to truncate
 	tmpFilename, err := NewPipeline(
 		CatFile("testdata/truncatefile/content.txt"),
-		AppendToTempFile(os.TempDir(), "scriptify-*"),
-	).Exec().String()
+		AppendToTempFile(os.TempDir(), "scriptify-xargstruncatefiles-*"),
+	).Exec().TrimmedString()
 	assert.Nil(t, err)
-	tmpFilename = strings.TrimSpace(tmpFilename)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
 
 	lineCountFunc := PipelineFunc(
 		CatFile(tmpFilename),

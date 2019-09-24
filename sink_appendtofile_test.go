@@ -51,7 +51,7 @@ func TestAppendToFileWritesPipelineToGivenFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -118,7 +118,7 @@ func TestAppendToFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 	// setup your test
 
 	// we need a valid filename to try to write to
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile-")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves

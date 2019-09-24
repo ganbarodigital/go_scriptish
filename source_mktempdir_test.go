@@ -58,13 +58,16 @@ func TestMkTempDirWritesFolderToPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, _ := pipeline.Exec().String()
-	actualResult = strings.TrimSpace(actualResult)
+	actualResult, _ := pipeline.Exec().TrimmedString()
 
 	// ----------------------------------------------------------------
 	// test the results
 
 	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
+
+	// clean up after ourselves
+	err := ExecPipeline(RmFile(actualResult)).Error()
+	assert.Nil(t, err)
 }
 
 func TestMkTempDirSetsErrorIfCannotCreateFolder(t *testing.T) {
