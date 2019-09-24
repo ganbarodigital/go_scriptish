@@ -75,6 +75,7 @@ result, err := scriptish.NewPipeline(
   - [XargsTruncateFiles()](#xargstruncatefiles)
 - [Sinks](#sinks)
   - [AppendToFile()](#appendtofile)
+  - [RmDir()](#rmdir)
   - [RmFile()](#rmfile)
   - [ToStderr()](#tostderr)
   - [ToStdout()](#tostdout)
@@ -482,6 +483,7 @@ Bash                 | Scriptish
 `mktemp`             | [`scriptish.MkTempFile()`](#mktempfile)
 `mktemp -d`          | [`scriptish.MkTempDir()`](#mktempdir)
 `rm -f`              | [`scriptish.RmFile()`](#rmfile)
+`rm -r`              | [`scriptish.RmDir()`](#rmdir)
 `sort`               | [`scriptish.Sort()`](#sort)
 `sort -r`            | [`scriptish.Rsort()`](#rsort)
 `tail -n X`          | [`scriptish.Tail(X)`](#tail)
@@ -988,6 +990,20 @@ If the file does not exist, it is created.
 err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.AppendToFile("my-app.log"),
+).Exec().Error()
+```
+
+### RmDir()
+
+`RmDir()` deletes the given folder, as long as the folder is empty.
+
+It ignores the contents of the pipeline.
+
+It ignores the file's file permissions, because the underlying Golang os.Remove() behaves that way.
+
+```go
+err := scriptish.NewPipeline(
+    scriptish.RmDir("/path/to/folder"),
 ).Exec().Error()
 ```
 

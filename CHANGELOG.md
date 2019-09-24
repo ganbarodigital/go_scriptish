@@ -45,6 +45,7 @@
   - added `XargsTruncateFiles()`
 * Sinks:
   - added `AppendToFile()`
+  - added `RmDir()`
   - added `RmFile()`
   - added `ToStderr()`
   - added `ToStdout()`
