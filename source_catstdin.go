@@ -42,7 +42,7 @@ package scriptish
 import (
 	"os"
 
-	pipe "github.com/ganbarodigital/go_pipe"
+	pipe "github.com/ganbarodigital/go_pipe/v2"
 )
 
 // CatStdin writes the contents of the program's stdin to

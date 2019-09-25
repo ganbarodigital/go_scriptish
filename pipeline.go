@@ -40,7 +40,7 @@
 package scriptish
 
 import (
-	pipe "github.com/ganbarodigital/go_pipe"
+	pipe "github.com/ganbarodigital/go_pipe/v2"
 )
 
 // Command is a wrapper around the underlying pipe library's

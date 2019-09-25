@@ -43,7 +43,7 @@ import (
 	"os"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe"
+	pipe "github.com/ganbarodigital/go_pipe/v2"
 	"github.com/stretchr/testify/assert"
 )
 
