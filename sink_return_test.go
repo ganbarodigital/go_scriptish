@@ -64,3 +64,26 @@ func TestReturnSetsTheGivenStatusCode(t *testing.T) {
 	assert.NotNil(t, pipeline.Error())
 	assert.Equal(t, 3, pipeline.StatusCode)
 }
+
+func TestReturnPreservesThePreviousStdout(t *testing.T) {
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := "this is a test\n"
+	pipeline := NewPipeline(
+		Echo(expectedResult),
+		Return(3),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.NotNil(t, pipeline.Error())
+	assert.Equal(t, 3, pipeline.StatusCode)
+	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.String())
+}
