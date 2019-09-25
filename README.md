@@ -78,6 +78,7 @@ result, err := scriptish.NewPipeline(
   - [XargsTruncateFiles()](#xargstruncatefiles)
 - [Sinks](#sinks)
   - [AppendToFile()](#appendtofile)
+  - [Return()](#return)
   - [RmDir()](#rmdir)
   - [RmFile()](#rmfile)
   - [ToStderr()](#tostderr)
@@ -488,6 +489,7 @@ Bash                         | Scriptish
 `ls -l | awk '{ print $1 }'` | [`scriptish.Lsmod()`](#lsmod)
 `mktemp`                     | [`scriptish.MkTempFile()`](#mktempfile)
 `mktemp -d`                  | [`scriptish.MkTempDir()`](#mktempdir)
+`return`                     | [`scriptish.Return()`](#return)
 `rm -f`                      | [`scriptish.RmFile()`](#rmfile)
 `rm -r`                      | [`scriptish.RmDir()`](#rmdir)
 `sort`                       | [`scriptish.Sort()`](#sort)
@@ -1050,6 +1052,18 @@ err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.AppendToFile("my-app.log"),
 ).Exec().Error()
+```
+
+### Return()
+
+`Return()` terminates the pipeline with the given status code.
+
+```go
+statusCode := NewPipeline(
+    scriptish.Return(3)
+).Exec().StatusCode()
+
+// statusCode will be: 3
 ```
 
 ### RmDir()
