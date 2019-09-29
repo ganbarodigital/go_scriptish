@@ -59,6 +59,6 @@ func EchoSlice(input []string) Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

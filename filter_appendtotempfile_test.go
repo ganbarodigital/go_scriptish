@@ -45,7 +45,7 @@ import (
 	"strings"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe/v2"
+	pipe "github.com/ganbarodigital/go_pipe/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -128,7 +128,7 @@ func TestAppendToTempFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 
 	assert.NotNil(t, err)
 	assert.Error(t, err)
-	assert.Equal(t, NOT_OK, statusCode)
+	assert.Equal(t, StatusNotOkay, statusCode)
 
 	// the name of the tempfile DOES exist in the pipe's stdout
 	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))

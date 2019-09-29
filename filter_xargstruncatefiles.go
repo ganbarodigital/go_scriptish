@@ -56,7 +56,7 @@ func XargsTruncateFiles() Command {
 			// open / create the file
 			fh, err := os.OpenFile(line, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
-				return NOT_OK, err
+				return StatusNotOkay, err
 			}
 
 			// we're done here
@@ -69,6 +69,6 @@ func XargsTruncateFiles() Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

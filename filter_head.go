@@ -47,7 +47,7 @@ func Head(n int) Command {
 	if n < 1 {
 		return func(p *Pipe) (int, error) {
 			// do nothing
-			return OK, nil
+			return StatusOkay, nil
 		}
 	}
 
@@ -65,6 +65,6 @@ func Head(n int) Command {
 			}
 		}
 
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

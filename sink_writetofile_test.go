@@ -43,7 +43,7 @@ import (
 	"os"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe/v2"
+	pipe "github.com/ganbarodigital/go_pipe/v3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -182,5 +182,5 @@ func TestWriteToFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 
 	assert.NotNil(t, err)
 	assert.Error(t, err)
-	assert.Equal(t, NOT_OK, statusCode)
+	assert.Equal(t, StatusNotOkay, statusCode)
 }

@@ -65,7 +65,7 @@ func ListFiles(path string) Command {
 		// general case: user has given us a path with no wildcards
 		info, err := os.Stat(path)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// what are we looking at?
@@ -82,7 +82,7 @@ func globFiles(p *Pipe, path string) (int, error) {
 	// can we find any files?
 	filenames, err := filepath.Glob(path)
 	if err != nil {
-		return NOT_OK, err
+		return StatusNotOkay, err
 	}
 
 	// we have something to pass on
@@ -92,21 +92,21 @@ func globFiles(p *Pipe, path string) (int, error) {
 	}
 
 	// all done
-	return OK, nil
+	return StatusOkay, nil
 }
 
 func listFile(p *Pipe, path string) (int, error) {
 	p.Stdout.WriteString(path)
 	p.Stdout.WriteRune('\n')
 
-	return OK, nil
+	return StatusOkay, nil
 }
 
 func listFolder(p *Pipe, path string) (int, error) {
 	// can we read what's in the folder?
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		return NOT_OK, err
+		return StatusNotOkay, err
 	}
 
 	// we have some filenames to pass on
@@ -116,5 +116,5 @@ func listFolder(p *Pipe, path string) (int, error) {
 	}
 
 	// all done
-	return OK, nil
+	return StatusOkay, nil
 }

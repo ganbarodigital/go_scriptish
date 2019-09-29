@@ -56,6 +56,6 @@ func Rsort() Command {
 			p.Stdout.WriteRune('\n')
 		}
 
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

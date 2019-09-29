@@ -54,7 +54,7 @@ func Lsmod(filepath string) Command {
 	return func(p *Pipe) (int, error) {
 		fileInfo, err := os.Stat(filepath)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// write it to the pipe
@@ -62,6 +62,6 @@ func Lsmod(filepath string) Command {
 		p.Stdout.WriteRune('\n')
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

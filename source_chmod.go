@@ -54,10 +54,10 @@ func Chmod(filepath string, mode os.FileMode) Command {
 	return func(p *Pipe) (int, error) {
 		err := os.Chmod(filepath, mode)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

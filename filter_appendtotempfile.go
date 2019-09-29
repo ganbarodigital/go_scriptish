@@ -55,7 +55,7 @@ func AppendToTempFile(dir string, pattern string) Command {
 		// create the temporary file
 		fh, err := ioutil.TempFile(dir, pattern)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// remember to automatically close the file when we've finished
@@ -70,10 +70,10 @@ func AppendToTempFile(dir string, pattern string) Command {
 		// write to the file
 		_, err = io.Copy(fh, p.Stdin)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

@@ -87,7 +87,7 @@ func TestRunPipelineReturnsSubPipelinesError(t *testing.T) {
 
 	expectedError := errors.New("this is the error from our sub-pipeline")
 	op1 := func(p *Pipe) (int, error) {
-		return NOT_OK, expectedError
+		return StatusNotOkay, expectedError
 	}
 
 	subPipeline := NewPipeline(

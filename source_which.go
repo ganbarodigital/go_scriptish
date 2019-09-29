@@ -52,7 +52,7 @@ func Which(cmd string) Command {
 	return func(p *Pipe) (int, error) {
 		filepath, err := exec.LookPath(cmd)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// success!
@@ -60,6 +60,6 @@ func Which(cmd string) Command {
 		p.Stdout.WriteRune('\n')
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

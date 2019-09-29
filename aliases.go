@@ -40,37 +40,32 @@
 package scriptish
 
 import (
-	"os/exec"
+	pipe "github.com/ganbarodigital/go_pipe/v3"
 )
 
-// Exec runs an operating system command, and posts the results to
-// the pipeline's Stdout and Stderr.
+// Command is an alias for the underlying pipe library's Command
 //
-// The command's status code is stored in the pipeline.StatusCode.
-func Exec(args ...string) Command {
-	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// build our command
-		cmd := exec.Command(args[0], args[1:]...)
+// It just saves us having to import the pipe library into every single
+// file in the project.
+type Command = pipe.Command
 
-		// attach all of our inputs and outputs
-		cmd.Stdin = p.Stdin
-		cmd.Stdout = p.Stdout
-		cmd.Stderr = p.Stderr
+// Pipe is an alias for the underlying pipe library's Pipe
+//
+// It just saves us having to import the pipe library into every single
+// file in the project.
+type Pipe = pipe.Pipe
 
-		// let's do it
-		err := cmd.Start()
-		if err != nil {
-			return StatusNotOkay, err
-		}
+// Pipeline is an alias for a Sequence
+type Pipeline = Sequence
 
-		// wait for it to finish
-		err = cmd.Wait()
+// StatusOkay is an alias for the underlying pipe library's StatusOkay
+//
+// It just saves us having to import the pipe library into every single
+// file in the project.
+const StatusOkay = pipe.StatusOkay
 
-		// we want the process's status code
-		statusCode := cmd.ProcessState.ExitCode()
-
-		// all done
-		return statusCode, err
-	}
-}
+// StatusNotOkay is an alias for the underlying pipe library's StatusNotOkay
+//
+// It just saves us having to import the pipe library into every single
+// file in the project.
+const StatusNotOkay = pipe.StatusNotOkay

@@ -56,7 +56,7 @@ func XargsRmFile() Command {
 		for line := range p.Stdin.ReadLines() {
 			err := os.Remove(line)
 			if err != nil {
-				return NOT_OK, err
+				return StatusNotOkay, err
 			}
 
 			// pass it on, in case the next item in the pipeline
@@ -66,6 +66,6 @@ func XargsRmFile() Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

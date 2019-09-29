@@ -53,7 +53,7 @@ func AppendToFile(filename string) Command {
 		// open / create the file
 		fh, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// remember to automatically close the file when we've finished
@@ -63,10 +63,10 @@ func AppendToFile(filename string) Command {
 		// write to the file
 		_, err = io.Copy(fh, p.Stdin)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

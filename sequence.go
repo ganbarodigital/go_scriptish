@@ -40,37 +40,17 @@
 package scriptish
 
 import (
-	"os/exec"
+	pipe "github.com/ganbarodigital/go_pipe/v3"
 )
 
-// Exec runs an operating system command, and posts the results to
-// the pipeline's Stdout and Stderr.
-//
-// The command's status code is stored in the pipeline.StatusCode.
-func Exec(args ...string) Command {
-	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// build our command
-		cmd := exec.Command(args[0], args[1:]...)
+// Sequence is a wrapper around our underlying pipe library's pipeline,
+// so that we can extend it with extra functionality should we wish
+type Sequence struct {
+	*pipe.Sequence
+}
 
-		// attach all of our inputs and outputs
-		cmd.Stdin = p.Stdin
-		cmd.Stdout = p.Stdout
-		cmd.Stderr = p.Stderr
-
-		// let's do it
-		err := cmd.Start()
-		if err != nil {
-			return StatusNotOkay, err
-		}
-
-		// wait for it to finish
-		err = cmd.Wait()
-
-		// we want the process's status code
-		statusCode := cmd.ProcessState.ExitCode()
-
-		// all done
-		return statusCode, err
-	}
+// Exec executes the current pipeline
+func (sq *Sequence) Exec() *Sequence {
+	sq.Controller()
+	return sq
 }

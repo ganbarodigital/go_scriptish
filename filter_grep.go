@@ -50,7 +50,7 @@ func Grep(regex string) Command {
 		// do we have a valid regex?
 		re, err := regexp.Compile(regex)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// let's apply it
@@ -62,6 +62,6 @@ func Grep(regex string) Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

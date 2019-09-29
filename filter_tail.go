@@ -49,7 +49,7 @@ func Tail(n int) Command {
 	if n < 1 {
 		return func(p *Pipe) (int, error) {
 			// do nothing
-			return OK, nil
+			return StatusOkay, nil
 		}
 	}
 
@@ -80,6 +80,6 @@ func Tail(n int) Command {
 		})
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

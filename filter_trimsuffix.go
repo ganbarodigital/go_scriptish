@@ -56,6 +56,6 @@ func TrimSuffix(ext string) Command {
 			p.Stdout.WriteRune('\n')
 		}
 
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

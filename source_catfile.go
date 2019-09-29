@@ -42,7 +42,7 @@ package scriptish
 import (
 	"os"
 
-	pipe "github.com/ganbarodigital/go_pipe/v2"
+	pipe "github.com/ganbarodigital/go_pipe/v3"
 )
 
 // CatFile writes the contents of a file to the pipeline's stdout
@@ -52,7 +52,7 @@ func CatFile(filename string) Command {
 		// can we open the file?
 		f, err := os.Open(filename)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// copy the file into our pipeline
@@ -60,6 +60,6 @@ func CatFile(filename string) Command {
 		p.DrainStdin()
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

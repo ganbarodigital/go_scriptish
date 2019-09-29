@@ -51,7 +51,7 @@ func MkTempFile(dir string, pattern string) Command {
 		// create the file
 		fh, err := ioutil.TempFile(dir, pattern)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// write the file's name out
@@ -65,6 +65,6 @@ func MkTempFile(dir string, pattern string) Command {
 		fh.Close()
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

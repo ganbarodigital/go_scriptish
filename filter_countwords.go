@@ -56,6 +56,6 @@ func CountWords() Command {
 		p.Stdout.WriteString(strconv.Itoa(count))
 		p.Stdout.WriteRune('\n')
 
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

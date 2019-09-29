@@ -58,7 +58,7 @@ func SwapExtensions(old []string, new []string) Command {
 			}
 		} else if len(old) != len(new) {
 			// we don't know what to do
-			return NOT_OK, ErrMismatchedInputs{"old", len(old), "new", len(new)}
+			return StatusNotOkay, ErrMismatchedInputs{"old", len(old), "new", len(new)}
 		}
 
 		for line := range p.Stdin.ReadLines() {
@@ -90,6 +90,6 @@ func SwapExtensions(old []string, new []string) Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

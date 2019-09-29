@@ -51,7 +51,7 @@ func MkTempDir(dir string, prefix string) Command {
 		// create the file
 		name, err := ioutil.TempDir(dir, prefix)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// write the file's name out
@@ -59,6 +59,6 @@ func MkTempDir(dir string, prefix string) Command {
 		p.Stdout.WriteRune('\n')
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

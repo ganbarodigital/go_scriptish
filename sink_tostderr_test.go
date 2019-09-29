@@ -47,7 +47,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestToStderrWritesToProgramStdout(t *testing.T) {
+func TestToStderrWritesToProgramStderr(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 

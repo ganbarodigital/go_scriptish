@@ -55,6 +55,6 @@ func Echo(input string) Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

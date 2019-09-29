@@ -56,13 +56,13 @@ func RunPipeline(pl *Pipeline) Command {
 
 		// did anything go wrong?
 		if pl.Err != nil {
-			return NOT_OK, pl.Err
+			return StatusNotOkay, pl.Err
 		}
 
 		// copy our pipeline's stdout to become the pipe's next stdin
 		p.Stdout = pl.Pipe.Stdout
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

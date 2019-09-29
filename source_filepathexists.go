@@ -57,7 +57,7 @@ func FilepathExists(filepath string) Command {
 		// does the file exist?
 		_, err := os.Stat(filepath)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// write the filepath to the pipeline, in case the next item
@@ -66,6 +66,6 @@ func FilepathExists(filepath string) Command {
 		p.Stdout.WriteRune('\n')
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

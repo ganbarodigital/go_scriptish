@@ -50,7 +50,7 @@ func CutFields(spec string) Command {
 		// which columns do we want?
 		columnsSpec, err := ParseRangeSpec(spec)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// go and get those columns
@@ -79,6 +79,6 @@ func CutFields(spec string) Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

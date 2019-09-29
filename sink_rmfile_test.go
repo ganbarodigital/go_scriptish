@@ -139,6 +139,6 @@ func TestRmFileDoesNotRespectFilePermissions(t *testing.T) {
 	// test the results
 
 	assert.Nil(t, err)
-	assert.Equal(t, OK, pipeline.StatusCode)
+	assert.Equal(t, StatusOkay, pipeline.StatusCode)
 	assert.Empty(t, actualResult)
 }

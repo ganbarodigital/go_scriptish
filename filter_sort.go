@@ -55,6 +55,6 @@ func Sort() Command {
 			p.Stdout.WriteRune('\n')
 		}
 
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

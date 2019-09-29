@@ -54,10 +54,10 @@ func RmDir(filepath string) Command {
 	return func(p *Pipe) (int, error) {
 		err := os.Remove(filepath)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

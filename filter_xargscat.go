@@ -54,7 +54,7 @@ func XargsCat() Command {
 			// can we read the file?
 			contents, err := ioutil.ReadFile(line)
 			if err != nil {
-				return NOT_OK, err
+				return StatusNotOkay, err
 			}
 
 			// add the file contents to the pipeline
@@ -69,6 +69,6 @@ func XargsCat() Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

@@ -59,6 +59,6 @@ func DropEmptyLines() Command {
 			}
 		}
 
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

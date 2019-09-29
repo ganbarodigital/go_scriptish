@@ -59,6 +59,6 @@ func StripExtension() Command {
 		}
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }

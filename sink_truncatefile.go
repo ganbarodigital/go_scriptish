@@ -52,13 +52,13 @@ func TruncateFile(filename string) Command {
 		// open / create the file
 		fh, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			return NOT_OK, err
+			return StatusNotOkay, err
 		}
 
 		// we're done here
 		fh.Close()
 
 		// all done
-		return OK, nil
+		return StatusOkay, nil
 	}
 }
