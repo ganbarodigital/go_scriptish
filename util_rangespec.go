@@ -47,6 +47,7 @@ import (
 	"strings"
 )
 
+// Range tracks the start and end of a given range of numbers
 type Range struct {
 	Lo int
 	Hi int
