@@ -62,7 +62,7 @@ func TestReturnSetsTheGivenStatusCode(t *testing.T) {
 	// test the results
 
 	assert.NotNil(t, pipeline.Error())
-	assert.Equal(t, 3, pipeline.StatusCode)
+	assert.Equal(t, 3, pipeline.StatusCode())
 }
 
 func TestReturnPreservesThePreviousStdout(t *testing.T) {
@@ -84,6 +84,6 @@ func TestReturnPreservesThePreviousStdout(t *testing.T) {
 	// test the results
 
 	assert.NotNil(t, pipeline.Error())
-	assert.Equal(t, 3, pipeline.StatusCode)
+	assert.Equal(t, 3, pipeline.StatusCode())
 	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.String())
 }

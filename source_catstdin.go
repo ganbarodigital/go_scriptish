@@ -42,7 +42,7 @@ package scriptish
 import (
 	"os"
 
-	pipe "github.com/ganbarodigital/go_pipe/v3"
+	pipe "github.com/ganbarodigital/go_pipe/v4"
 )
 
 // CatStdin writes the contents of the program's stdin to
@@ -54,7 +54,7 @@ func CatStdin() Command {
 		p.Stdin = pipe.NewSourceFromReader(os.Stdin)
 
 		// this will copy everything from there to the pipe's stdout
-		p.DrainStdin()
+		p.DrainStdinToStdout()
 
 		// all done
 		return StatusOkay, nil

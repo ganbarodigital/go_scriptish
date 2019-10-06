@@ -42,7 +42,7 @@ package scriptish
 import (
 	"os"
 
-	pipe "github.com/ganbarodigital/go_pipe/v3"
+	pipe "github.com/ganbarodigital/go_pipe/v4"
 )
 
 // CatFile writes the contents of a file to the pipeline's stdout
@@ -57,7 +57,7 @@ func CatFile(filename string) Command {
 
 		// copy the file into our pipeline
 		p.Stdin = pipe.NewSourceFromReadCloser(f)
-		p.DrainStdin()
+		p.DrainStdinToStdout()
 
 		// all done
 		return StatusOkay, nil

@@ -39,6 +39,10 @@
 
 package scriptish
 
+import (
+	"io"
+)
+
 // RunPipeline allows you to call one pipeline from another.
 //
 // Use this to create reusable pipelines.
@@ -52,17 +56,15 @@ func RunPipeline(pl *Pipeline) Command {
 		}
 
 		// run our sub-pipeline
-		pl.Exec()
-
-		// did anything go wrong?
-		if pl.Err != nil {
-			return StatusNotOkay, pl.Err
-		}
+		//
+		// NOTE that we cannot call pl.Exec(), as that (by design) starts
+		// the pipeline with a brand-new pipe
+		pl.Controller()
 
 		// copy our pipeline's stdout to become the pipe's next stdin
-		p.Stdout = pl.Pipe.Stdout
+		io.Copy(p.Stdout, pl.Pipe.Stdout.NewReader())
 
 		// all done
-		return StatusOkay, nil
+		return pl.StatusError()
 	}
 }

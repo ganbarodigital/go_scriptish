@@ -44,7 +44,7 @@ func Return(statusCode int) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
 		// make sure we don't lose anything in stdin
-		p.DrainStdin()
+		p.DrainStdinToStdout()
 
 		// all done
 		return statusCode, nil

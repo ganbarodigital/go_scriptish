@@ -59,8 +59,7 @@ func TestRmDirRemovesAGivenEmptyFolder(t *testing.T) {
 
 	// this pipeline will prove if the temporary file does/does not exist
 	tmpDirExists := PipelineFunc(FilepathExists(tmpDir))
-	dirExists, err := tmpDirExists().Okay()
-	assert.Nil(t, err)
+	dirExists := tmpDirExists().Okay()
 	assert.True(t, dirExists)
 
 	pipeline := NewPipeline(
@@ -79,8 +78,7 @@ func TestRmDirRemovesAGivenEmptyFolder(t *testing.T) {
 	assert.Empty(t, actualResult)
 
 	// the file should be gone
-	dirExists, err = tmpDirExists().Okay()
-	assert.Error(t, err)
+	dirExists = tmpDirExists().Okay()
 	assert.False(t, dirExists)
 }
 
@@ -136,6 +134,6 @@ func TestRmDirDoesNotRespectFilePermissions(t *testing.T) {
 	// test the results
 
 	assert.Nil(t, err)
-	assert.Equal(t, StatusOkay, pipeline.StatusCode)
+	assert.Equal(t, StatusOkay, pipeline.StatusCode())
 	assert.Empty(t, actualResult)
 }

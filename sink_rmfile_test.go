@@ -62,8 +62,7 @@ func TestRmFileRemovesAGivenFile(t *testing.T) {
 
 	// this pipeline will prove if the temporary file does/does not exist
 	tmpFileExists := PipelineFunc(FilepathExists(tmpFilename))
-	fileExists, err := tmpFileExists().Okay()
-	assert.Nil(t, err)
+	fileExists := tmpFileExists().Okay()
 	assert.True(t, fileExists)
 
 	pipeline := NewPipeline(
@@ -82,8 +81,7 @@ func TestRmFileRemovesAGivenFile(t *testing.T) {
 	assert.Empty(t, actualResult)
 
 	// the file should be gone
-	fileExists, err = tmpFileExists().Okay()
-	assert.Error(t, err)
+	fileExists = tmpFileExists().Okay()
 	assert.False(t, fileExists)
 }
 
@@ -139,6 +137,6 @@ func TestRmFileDoesNotRespectFilePermissions(t *testing.T) {
 	// test the results
 
 	assert.Nil(t, err)
-	assert.Equal(t, StatusOkay, pipeline.StatusCode)
+	assert.Equal(t, StatusOkay, pipeline.StatusCode())
 	assert.Empty(t, actualResult)
 }

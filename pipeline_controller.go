@@ -39,30 +39,40 @@
 
 package scriptish
 
-// NewPipeline creates a pipeline that's ready to run
-func NewPipeline(steps ...Command) *Sequence {
-	// build our pipeline
-	retval := NewSequence(steps...)
+// PipelineController executes a sequence of commands as if they were
+// a UNIX shell pipeline
+func PipelineController(sq *Sequence) SequenceController {
+	return func() {
+		// do we have a pipeline to play with?
+		if sq == nil {
+			return
+		}
 
-	// tell the underlying sequence how we want these commands to run
-	retval.Controller = PipelineController(retval)
+		// execute everything in our pipeline
+		for _, step := range sq.Steps {
+			// at this point, stdout needs to become the next
+			// stdin
+			preparePipeForNextCommand(sq.Pipe)
 
-	// all done
-	return retval
-}
+			// run the next step
+			sq.Pipe.RunCommand(step)
 
-// ExecPipeline creates and runs a pipeline. Use this for short, throwaway
-// actions.
-func ExecPipeline(steps ...Command) *Pipeline {
-	pipeline := NewPipeline(steps...).Exec()
-	return pipeline
-}
-
-// PipelineFunc creates a pipeline, and wraps it in a function to make
-// it easier to call.
-func PipelineFunc(steps ...Command) func() *Pipeline {
-	newPipe := NewPipeline(steps...)
-	return func() *Pipeline {
-		return newPipe.Exec()
+			// we stop executing the moment something goes wrong
+			if sq.Pipe.Error() != nil {
+				return
+			}
+		}
 	}
+}
+
+// helper function
+func preparePipeForNextCommand(p *Pipe) {
+	// the output from our previous command becomes the input to the next
+	p.SetStdinFromString(p.Stdout.String())
+
+	// the next command starts with no output
+	p.SetNewStdout()
+
+	// we throw away any errors that have been written here
+	p.SetNewStderr()
 }

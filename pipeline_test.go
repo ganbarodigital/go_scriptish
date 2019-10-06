@@ -40,8 +40,10 @@
 package scriptish
 
 import (
+	"errors"
 	"testing"
 
+	pipe "github.com/ganbarodigital/go_pipe/v4"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -147,4 +149,257 @@ func ExecCopesWithAnEmptyPipelineStruct(t *testing.T) {
 	// test the results
 
 	// as long as the test doesn't crash, it has passed
+}
+
+func TestNewPipelineCreatesPipeWithEmptyStdin(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := ""
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline()
+	actualResult := pipeline.Pipe.Stdin.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestNewPipelineCreatesPipeWithEmptyStdout(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := ""
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline()
+	actualResult := pipeline.Pipe.Stdout.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestNewPipelineCreatesPipeWithEmptyStderr(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := ""
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline()
+	actualResult := pipeline.Pipe.Stderr.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestNewPipelineCreatesPipelineWithNilErrSet(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Nil(t, pipeline.Error())
+}
+
+func TestNewPipelineCreatesPipelineWithZeroStatusCode(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, 0, pipeline.StatusCode())
+}
+
+func TestPipelineControllerCopesWithNilSequencePointer(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	var sequence *Sequence
+	controller := PipelineController
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	controller(sequence)
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	// as long as it didn't crash, we're good
+}
+
+func TestPipelineControllerCopesWithEmptySequence(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	var sequence Sequence
+	sequence.Controller = PipelineController(&sequence)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	sequence.Exec()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	// as long as it didn't crash, we're good
+}
+
+func TestPipelineExecRunsAllStepsInOrder(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := "hello world\nhave a nice day\n"
+	op1 := func(p *Pipe) (int, error) {
+		p.Stdout.WriteString("hello world")
+		p.Stdout.WriteRune('\n')
+
+		// all done
+		return 0, nil
+	}
+	op2 := func(p *Pipe) (int, error) {
+		// copy what op1 did first
+		p.DrainStdinToStdout()
+
+		// add our own content
+		p.Stdout.WriteString("have a nice day")
+		p.Stdout.WriteRune('\n')
+
+		// all done
+		return 0, nil
+	}
+
+	pipeline := NewPipeline(op1, op2)
+	pipeline.Exec()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	actualResult, err := pipeline.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Nil(t, err)
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestPipelineExecStopsWhenAStepReportsAnError(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedStdout := "hello world\n"
+	expectedStderr := "alfred the great\n"
+	op1 := func(p *Pipe) (int, error) {
+		p.Stdout.WriteString(expectedStdout)
+		p.Stderr.WriteString(expectedStderr)
+
+		// all done
+		return 0, errors.New("stop at step 1")
+	}
+	op2 := func(p *Pipe) (int, error) {
+		// copy what op1 did first
+		p.DrainStdinToStdout()
+
+		// add our own content
+		p.Stdout.WriteString("have a nice day")
+		p.Stdout.WriteRune('\n')
+
+		// all done
+		return 0, nil
+	}
+
+	pipeline := NewPipeline(op1, op2)
+	pipeline.Exec()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	finalOutput, err := pipeline.String()
+	actualStderr := pipeline.Pipe.Stderr.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	// pipeline.String() should have returned an error
+	assert.NotNil(t, err)
+
+	// pipeline.String() should have returned the contents of our
+	// Pipe.Stdout buffer
+	assert.Equal(t, expectedStdout, finalOutput)
+
+	// our pipeline's Stderr should still contain what the first step
+	// did ... and only the first step
+	assert.Equal(t, expectedStderr, actualStderr)
+}
+
+func TestPipelineExecSetsErrWhenOpReturnsNonZeroStatusCodeAndNilErr(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	op1 := func(p *pipe.Pipe) (int, error) {
+		// fail, but without an error to say why
+		return StatusNotOkay, nil
+	}
+
+	pipeline := NewPipeline(op1)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	// pipeline.Err should have been set by Exec()
+	assert.NotNil(t, pipeline.Error())
+	_, ok := pipeline.Error().(pipe.ErrNonZeroStatusCode)
+	assert.True(t, ok)
 }

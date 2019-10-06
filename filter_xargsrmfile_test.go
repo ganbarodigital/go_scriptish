@@ -86,7 +86,7 @@ func TestXargsRmFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, pipeline.Err)
+	assert.Nil(t, pipeline.Error())
 	assert.Equal(t, expectedResult, actualResult)
 
 	// the folder should now be empty

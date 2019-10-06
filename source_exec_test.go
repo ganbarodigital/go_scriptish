@@ -148,7 +148,7 @@ func TestExecCapturesTheStatusCode(t *testing.T) {
 	assert.NotNil(t, err)
 	_, ok := err.(*exec.ExitError)
 	assert.True(t, ok)
-	assert.Equal(t, expectedResult, pipeline.StatusCode)
+	assert.Equal(t, expectedResult, pipeline.StatusCode())
 }
 
 func TestExecSetsErrorIfCommandCannotBeRun(t *testing.T) {
@@ -176,5 +176,5 @@ func TestExecSetsErrorIfCommandCannotBeRun(t *testing.T) {
 	assert.NotNil(t, err)
 	_, ok := err.(*os.PathError)
 	assert.True(t, ok)
-	assert.Equal(t, expectedResult, pipeline.StatusCode)
+	assert.Equal(t, expectedResult, pipeline.StatusCode())
 }

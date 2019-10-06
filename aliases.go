@@ -40,7 +40,7 @@
 package scriptish
 
 import (
-	pipe "github.com/ganbarodigital/go_pipe/v3"
+	pipe "github.com/ganbarodigital/go_pipe/v4"
 )
 
 // Command is an alias for the underlying pipe library's Command
@@ -48,6 +48,9 @@ import (
 // It just saves us having to import the pipe library into every single
 // file in the project.
 type Command = pipe.Command
+
+// List is an alias for a Sequence
+type List = Sequence
 
 // Pipe is an alias for the underlying pipe library's Pipe
 //

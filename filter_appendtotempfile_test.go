@@ -45,7 +45,7 @@ import (
 	"strings"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe/v3"
+	pipe "github.com/ganbarodigital/go_pipe/v4"
 	"github.com/stretchr/testify/assert"
 )
 

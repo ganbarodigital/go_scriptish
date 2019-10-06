@@ -84,7 +84,7 @@ func TestXargsTruncateFiles(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, pipeline.Err)
+	assert.Nil(t, pipeline.Error())
 
 	// the file should now be empty
 	lineCount, err = lineCountFunc().ParseInt()

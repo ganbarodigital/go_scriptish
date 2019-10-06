@@ -39,30 +39,5 @@
 
 package scriptish
 
-// NewPipeline creates a pipeline that's ready to run
-func NewPipeline(steps ...Command) *Sequence {
-	// build our pipeline
-	retval := NewSequence(steps...)
-
-	// tell the underlying sequence how we want these commands to run
-	retval.Controller = PipelineController(retval)
-
-	// all done
-	return retval
-}
-
-// ExecPipeline creates and runs a pipeline. Use this for short, throwaway
-// actions.
-func ExecPipeline(steps ...Command) *Pipeline {
-	pipeline := NewPipeline(steps...).Exec()
-	return pipeline
-}
-
-// PipelineFunc creates a pipeline, and wraps it in a function to make
-// it easier to call.
-func PipelineFunc(steps ...Command) func() *Pipeline {
-	newPipe := NewPipeline(steps...)
-	return func() *Pipeline {
-		return newPipe.Exec()
-	}
-}
+// SequenceController is a function that executes a given sequence
+type SequenceController func()
