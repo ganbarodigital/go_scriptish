@@ -102,6 +102,7 @@ result, err := scriptish.NewPipeline(
   - [Strings()](#strings)
   - [TrimmedString()](#trimmedstring)
 - [Logic Calls](#logic-calls)
+  - [And()](#and)
   - [Or()](#or)
 - [Errors](#errors)
   - [ErrMismatchedInputs](#errmismatchedinputs)
@@ -657,6 +658,7 @@ Bash                         | Scriptish
 `> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
 `>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
 `||`                         | [`scriptish.Or()`](#or)
+`&&`                         | [`scriptish.And()`](#and)
 `basename ...`               | [`scriptish.Basename()`](#basename)
 `cat "..."`                  | [`scriptish.CatFile(...)`](#catfile)
 `cat /dev/null > $x`         | [`scriptish.TruncateFile($x)`](#truncatefile)
@@ -1473,6 +1475,30 @@ scriptish.ExecList(
 (It also has to be said that implementing logic support in Scriptish was a good test case for proving Scriptish's underlying design.)
 
 Generally, all the implemented logc takes Lists or Pipelines as arguments. (Lists and Pipelines are both aliases for the `Sequence` struct, so you can pass either in to suit.) If there are any exceptions to this rule, we'll make sure to point it out in the documentation for the individual logic call.
+
+### And()
+
+`And()` executes the given sequence only if the previous command did not return any kind of error.
+
+The sequence starts with an empty Stdin. The sequence's output is written back to the Stdout and Stderr of the calling list or pipeline - along with the StatusCode() and Error().
+
+It is an emulation of UNIX shell scripting's `command1 && command2` feature.
+
+__NOTE that `And()` only works when run inside a List__:
+
+```golang
+scriptish.ExecList(
+    scriptish.Exec("git", "fetch"),
+    // if `git fetch` fails, do not attempt the merge
+    scriptish.And(
+        scriptish.NewList(
+            scriptish.Exec("git", "merge")
+        )
+    )
+)
+```
+
+If you call `And()` inside a Pipeline, it'll always run the given sequence. Pipelines terminate whenever a command returns an error, so `And()` will only be called if the previous command succeeded.
 
 ### Or()
 

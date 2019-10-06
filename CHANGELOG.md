@@ -60,6 +60,7 @@
   - added `TruncateFile()`
   - added `WriteToFile()`
 * Logic:
+  - added `And()`
   - added `Or()`
 * Errors:
   - added `ErrMismatchedInputs`
