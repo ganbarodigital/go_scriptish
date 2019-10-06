@@ -240,7 +240,11 @@ One difference between UNIX commands and Golang is error handling. Scriptish com
 
 If you're calling external commands using `scriptish.Exec()`, you've still got access to the UNIX status code exactly like a shell script does. And you've always got access to any Golang errors that have occurred too.
 
-Just like UNIX shell scripts, a Scriptish pipeline stops executing if any command returns an error.
+**Unlike** UNIX shell scripts, a Scriptish pipeline stops executing if any command returns an error.
+
+You might not be aware of it, but by default, a pipeline in a UNIX shell script continues to run even if one of the commands returns an error. This causes error values to propagate - and error propagation is a major cause of robustness issues in software.
+
+Philosophically, we believe that good software engineering practices are more important than UNIX shell compatibility.
 
 ### Sources, Filters, Sinks and Capture Methods
 
