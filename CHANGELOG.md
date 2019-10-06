@@ -7,6 +7,9 @@
 * Added `NewPipeline()` to create a new Pipeline to execute
 * Added `ExecPipeline()` to create and run a pipeline in a single step
 * Added `PipelineFunc()` to create a pipeline and turn it into a function
+* Added `NewList()` to create a new List to execute
+* Added `ExecList()` to create and run a List in a single step
+* Added `ListFunc()` to create a List and turn it into a function
 * Sources:
   - added `CatFile()`
   - added `CatStdin()`

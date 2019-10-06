@@ -36,6 +36,13 @@ result, err := scriptish.NewPipeline(
 - [Running An Existing Pipeline](#running-an-existing-pipeline)
 - [Calling A Pipeline From Another Pipeline](#calling-a-pipeline-from-another-pipeline)
 - [Capturing The Output](#capturing-the-output)
+- [Pipelines vs Lists](#pipelines-vs-lists)
+- [Creating A List](#creating-a-list)
+  - [NewList()](#newlist)
+  - [ExecList()](#execlist)
+  - [ListFunc()](#listfunc)
+- [Running An Existing List](#running-an-existing-list)
+- [Calling A List From Another List Or Pipeline](#calling-a-list-from-another-list-or-pipeline)
 - [From Bash To Scriptish](#from-bash-to-scriptish)
 - [Sources](#sources)
   - [CatFile()](#catfile)
@@ -462,6 +469,166 @@ success, err := scriptish.NewPipeline(
 // and if the pipeline didn't work ...
 // - success is `false`
 // - err contains a Golang error
+```
+
+## Pipelines vs Lists
+
+UNIX shell scripts support two main ways (known as sequences) to string individual commands together:
+
+* _pipelines_ feed the output from one command into the next one
+* _lists_ simply append the output from each command to `stdout` and `stderr`
+
+Most of the time, you'll want to stick to _pipelines_, and port the rest of your shell script's behaviour over to native Golang code. That gives you the convenience of Scriptish's emulation of classic UNIX shell commands and the power of everything that Golang can do.
+
+Sometimes, you'll find it less effort to use a few _lists_ too.
+
+A classic example is `die()`. It's very common for UNIX shell scripts to define their own `die()` function like this:
+
+```bash
+die() {
+    echo "*** error: $*"
+    exit 1
+}
+
+[[ -e ./Dockerfile ]] || die "cannot find Dockerfile"
+```
+
+Here's the equivalent Scriptish:
+
+```golang
+dieFunc := ListFunc(
+    scriptish.Echo("*** error: $*"),
+    scriptish.ToStderr(),
+    scriptish.Exit(1),
+)
+
+scriptish.ExecList(
+    scriptish.TestFileExists("./Dockerfile"),
+    scriptish.Or(dieFunc("cannot find Dockerfile")),
+)
+```
+
+## Creating A List
+
+You can create a list in several ways.
+
+Pipeline               | Produces                         | Best For
+-----------------------|----------------------------------|---------------------------------
+`scriptish.NewList()`  | List that's ready to run         | Reusable lists
+`scriptish.ExecList()` | List that has been run once      | Throwaway lists
+`scriptish.ListFunc()` | Function that will run your list | Getting results back into Golang
+
+### NewList()
+
+Call `NewList()` when you want to build a list:
+
+```go
+list := scriptish.NewList(
+    scriptish.Echo("*** warning: $*"),
+)
+```
+
+`list` can now be executed as often as you want.
+
+```go
+list.Exec("cannot find Dockerfile")
+```
+
+### ExecList()
+
+`ExecList()` builds a list and executes it in a single step.
+
+```go
+list := scriptish.ExecList(
+    scriptish.CatFile("/path/to/file1.txt"),
+    scriptish.CatFile("/path/to/file2.txt"),
+)
+```
+
+Behind the scenes, it simply does a `scriptish.NewList(...).Exec()` for you.
+
+You can then use any of the [capture methods](#capture-methods) to find out what happened:
+
+```go
+result, err = list.ParseInt()
+```
+
+You can re-use the resulting list as often as you want.
+
+`ExecList()` is great for lists that you want to throw away after use.
+
+### ListFunc()
+
+`ListFunc()` builds the list and turns it into a function.
+
+```go
+fileExistsFunc := scriptish.ListFunc(
+    scriptish.FileExists("/path/to/file")
+)
+```
+
+Whenever you call the function, the list executes. The function returns a `*List`. Use any of the [capture methods](#capture-methods) to find out what happened when the list executed.
+
+```go
+fileExists := fileExistsFunc().Okay()
+```
+
+You can re-use the function as often as you want.
+
+`ListFunc()` is great for lists where you want to get the results back into your Golang code.
+
+## Running An Existing List
+
+Once you have built a list, call the `Exec()` method to execute it:
+
+```go
+list := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file1.txt"),
+    scriptish.CatFile("/path/to/file2.txt"),
+)
+list.Exec()
+```
+
+`Exec()` always returns a pointer to the same list, so that you can use method chaining to create nicer-looking code.
+
+```go
+// in this example, `list` is available to be used more than once
+list := scriptish.NewList(
+    scriptish.CatFile("/path/to/file1.txt"),
+    scriptish.CatFile("/path/to/file2.txt"),
+)
+result, err := pipeline.Exec().ParseInt()
+```
+
+```go
+// in this example, we don't keep a reference to the list
+result, err := scriptish.NewList(
+    scriptish.CatFile("/path/to/file1.txt"),
+    scriptish.CatFile("/path/to/file2.txt"),
+).Exec().ParseInt()
+```
+
+## Calling A List From Another List Or Pipeline
+
+UNIX shell scripts can be broken up into functions to make them easier to maintain. You can do something similar in Scriptish, by calling a list from another pipeline or list:
+
+```golang
+// this will fetch the latest changes from the upstream Git repo
+fetch_changes_from_origin := scriptish.NewList(
+    scriptish.Exec("git", "remote", "update", "$ORIGIN"),
+    scriptish.Or(dieFunc("Unable to get list of changes from '$ORIGIN'")),
+    scriptish.Exec("git", "fetch", "$ORIGIN"),
+    scriptish.Or(dieFunc("Unable to fetch latest changes from '$ORIGIN'")),
+    scriptish.Exec("git", "fetch", "--tags"),
+    scriptish.Or(dieFunc("Unable to fetch latest tags from '$ORIGIN'")),
+)
+
+// this will fetch the latest changes from upstream, and then
+// merge them into local branches
+merge_latest_changes = scriptish.NewList(
+    scriptish.RunList(fetch_changes_from_origin),
+    ...
+)
 ```
 
 ## From Bash To Scriptish
