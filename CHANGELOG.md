@@ -61,6 +61,7 @@
 * Logic:
   - added `And()`
   - added `If()`
+  - added `IfElse()`
   - added `Or()`
 * Expressions:
   - added `TestFilepathExists()`
