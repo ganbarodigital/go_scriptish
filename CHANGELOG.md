@@ -36,6 +36,7 @@
   - added `GrepV()`
   - added `Head()`
   - added `Rsort()`
+  - added `RunList()`
   - added `RunPipeline()`
   - added `Sort()`
   - added `StripExtension()`
