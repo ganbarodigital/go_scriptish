@@ -53,11 +53,11 @@ result, err := scriptish.NewPipeline(
   - [EchoArgs()](#echoargs)
   - [EchoSlice()](#echoslice)
   - [Exec()](#exec)
-  - [FilepathExists()](#filepathexists)
   - [ListFiles()](#listfiles)
   - [Lsmod()](#lsmod)
   - [MkTempDir()](#mktempdir)
   - [MkTempFile()](#mktempfile)
+  - [TestFilepathExists()](#testfilepathexists)
   - [Which()](#which)
 - [Filters](#filters)
   - [AppendToTempFile()](#appendtotempfile)
@@ -81,8 +81,8 @@ result, err := scriptish.NewPipeline(
   - [TrimWhitespace()](#trimwhitespace)
   - [Uniq()](#uniq)
   - [XargsCat()](#xargscat)
-  - [XargsFilepathExists()](#xargsfilepathexists)
   - [XargsRmFile()](#xargsrmfile)
+  - [XargsTestFilepathExists()](#xargstestfilepathexists)
   - [XargsTruncateFiles()](#xargstruncatefiles)
 - [Sinks](#sinks)
   - [AppendToFile()](#appendtofile)
@@ -279,7 +279,7 @@ A capture method isn't a Scriptish command. It's a method on the `Pipeline` stru
 
 ```go
 fileExists = scriptish.ExecPipeline(
-    scriptish.FilepathExists("/path/to/file.txt")
+    scriptish.TestFilepathExists("/path/to/file.txt")
 ).Okay()
 ```
 
@@ -655,7 +655,7 @@ Bash                         | Scriptish
 `${x%.*}`                    | [`scriptish.StripExtension()`](#stripextension)
 `${x%$y}%z`                  | [`scriptish.SwapExtensions()](#swapextensions)
 `${x%$y}`                    | [`scriptish.TrimSuffix()`](#trimsuffix)
-`[[ -e $x ]]`                | [`scriptish.FilepathExists()`](#filepathexists)
+`[[ -e $x ]]`                | [`scriptish.TestFilepathExists()`](#filepathexists)
 `> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
 `>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
 `||`                         | [`scriptish.Or()`](#or)
@@ -690,7 +690,7 @@ Bash                         | Scriptish
 `which`                      | [`scriptish.Which()`](#which)
 `xargs cat`                  | [`scriptish.XargsCat()`](#xargscat)
 `xargs rm`                   | [`scriptish.XargsRmFile()`](#xargsrmfile)
-`xargs test -e`              | [`scriptish.XargsFilepathExists()`](#xargsfilepathexists)
+`xargs test -e`              | [`scriptish.XargsTestFilepathExists()`](#xargsfilepathexists)
 
 ## Sources
 
@@ -788,20 +788,6 @@ Golang will set `err` to an [`exec.ExitError`](https://golang.org/pkg/os/exec/#E
 
 Golang will set `err` to an [`os.PathError`](https://golang.org/pkg/os/#PathError) if the command could not be found in the first place.
 
-### FilepathExists()
-
-`FilepathExists()` checks to see if the given filepath exists. If it does, the filepath is written to the pipeline's `Stdout`.
-
-* It does not care what the filepath points at (file, folder, named pipe, and so on).
-* It ignores the contents of the pipeline.
-* It follows symbolic links.
-
-```go
-fileExists := scriptish.ExecPipeline(
-    scriptish.FilepathExists("/path/to/file")
-).Okay()
-```
-
 ### ListFiles()
 
 `ListFiles()` writes a list of matching files to the pipeline's `Stdout`, one line per filename found.
@@ -864,6 +850,20 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-*")
 ).Exec().String()
+```
+
+### TestFilepathExists()
+
+`TestFilepathExists()` checks to see if the given filepath exists. If it does, the filepath is written to the pipeline's `Stdout`.
+
+* It does not care what the filepath points at (file, folder, named pipe, and so on).
+* It ignores the contents of the pipeline.
+* It follows symbolic links.
+
+```go
+fileExists := scriptish.ExecPipeline(
+    scriptish.TestFilepathExists("/path/to/file")
+).Okay()
 ```
 
 ### Which()
@@ -1176,22 +1176,6 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-### XargsFilepathExists()
-
-`XargsFilepathExists()` treats each line in the pipeline as a filepath. It checks to see if the given filepath exists. If the filepath exists, it is written to the pipeline's stdout.
-
-It does not care what the filepath points at (file, folder, named pipe, and so on).
-
-```go
-// example: find all RAW photo files that also have a corresponding
-// JPEG file
-result, err := scriptish.NewPipeline(
-    scriptish.ListFiles("/path/to/folder/*.raw"),
-    scriptish.SwapExtensions(".raw", ".jpeg"),
-    scriptish.XargsFilepathExists()
-).Exec().Strings()
-```
-
 ### XargsRmFile()
 
 `XargsRmFile()` treats every line in the pipeline as a filename. It attempts to delete each file.
@@ -1208,6 +1192,22 @@ err := scriptish.NewPipeline(
         scriptish.Printf("deleted file: $x")
     )
 ).Exec().Error()
+```
+
+### XargsTestFilepathExists()
+
+`XargsTestFilepathExists()` treats each line in the pipeline as a filepath. It checks to see if the given filepath exists. If the filepath exists, it is written to the pipeline's stdout.
+
+It does not care what the filepath points at (file, folder, named pipe, and so on).
+
+```go
+// example: find all RAW photo files that also have a corresponding
+// JPEG file
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.raw"),
+    scriptish.SwapExtensions(".raw", ".jpeg"),
+    scriptish.XargsTestFilepathExists()
+).Exec().Strings()
 ```
 
 ### XargsTruncateFiles()
@@ -1469,7 +1469,7 @@ dieFunc := scriptish.ListFunc(
 )
 
 scriptish.ExecList(
-    scriptish.TestFileExists("./Dockerfile"),
+    scriptish.TestFilepathExists("./Dockerfile"),
     scriptish.Or(dieFunc("cannot find Dockerfile")),
 )
 ```
@@ -1515,7 +1515,7 @@ result, err := scriptish.ExecList(
     scriptish.If(
         // this is the `expr` or expression
         scriptish.NewPipeline(
-            scriptish.TestFileExists("/path/to/file"),
+            scriptish.TestFilepathExists("/path/to/file"),
         ),
         // this is the `body` that is executed if the `expr` succeeds
         scriptish.NewPipeline(
@@ -1540,7 +1540,7 @@ __NOTE that `Or()` only works when run inside a List__:
 
 ```golang
 statusCode, err := scriptish.NewList(
-    scriptish.TestFileExists("/path/to/file"),
+    scriptish.TestFilepathExists("/path/to/file"),
     scriptish.Or(dieFunc("cannot find file")),
 ).Exec().StatusError()
 ```

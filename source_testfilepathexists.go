@@ -43,7 +43,7 @@ import (
 	"os"
 )
 
-// FilepathExists checks to see if the given filepath exists. If it does,
+// TestFilepathExists checks to see if the given filepath exists. If it does,
 // the filepath is written to the pipeline's Stdout.
 //
 // It does not care what the filepath points at (file, folder, named pipe,
@@ -51,7 +51,7 @@ import (
 //
 // It ignores the contents of the pipeline.
 // It follows symbolic links.
-func FilepathExists(filepath string) Command {
+func TestFilepathExists(filepath string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
 		// does the file exist?

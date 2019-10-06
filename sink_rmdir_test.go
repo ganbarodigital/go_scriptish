@@ -58,7 +58,7 @@ func TestRmDirRemovesAGivenEmptyFolder(t *testing.T) {
 	assert.NotEmpty(t, tmpDir)
 
 	// this pipeline will prove if the temporary file does/does not exist
-	tmpDirExists := PipelineFunc(FilepathExists(tmpDir))
+	tmpDirExists := PipelineFunc(TestFilepathExists(tmpDir))
 	dirExists := tmpDirExists().Okay()
 	assert.True(t, dirExists)
 

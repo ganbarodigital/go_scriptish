@@ -61,7 +61,7 @@ func TestRmFileRemovesAGivenFile(t *testing.T) {
 	defer ExecPipeline(RmFile(tmpFilename))
 
 	// this pipeline will prove if the temporary file does/does not exist
-	tmpFileExists := PipelineFunc(FilepathExists(tmpFilename))
+	tmpFileExists := PipelineFunc(TestFilepathExists(tmpFilename))
 	fileExists := tmpFileExists().Okay()
 	assert.True(t, fileExists)
 

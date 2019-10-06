@@ -43,14 +43,14 @@ import (
 	"os"
 )
 
-// XargsFilepathExists treats each line in the pipeline as a filepath.
+// XargsTestFilepathExists treats each line in the pipeline as a filepath.
 // It checks to see if the given filepath exists.
 //
 // If the filepath exists, it is written to the pipeline's stdout.
 //
 // It does not care what the filepath points at (file, folder, named pipe,
 // and so on).
-func XargsFilepathExists() Command {
+func XargsTestFilepathExists() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {

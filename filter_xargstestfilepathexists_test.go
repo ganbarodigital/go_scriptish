@@ -46,7 +46,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestXargsFilepathExistsWritesFilepathsThatExist(t *testing.T) {
+func TestXargsTestFilepathExistsWritesFilepathsThatExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
@@ -56,7 +56,7 @@ func TestXargsFilepathExistsWritesFilepathsThatExist(t *testing.T) {
 	expectedResult := filename + "\n"
 	pipeline := NewPipeline(
 		ListFiles(filename),
-		XargsFilepathExists(),
+		XargsTestFilepathExists(),
 	)
 
 	// ----------------------------------------------------------------
@@ -70,7 +70,7 @@ func TestXargsFilepathExistsWritesFilepathsThatExist(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestXargsFilePathExistsDropsFilepathsThatDoNotExist(t *testing.T) {
+func TestXargsTestFilepathExistsDropsFilepathsThatDoNotExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
@@ -78,7 +78,7 @@ func TestXargsFilePathExistsDropsFilepathsThatDoNotExist(t *testing.T) {
 
 	pipeline := NewPipeline(
 		Echo("/does/not/exist/and/never/will"),
-		XargsFilepathExists(),
+		XargsTestFilepathExists(),
 	)
 
 	// ----------------------------------------------------------------

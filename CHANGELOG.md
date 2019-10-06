@@ -19,7 +19,6 @@
   - added `EchoArgs()`
   - added `EchoSlice()`
   - added `Exec()`
-  - added `FilepathExists()`
   - added `ListFiles()`
   - added `Lsmod()`
   - added `MkTempDir()`
@@ -47,7 +46,7 @@
   - added `TrimWhitespace()`
   - added `Uniq()`
   - added `XargsCat()`
-  - added `XargsFilepathExists()`
+  - added `XargsTestFilepathExists()`
   - added `XargsRmFile()`
   - added `XargsTruncateFiles()`
 * Sinks:
@@ -63,6 +62,8 @@
   - added `And()`
   - added `If()`
   - added `Or()`
+* Expressions:
+  - added `TestFilepathExists()`
 * Errors:
   - added `ErrMismatchedInputs`
 * Utilities:

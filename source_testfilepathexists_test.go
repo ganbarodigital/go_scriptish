@@ -55,7 +55,7 @@ func TestFilePathExistsWritesFilepathsThatExist(t *testing.T) {
 
 	expectedResult := filename + "\n"
 	pipeline := NewPipeline(
-		FilepathExists(filename),
+		TestFilepathExists(filename),
 	)
 
 	// ----------------------------------------------------------------
@@ -76,7 +76,7 @@ func TestFilePathExistsDropsFilepathsThatDoNotExist(t *testing.T) {
 	expectedResult := ""
 
 	pipeline := NewPipeline(
-		FilepathExists("/does/not/exist/and/never/will"),
+		TestFilepathExists("/does/not/exist/and/never/will"),
 	)
 
 	// ----------------------------------------------------------------
