@@ -31,16 +31,16 @@ result, err := scriptish.NewPipeline(
   - [Sources, Filters, Sinks, Logic and Capture Methods](#sources-filters-sinks-logic-and-capture-methods)
 - [Creating A Pipeline](#creating-a-pipeline)
   - [NewPipeline()](#newpipeline)
+  - [NewPipelineFunc()](#newpipelinefunc)
   - [ExecPipeline()](#execpipeline)
-  - [PipelineFunc()](#pipelinefunc)
 - [Running An Existing Pipeline](#running-an-existing-pipeline)
 - [Calling A Pipeline From Another Pipeline](#calling-a-pipeline-from-another-pipeline)
 - [Capturing The Output](#capturing-the-output)
 - [Pipelines vs Lists](#pipelines-vs-lists)
 - [Creating A List](#creating-a-list)
   - [NewList()](#newlist)
+  - [NewListFunc()](#newlistfunc)
   - [ExecList()](#execlist)
-  - [ListFunc()](#listfunc)
 - [Running An Existing List](#running-an-existing-list)
 - [Calling A List From Another List Or Pipeline](#calling-a-list-from-another-list-or-pipeline)
 - [Pipelines, Lists and Sequences](#pipelines-lists-and-sequences)
@@ -288,11 +288,11 @@ fileExists = scriptish.ExecPipeline(
 
 You can create a pipeline in several ways.
 
-Pipeline                   | Produces                             | Best For
----------------------------|--------------------------------------|---------------------------------
-`scriptish.NewPipeline()`  | Pipeline that's ready to run         | Reusable pipelines
-`scriptish.ExecPipeline()` | Pipeline that has been run once      | Throwaway pipelines
-`scriptish.PipelineFunc()` | Function that will run your pipeline | Getting results back into Golang
+Pipeline                      | Produces                             | Best For
+------------------------------|--------------------------------------|---------------------------------
+`scriptish.NewPipeline()`     | Pipeline that's ready to run         | Reusable pipelines
+`scriptish.NewPipelineFunc()` | Function that will run your pipeline | Getting results back into Golang
+`scriptish.ExecPipeline()`    | Pipeline that has been run once      | Throwaway pipelines
 
 ### NewPipeline()
 
@@ -312,6 +312,36 @@ result, err := pipeline.Exec().ParseInt()
 ```
 
 Most of the examples in this README (and most of the unit tests) use `scriptish.NewPipeline()`.
+
+### NewPipelineFunc()
+
+`NewPipelineFunc()` builds the pipeline and turns it into a function.
+
+```go
+fileExistsFunc := scriptish.NewPipelineFunc(
+    scriptish.FileExists("/path/to/file")
+)
+```
+
+Whenever you call the function, the pipeline executes. The function returns a `*Pipeline`. Use any of the [capture methods](#capture-methods) to find out what happened when the pipeline executed.
+
+```go
+fileExists := fileExistsFunc().Okay()
+```
+
+You can re-use the function as often as you want.
+
+`NewPipelineFunc()` is great for pipelines where you want to get the results back into your Golang code:
+
+```go
+getCurrentBranch := scriptish.NewPipelineFunc(
+    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Grep("^[* ]"),
+    scriptish.Tr([]string{"* "}, []string{""}),
+)
+
+currentBranch, err := getCurrentBranch().TrimmedString()
+```
 
 ### ExecPipeline()
 
@@ -341,36 +371,6 @@ result, err := scriptish.ExecPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.CountWords()
 ).ParseInt()
-```
-
-### PipelineFunc()
-
-`PipelineFunc()` builds the pipeline and turns it into a function.
-
-```go
-fileExistsFunc := scriptish.PipelineFunc(
-    scriptish.FileExists("/path/to/file")
-)
-```
-
-Whenever you call the function, the pipeline executes. The function returns a `*Pipeline`. Use any of the [capture methods](#capture-methods) to find out what happened when the pipeline executed.
-
-```go
-fileExists := fileExistsFunc().Okay()
-```
-
-You can re-use the function as often as you want.
-
-`PipelineFunc()` is great for pipelines where you want to get the results back into your Golang code:
-
-```go
-getCurrentBranch := scriptish.PipelineFunc(
-    scriptish.Exec("git", "branch", "--no-color"),
-    scriptish.Grep("^[* ]"),
-    scriptish.Tr([]string{"* "}, []string{""}),
-)
-
-currentBranch, err := getCurrentBranch().TrimmedString()
 ```
 
 ## Running An Existing Pipeline
@@ -503,7 +503,7 @@ die() {
 Here's the equivalent Scriptish:
 
 ```golang
-dieFunc := scriptish.ListFunc(
+dieFunc := scriptish.NewList(
     scriptish.Echo("*** error: $*"),
     scriptish.ToStderr(),
     scriptish.Exit(1),
@@ -519,11 +519,11 @@ scriptish.ExecList(
 
 You can create a list in several ways.
 
-Pipeline               | Produces                         | Best For
------------------------|----------------------------------|---------------------------------
-`scriptish.NewList()`  | List that's ready to run         | Reusable lists
-`scriptish.ExecList()` | List that has been run once      | Throwaway lists
-`scriptish.ListFunc()` | Function that will run your list | Getting results back into Golang
+Pipeline                  | Produces                         | Best For
+--------------------------|----------------------------------|---------------------------------
+`scriptish.NewList()`     | List that's ready to run         | Reusable lists
+`scriptish.NewListFunc()` | Function that will run your list | Getting results back into Golang
+`scriptish.ExecList()`    | List that has been run once      | Throwaway lists
 
 ### NewList()
 
@@ -540,6 +540,26 @@ list := scriptish.NewList(
 ```go
 list.Exec("cannot find Dockerfile")
 ```
+
+### NewListFunc()
+
+`NewListFunc()` builds the list and turns it into a function.
+
+```go
+fileExistsFunc := scriptish.NewListFunc(
+    scriptish.FileExists("/path/to/file")
+)
+```
+
+Whenever you call the function, the list executes. The function returns a `*List`. Use any of the [capture methods](#capture-methods) to find out what happened when the list executed.
+
+```go
+fileExists := fileExistsFunc().Okay()
+```
+
+You can re-use the function as often as you want.
+
+`NewListFunc()` is great for lists where you want to get the results back into your Golang code.
 
 ### ExecList()
 
@@ -563,26 +583,6 @@ result, err = list.ParseInt()
 You can re-use the resulting list as often as you want.
 
 `ExecList()` is great for lists that you want to throw away after use.
-
-### ListFunc()
-
-`ListFunc()` builds the list and turns it into a function.
-
-```go
-fileExistsFunc := scriptish.ListFunc(
-    scriptish.FileExists("/path/to/file")
-)
-```
-
-Whenever you call the function, the list executes. The function returns a `*List`. Use any of the [capture methods](#capture-methods) to find out what happened when the list executed.
-
-```go
-fileExists := fileExistsFunc().Okay()
-```
-
-You can re-use the function as often as you want.
-
-`ListFunc()` is great for lists where you want to get the results back into your Golang code.
 
 ## Running An Existing List
 
@@ -1464,7 +1464,7 @@ die() {
 Here's the equivalent Scriptish:
 
 ```golang
-dieFunc := scriptish.ListFunc(
+dieFunc := scriptish.NewList(
     scriptish.Echo("*** error: $*"),
     scriptish.ToStderr(),
     scriptish.Exit(1),

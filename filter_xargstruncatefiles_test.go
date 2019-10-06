@@ -60,7 +60,7 @@ func TestXargsTruncateFiles(t *testing.T) {
 	// clean up after ourselves
 	defer ExecPipeline(RmFile(tmpFilename))
 
-	lineCountFunc := PipelineFunc(
+	lineCountFunc := NewPipelineFunc(
 		CatFile(tmpFilename),
 		CountLines(),
 	)

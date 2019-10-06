@@ -99,7 +99,7 @@ func ListFuncCreatesAListAsAFunction(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	list := ListFunc(Echo("hello world!"))()
+	list := NewListFunc(Echo("hello world!"))()
 
 	// ----------------------------------------------------------------
 	// test the results
@@ -394,7 +394,7 @@ func TestExecListRunsAListOfSteps(t *testing.T) {
 	assert.Equal(t, expectedError, actualError)
 }
 
-func TestListFuncReturnsAListAsAFunction(t *testing.T) {
+func TestNewListFuncReturnsAListAsAFunction(t *testing.T) {
 	t.Parallel()
 
 	// ----------------------------------------------------------------
@@ -411,7 +411,7 @@ func TestListFuncReturnsAListAsAFunction(t *testing.T) {
 		return expectedStatus, expectedError
 	}
 
-	listFunc := ListFunc(op1, op2)
+	listFunc := NewListFunc(op1, op2)
 	list := listFunc()
 
 	// ----------------------------------------------------------------

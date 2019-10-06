@@ -66,7 +66,7 @@ func TestXargsRmFile(t *testing.T) {
 	}
 
 	// prove that the files exist
-	listingFunc := PipelineFunc(ListFiles(tmpDir))
+	listingFunc := NewPipelineFunc(ListFiles(tmpDir))
 	expectedResult, err := listingFunc().Strings()
 	assert.Nil(t, err)
 	assert.Equal(t, 5, len(expectedResult))

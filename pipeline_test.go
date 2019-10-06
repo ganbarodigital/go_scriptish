@@ -100,7 +100,7 @@ func PipelineFuncCreatesAPipelineAsAFunction(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	pipeline := PipelineFunc(Echo("hello world!"))()
+	pipeline := NewPipelineFunc(Echo("hello world!"))()
 
 	// ----------------------------------------------------------------
 	// test the results

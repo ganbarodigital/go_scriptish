@@ -50,18 +50,18 @@ func NewList(steps ...Command) *List {
 	return retval
 }
 
+// NewListFunc creates a list, and wraps it in a function to make
+// it easier to call.
+func NewListFunc(steps ...Command) func() *List {
+	newList := NewList(steps...)
+	return func() *List {
+		return newList.Exec()
+	}
+}
+
 // ExecList creates and runs a list. Use this for short, throwaway
 // actions.
 func ExecList(steps ...Command) *List {
 	list := NewList(steps...).Exec()
 	return list
-}
-
-// ListFunc creates a list, and wraps it in a function to make
-// it easier to call.
-func ListFunc(steps ...Command) func() *List {
-	newList := NewList(steps...)
-	return func() *List {
-		return newList.Exec()
-	}
 }

@@ -66,7 +66,7 @@ func TestTruncateFile(t *testing.T) {
 	).Exec().String()
 	assert.Nil(t, err)
 
-	lineCountFunc := PipelineFunc(
+	lineCountFunc := NewPipelineFunc(
 		CatFile(tmpFilename),
 		CountLines(),
 	)

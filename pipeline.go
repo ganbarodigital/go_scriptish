@@ -51,18 +51,18 @@ func NewPipeline(steps ...Command) *Sequence {
 	return retval
 }
 
+// NewPipelineFunc creates a pipeline, and wraps it in a function to make
+// it easier to call.
+func NewPipelineFunc(steps ...Command) func() *Pipeline {
+	newPipe := NewPipeline(steps...)
+	return func() *Pipeline {
+		return newPipe.Exec()
+	}
+}
+
 // ExecPipeline creates and runs a pipeline. Use this for short, throwaway
 // actions.
 func ExecPipeline(steps ...Command) *Pipeline {
 	pipeline := NewPipeline(steps...).Exec()
 	return pipeline
-}
-
-// PipelineFunc creates a pipeline, and wraps it in a function to make
-// it easier to call.
-func PipelineFunc(steps ...Command) func() *Pipeline {
-	newPipe := NewPipeline(steps...)
-	return func() *Pipeline {
-		return newPipe.Exec()
-	}
 }
