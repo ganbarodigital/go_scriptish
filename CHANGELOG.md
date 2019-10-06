@@ -59,6 +59,8 @@
   - added `ToStdout()`
   - added `TruncateFile()`
   - added `WriteToFile()`
+* Logic:
+  - added `Or()`
 * Errors:
   - added `ErrMismatchedInputs`
 * Utilities:

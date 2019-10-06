@@ -28,7 +28,7 @@ result, err := scriptish.NewPipeline(
   - [What Is A Pipeline?](#what-is-a-pipeline)
   - [What Happens When A Pipeline Runs?](#what-happens-when-a-pipeline-runs)
   - [How Are Errors Handled?](#how-are-errors-handled)
-  - [Sources, Filters, Sinks and Capture Methods](#sources-filters-sinks-and-capture-methods)
+  - [Sources, Filters, Sinks, Logic and Capture Methods](#sources-filters-sinks-logic-and-capture-methods)
 - [Creating A Pipeline](#creating-a-pipeline)
   - [NewPipeline()](#newpipeline)
   - [ExecPipeline()](#execpipeline)
@@ -43,6 +43,7 @@ result, err := scriptish.NewPipeline(
   - [ListFunc()](#listfunc)
 - [Running An Existing List](#running-an-existing-list)
 - [Calling A List From Another List Or Pipeline](#calling-a-list-from-another-list-or-pipeline)
+- [Pipelines, Lists and Sequences](#pipelines-lists-and-sequences)
 - [From Bash To Scriptish](#from-bash-to-scriptish)
 - [Sources](#sources)
   - [CatFile()](#catfile)
@@ -100,6 +101,8 @@ result, err := scriptish.NewPipeline(
   - [String()](#string)
   - [Strings()](#strings)
   - [TrimmedString()](#trimmedstring)
+- [Logic Calls](#logic-calls)
+  - [Or()](#or)
 - [Errors](#errors)
   - [ErrMismatchedInputs](#errmismatchedinputs)
 - [Inspirations](#inspirations)
@@ -253,13 +256,14 @@ You might not be aware of it, but by default, a pipeline in a UNIX shell script 
 
 Philosophically, we believe that good software engineering practices are more important than UNIX shell compatibility.
 
-### Sources, Filters, Sinks and Capture Methods
+### Sources, Filters, Sinks, Logic and Capture Methods
 
-Scriptish commands fall into one of three categories:
+Scriptish commands fall into one of four categories:
 
 * [Sources](#sources) create content in the pipeline, e.g. `scriptish.CatFile()`. They ignore whatever's already in the pipeline.
 * [Filters](#filters) do something with (or to) the pipeline's content, and they write the results back into the pipeline. These results form the input content for the next pipeline command.
 * [Sinks](#sinks) do something with (or two) the pipeline's content, and don't write any new content back into the pipeline.
+* [Logic](#logic-calls) implement support for `if`-like statements directly in Scriptish.
 
 A pipeline normally:
 
@@ -631,6 +635,14 @@ merge_latest_changes = scriptish.NewList(
 )
 ```
 
+## Pipelines, Lists and Sequences
+
+In UNIX shell programming, pipelines and lists are both examples of a _sequence of commands_. Each one is a set of commands that are wrapped in slightly different execution logic.
+
+In Scriptish, a `Pipeline` and a `List` are type aliases for a `Sequence`. A call to `NewPipeline()` or `NewList()` creates a `Sequence` that also has the right execution logic for a pipeline or a list. We've done it this way so that you can use both pipelines and lists in our [logic calls](#logic-calls).
+
+All of our logic calls accept `Sequence` parameters. You can pass in a `Pipeline` or a `List` to suit, and either will work just fine.
+
 ## From Bash To Scriptish
 
 Here's a handy table to help you quickly translate an action from a Bash shell script to the equivalent Scriptish command.
@@ -644,6 +656,7 @@ Bash                         | Scriptish
 `[[ -e $x ]]`                | [`scriptish.FilepathExists()`](#filepathexists)
 `> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
 `>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
+`||`                         | [`scriptish.Or()`](#or)
 `basename ...`               | [`scriptish.Basename()`](#basename)
 `cat "..."`                  | [`scriptish.CatFile(...)`](#catfile)
 `cat /dev/null > $x`         | [`scriptish.TruncateFile($x)`](#truncatefile)
@@ -1426,6 +1439,64 @@ localBranch, err := scriptish.ExecPipeline(
 If the pipeline's `Stdout` is empty, an empty string will be returned.
 
 If the pipeline didn't execute successfully, the contents of the pipeline's `Stderr` will be returned. We might change this behaviour in the future.
+
+## Logic Calls
+
+Most of the time, you will use native Golang code to write `if` statements for your code. Use the [capture methods](#capture-methods) to get the results of your pipelines back into your Golang code.
+
+Sometimes, it will be more convenient to use Scriptish's built-in logic support. The classic example is the `die()` function commonly created in UNIX shell scripts to handle errors:
+
+```bash
+die() {
+    echo "*** error: $*" >&2
+    exit 1
+}
+
+[[ -e ./Dockerfile ]] || die "cannot find Dockerfile"
+```
+
+Here's the equivalent Scriptish:
+
+```golang
+dieFunc := scriptish.ListFunc(
+    scriptish.Echo("*** error: $*"),
+    scriptish.ToStderr(),
+    scriptish.Exit(1),
+)
+
+scriptish.ExecList(
+    scriptish.TestFileExists("./Dockerfile"),
+    scriptish.Or(dieFunc("cannot find Dockerfile")),
+)
+```
+
+(It also has to be said that implementing logic support in Scriptish was a good test case for proving Scriptish's underlying design.)
+
+Generally, all the implemented logc takes Lists or Pipelines as arguments. (Lists and Pipelines are both aliases for the `Sequence` struct, so you can pass either in to suit.) If there are any exceptions to this rule, we'll make sure to point it out in the documentation for the individual logic call.
+
+### Or()
+
+`Or()` executes the given sequence only if the previous command has returned some kind of error.
+
+The sequence starts with an empty Stdin. The sequence's output is written back to the Stdout and Stderr of the calling list or pipeline - along with the StatusCode() and Error().
+
+It is an emulation of UNIX shell scripting's `list1 || command` feature.
+
+__NOTE that `Or()` only works when run inside a List__:
+
+```golang
+statusCode, err := scriptish.NewList(
+    scriptish.TestFileExists("/path/to/file"),
+    scriptish.Or(dieFunc("cannot find file")),
+).Exec().StatusError()
+```
+
+If you call `Or()` from inside a Pipeline, it will never work. Pipelines terminate when the first command returns an error. This means that either:
+
+* the pipeline will terminate before `Or()` is reached, or
+* `Or()` never executes the given sequence (because there's no previous error)
+
+At the moment, we can't think of a way of detecting any attempt to call `Or()` from a pipeline.
 
 ## Errors
 
