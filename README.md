@@ -272,7 +272,9 @@ But what if we want to get the results back into our Golang code, to reuse in so
 A capture method isn't a Scriptish command. It's a method on the `Pipeline` struct:
 
 ```go
-fileExists = ExecPipeline(scriptish.FilepathExists("/path/to/file.txt")).Okay()
+fileExists = scriptish.ExecPipeline(
+    scriptish.FilepathExists("/path/to/file.txt")
+).Okay()
 ```
 
 ## Creating A Pipeline
@@ -494,7 +496,7 @@ die() {
 Here's the equivalent Scriptish:
 
 ```golang
-dieFunc := ListFunc(
+dieFunc := scriptish.ListFunc(
     scriptish.Echo("*** error: $*"),
     scriptish.ToStderr(),
     scriptish.Exit(1),
@@ -580,7 +582,7 @@ You can re-use the function as often as you want.
 Once you have built a list, call the `Exec()` method to execute it:
 
 ```go
-list := scriptish.NewPipeline(
+list := scriptish.NewList(
     scriptish.CatFile("/path/to/file1.txt"),
     scriptish.CatFile("/path/to/file2.txt"),
 )
@@ -752,7 +754,7 @@ result, err := scriptish.NewPipeline(
 The command's status code will be stored in the pipeline's `StatusCode`.
 
 ```go
-localBranch, err := ExecPipeline(
+localBranch, err := scriptish.ExecPipeline(
     scriptish.Exec("git", "branch", "--no-color"),
     scriptish.Grep("^[* ]"),
     scriptish.Tr([]string{"* "}, []string{""}),
@@ -762,7 +764,7 @@ localBranch, err := ExecPipeline(
 Use the [`.Okay()`](#okay) capture method if you simply want to know if the command worked or not:
 
 ```go
-success := ExecPipeline(scriptish.Exec("git", "push")).Okay()
+success := scriptish.ExecPipeline(scriptish.Exec("git", "push")).Okay()
 ```
 
 Golang will set `err` to an [`exec.ExitError`](https://golang.org/pkg/os/exec/#ExitError) if the command's status code is not 0 (zero).
@@ -1230,7 +1232,7 @@ err := scriptish.NewPipeline(
 `Return()` terminates the pipeline with the given status code.
 
 ```go
-statusCode := NewPipeline(
+statusCode := scriptish.NewPipeline(
     scriptish.Return(3)
 ).Exec().StatusCode()
 
@@ -1333,17 +1335,15 @@ Normally, you wouldn't call this yourself.
 `Error()` returns the pipeline's current Golang error status, which may be `nil`.
 
 ```go
-err := ExecPipeline(scriptish.RmFile("/path/to/file")).Error()
+err := scriptish.ExecPipeline(scriptish.RmFile("/path/to/file")).Error()
 ```
-
-It's mostly there for checking on pipelines that produce no output. It's a toss up as to whether you should call `Error()` or `Okay()`.
 
 ### Okay()
 
 `Okay()` returns `true|false` depending on the pipeline's current UNIX status code.
 
 ```go
-success := ExecPipeline(scriptish.Exec("git push")).Okay()
+success := scriptish.ExecPipeline(scriptish.Exec("git push")).Okay()
 ```
 
 `success` is a `bool`:
@@ -1356,7 +1356,7 @@ All Scriptish commands set the pipeline's `StatusCode`, so it's safe to use `Oka
 It's mostly there if you want to call a pipeline in a Golang `if` statement:
 
 ```go
-if !ExecPipeline(scriptish.Exec("git", "push")).Okay() {
+if !scriptish.ExecPipeline(scriptish.Exec("git", "push")).Okay() {
     // push failed, do something about it
 }
 ```
@@ -1366,7 +1366,7 @@ if !ExecPipeline(scriptish.Exec("git", "push")).Okay() {
 `ParseInt()` returns the pipeline's `Stdout` as an `int` value:
 
 ```go
-lineCount, err := ExecPipeline(
+lineCount, err := scriptish.ExecPipeline(
     scriptish.CatFile("/path/to/file"),
     scriptish.CountLines(),
 ).ParseInt()
@@ -1381,7 +1381,7 @@ If the pipeline didn't execute successfully, it will return `0` and the pipeline
 `String()` returns the pipeline's `Stdout` as a single string:
 
 ```go
-contents, err := ExecPipeline(
+contents, err := scriptish.ExecPipeline(
     scriptish.CatFile("/path/to/file")
 ).String()
 ```
@@ -1397,7 +1397,7 @@ If the pipeline didn't execute successfully, the contents of the pipeline's `Std
 `Strings()` returns the pipeline's `Stdout` as an array of strings (aka a string slice):
 
 ```go
-files, err := ExecPipeline(
+files, err := scriptish.ExecPipeline(
     scriptish.ListFiles("/path/to/folder"),
     scriptish.Basename(),
 ).Strings()
@@ -1414,7 +1414,7 @@ If the pipeline didn't execute successfully, the contents of the pipeline's `Std
 `TrimmedString()` returns the pipeline's `Stdout` as a single string, with leading and trailing whitespace removed:
 
 ```go
-localBranch, err := ExecPipeline(
+localBranch, err := scriptish.ExecPipeline(
     scriptish.Exec("git", "branch", "--no-color"),
     scriptish.Grep("^[* ]"),
     scriptish.Tr([]string{"* "}, []string{""}),
