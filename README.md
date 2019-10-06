@@ -272,7 +272,7 @@ But what if we want to get the results back into our Golang code, to reuse in so
 A capture method isn't a Scriptish command. It's a method on the `Pipeline` struct:
 
 ```go
-fileExists, _ = ExecPipeline(scriptish.FilepathExists("/path/to/file.txt")).Okay()
+fileExists = ExecPipeline(scriptish.FilepathExists("/path/to/file.txt")).Okay()
 ```
 
 ## Creating A Pipeline
@@ -347,7 +347,7 @@ fileExistsFunc := scriptish.PipelineFunc(
 Whenever you call the function, the pipeline executes. The function returns a `*Pipeline`. Use any of the [capture methods](#capture-methods) to find out what happened when the pipeline executed.
 
 ```go
-fileExists, err := fileExistsFunc().Okay()
+fileExists := fileExistsFunc().Okay()
 ```
 
 You can re-use the function as often as you want.
@@ -458,17 +458,15 @@ result, err := scriptish.NewPipeline(
 If you want to run a Scriptish command and you don't care about capturing the output, call `Pipeline.Okay()`:
 
 ```go
-success, err := scriptish.NewPipeline(
+success := scriptish.NewPipeline(
     scriptish.RmFile("/path/to/file.txt")
 ).Exec().Okay()
 
 // if the pipeline worked ...
 // - success is `true`
-// - err is `nil`
 //
 // and if the pipeline didn't work ...
 // - success is `false`
-// - err contains a Golang error
 ```
 
 ## Pipelines vs Lists
@@ -764,7 +762,7 @@ localBranch, err := ExecPipeline(
 Use the [`.Okay()`](#okay) capture method if you simply want to know if the command worked or not:
 
 ```go
-success, err := ExecPipeline(scriptish.Exec("git" "push")).Okay()
+success := ExecPipeline(scriptish.Exec("git", "push")).Okay()
 ```
 
 Golang will set `err` to an [`exec.ExitError`](https://golang.org/pkg/os/exec/#ExitError) if the command's status code is not 0 (zero).
@@ -780,7 +778,9 @@ Golang will set `err` to an [`os.PathError`](https://golang.org/pkg/os/#PathErro
 * It follows symbolic links.
 
 ```go
-fileExists, err := ExecPpipeline(FilepathExists("/path/to/file")).Okay()
+fileExists := scriptish.ExecPipeline(
+    scriptish.FilepathExists("/path/to/file")
+).Okay()
 ```
 
 ### ListFiles()
@@ -1340,10 +1340,10 @@ It's mostly there for checking on pipelines that produce no output. It's a toss 
 
 ### Okay()
 
-`Okay()` returns `true|false` depending on the pipeline's current UNIX status code, and its current Golang error status.
+`Okay()` returns `true|false` depending on the pipeline's current UNIX status code.
 
 ```go
-success, err := ExecPipeline(scriptish.Exec("git push")).Okay()
+success := ExecPipeline(scriptish.Exec("git push")).Okay()
 ```
 
 `success` is a `bool`:
@@ -1353,9 +1353,13 @@ success, err := ExecPipeline(scriptish.Exec("git push")).Okay()
 
 All Scriptish commands set the pipeline's `StatusCode`, so it's safe to use `Okay()` to check any pipeline you create.
 
-It's mostly there if you're calling [`scriptish.Exec()`](#exec) and you want to explicitly check that the shell command did return a status code of 0.
+It's mostly there if you want to call a pipeline in a Golang `if` statement:
 
-It's a toss up as to whether you should call `Error()` or `Okay()` throughout your code.
+```go
+if !ExecPipeline(scriptish.Exec("git", "push")).Okay() {
+    // push failed, do something about it
+}
+```
 
 ### ParseInt()
 
