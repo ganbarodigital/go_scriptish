@@ -61,6 +61,7 @@
   - added `WriteToFile()`
 * Logic:
   - added `And()`
+  - added `If()`
   - added `Or()`
 * Errors:
   - added `ErrMismatchedInputs`

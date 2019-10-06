@@ -103,6 +103,7 @@ result, err := scriptish.NewPipeline(
   - [TrimmedString()](#trimmedstring)
 - [Logic Calls](#logic-calls)
   - [And()](#and)
+  - [If()](#if)
   - [Or()](#or)
 - [Errors](#errors)
   - [ErrMismatchedInputs](#errmismatchedinputs)
@@ -671,6 +672,7 @@ Bash                         | Scriptish
 `grep ...`                   | [`scriptish.Grep()`](#grep)
 `grep -v ..`                 | [`scriptish.GrepV()`](#grepv)
 `head -n X`                  | [`scriptish.Head(X)`](#head)
+`if expr ; then body ; fi`   | [`scriptish.If()`](#if)
 `ls -1 ...`                  | [`scriptish.ListFiles(...)`](#listfiles)
 `ls -l | awk '{ print $1 }'` | [`scriptish.Lsmod()`](#lsmod)
 `mktemp`                     | [`scriptish.MkTempFile()`](#mktempfile)
@@ -1499,6 +1501,32 @@ scriptish.ExecList(
 ```
 
 If you call `And()` inside a Pipeline, it'll always run the given sequence. Pipelines terminate whenever a command returns an error, so `And()` will only be called if the previous command succeeded.
+
+### If()
+
+`If()` executes the `body` if (and only if) the given `expr` does not return any kind of error.
+
+Both `expr` and `body` start with an empty `Stdin`. Their output is written back to the pipeline's `Stdout` and `Stderr`.
+
+It is an emulation of UNIX shell scripting's `if expr ; then body ; fi` feature.
+
+```golang
+result, err := scriptish.ExecList(
+    scriptish.If(
+        // this is the `expr` or expression
+        scriptish.NewPipeline(
+            scriptish.TestFileExists("/path/to/file"),
+        ),
+        // this is the `body` that is executed if the `expr` succeeds
+        scriptish.NewPipeline(
+            scriptish.CatFile("/path/to/file"),
+            scriptish.Head(3),
+        ),
+    )
+).String()
+```
+
+You can safely use `If()` inside a pipeline, because it doesn't depend upon the result of any previous command.
 
 ### Or()
 
