@@ -1,11 +1,9 @@
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/ganbarodigital/go_envish v1.1.0 h1:P48TamHzPFxVU4/rBeshZxw7l3pdPDRXrOp0038CFhk=
-github.com/ganbarodigital/go_envish v1.1.0/go.mod h1:1tfGI/2F9EKkDHC3u/AcK+HML27LrXcHBPV7Za6KsGk=
-github.com/ganbarodigital/go_pipe/v4 v4.0.0 h1:Fp8/pgzVB9h4b86k7kzRk2SKU0EGEExCJK9gKskxcVQ=
-github.com/ganbarodigital/go_pipe/v4 v4.0.0/go.mod h1:bdJXhYXbw4TWiYMQtldU5qyxkOqxe6bzKQm2SDomyRs=
-github.com/ganbarodigital/go_pipe/v4 v4.1.0 h1:AxsQJQa041xxScDK0pdU1bupCgt2zhq/BPIsfxTYMIg=
-github.com/ganbarodigital/go_pipe/v4 v4.1.0/go.mod h1:bdJXhYXbw4TWiYMQtldU5qyxkOqxe6bzKQm2SDomyRs=
+github.com/ganbarodigital/go_envish/v2 v2.0.1 h1:nf0r+E+21ZwOwmNa+I2ExGDTmx50hs3XE4E0j+NXRUE=
+github.com/ganbarodigital/go_envish/v2 v2.0.1/go.mod h1:3PW9dXSJQ17/wyTd4sTRNQTq5T+nIto6QO5/cAyqAIk=
+github.com/ganbarodigital/go_pipe/v4 v4.2.0 h1:43aC6dvn9Oc+efimmrcRXcu8tMnIHRCkXuJSHwv+3qc=
+github.com/ganbarodigital/go_pipe/v4 v4.2.0/go.mod h1:fg48Ax/OHnWJaobxKeCx1WMqfTblImPxYi959y9bLQ0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
