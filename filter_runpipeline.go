@@ -49,6 +49,9 @@ import (
 func RunPipeline(pl *Pipeline) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// make sure our sub pipeline starts nice and empty
+		pl.NewPipe()
+
 		// copy the pipeline's content into our sub pipeline
 		for line := range p.Stdin.ReadLines() {
 			pl.Pipe.Stdout.WriteString(line)

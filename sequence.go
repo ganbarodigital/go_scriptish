@@ -68,21 +68,13 @@ type Sequence struct {
 // NewSequence creates a sequence that's ready to run
 func NewSequence(steps ...Command) *Sequence {
 	sq := Sequence{
-		Pipe:      pipe.NewPipe(),
 		Steps:     steps,
 		LocalVars: envish.NewLocalEnv(),
 	}
 
-	// we want an environment that supports both local and global
-	// variables
-	//
-	// this will get rebuilt everytime sq.Exec() is called, but we're
-	// building it here anyway to make sure this sequence is ready to go
-	// if it is called from another sequence
-	sq.Pipe.Env = envish.NewOverlayEnv(
-		sq.LocalVars,
-		envish.NewProgramEnv(),
-	)
+	// make sure we have a pipe, and its environment knows about our
+	// LocalVars
+	sq.NewPipe()
 
 	// set special parameters here ... well, the ones that make sense
 	// for Scriptish, anyways :)
@@ -140,13 +132,7 @@ func (sq *Sequence) Exec(params ...string) *Sequence {
 	}
 
 	// we start with a new Pipe
-	sq.Pipe = pipe.NewPipe()
-
-	// the new pipe needs a new environment establishing
-	sq.Pipe.Env = envish.NewOverlayEnv(
-		sq.LocalVars,
-		envish.NewProgramEnv(),
-	)
+	sq.NewPipe()
 
 	// we need to set the parameters
 	sq.SetParams(params...)
@@ -167,6 +153,24 @@ func (sq *Sequence) Okay() bool {
 	}
 
 	return sq.Pipe.Okay()
+}
+
+// NewPipe replaces the Sequence's existing pipe with a brand new (and empty)
+// one. This is very useful for reusing Sequences.
+//
+// This is called from various places right before a Sequence is run.
+//
+// You shouldn't need to call it yourself, but it's exported just in case
+// it's useful in some way.
+func (sq *Sequence) NewPipe() {
+	// we start with a new Pipe
+	sq.Pipe = pipe.NewPipe()
+
+	// the new pipe needs a new environment establishing
+	sq.Pipe.Env = envish.NewOverlayEnv(
+		sq.LocalVars,
+		envish.NewProgramEnv(),
+	)
 }
 
 // ParseInt returns the pipe's stdout as an integer
