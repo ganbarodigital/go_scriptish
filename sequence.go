@@ -142,6 +142,12 @@ func (sq *Sequence) Exec(params ...string) *Sequence {
 	// we start with a new Pipe
 	sq.Pipe = pipe.NewPipe()
 
+	// the new pipe needs a new environment establishing
+	sq.Pipe.Env = envish.NewOverlayEnv(
+		sq.LocalVars,
+		envish.NewProgramEnv(),
+	)
+
 	// we need to set the parameters
 	sq.SetParams(params...)
 
