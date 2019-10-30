@@ -40,10 +40,7 @@
 package scriptish
 
 import (
-	"fmt"
 	"io/ioutil"
-	"strconv"
-	"strings"
 
 	envish "github.com/ganbarodigital/go_envish/v3"
 	pipe "github.com/ganbarodigital/go_pipe/v5"
@@ -184,25 +181,7 @@ func (sq *Sequence) SetParams(params ...string) {
 		return
 	}
 
-	// step one - remove any existing positional params
-	for i := 1; i < 9; i++ {
-		sq.LocalVars.Unsetenv(fmt.Sprintf("$%d", i))
-	}
-
-	// step two - set the new param count
-	//
-	// params start at $1
-	newParamCount := len(params)
-	sq.LocalVars.Setenv("$#", strconv.Itoa(newParamCount))
-
-	for i := 1; i <= newParamCount; i++ {
-		sq.LocalVars.Setenv(fmt.Sprintf("$%d", i), params[i-1])
-	}
-
-	// step three - set $*
-	sq.LocalVars.Setenv("$*", strings.Join(params, " "))
-
-	// all done
+	setParamsInEnv(sq.LocalVars, params)
 }
 
 // StatusCode returns the UNIX-like status code from the last step to execute
