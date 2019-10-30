@@ -42,7 +42,7 @@ package scriptish
 import (
 	"os"
 
-	pipe "github.com/ganbarodigital/go_pipe/v4"
+	pipe "github.com/ganbarodigital/go_pipe/v5"
 )
 
 // CatFile writes the contents of a file to the pipeline's stdout

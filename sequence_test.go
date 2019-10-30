@@ -41,10 +41,8 @@ package scriptish
 
 import (
 	"errors"
-	"os"
 	"testing"
 
-	envish "github.com/ganbarodigital/go_envish/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -214,96 +212,6 @@ func TestSequenceExecCopesWithEmptySequence(t *testing.T) {
 	// test the results
 
 	// as long as it didn't crash, we're good
-}
-
-func TestSequenceExpandCopesWithNilSequencePointer(t *testing.T) {
-	t.Parallel()
-
-	// ----------------------------------------------------------------
-	// setup your test
-
-	var sequence *Sequence
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	sequence.Expand("hello ${HOME}")
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	// as long as it didn't crash, we're good
-}
-
-func TestSequenceExpandCopesWithEmptySequence(t *testing.T) {
-	t.Parallel()
-
-	// ----------------------------------------------------------------
-	// setup your test
-
-	var sequence Sequence
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	sequence.Expand("hello ${HOME}")
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	// as long as it didn't crash, we're good
-}
-
-func TestSequenceExpandUsesTheProgramEnvironmentByDefault(t *testing.T) {
-	t.Parallel()
-
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testKey := "TestSequenceKey"
-	testValue := "this is a test"
-	os.Setenv(testKey, testValue)
-
-	expectedResult := "hello this is a test"
-	sequence := NewSequence()
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult := sequence.Expand("hello ${TestSequenceKey}")
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestSequenceExpandUsesTheSequenceEnvironmentIfAvailable(t *testing.T) {
-	t.Parallel()
-
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testKey := "TestSequenceKey"
-	testValue1 := "this is a test"
-	testValue2 := "this is another test"
-	os.Setenv(testKey, testValue1)
-
-	expectedResult := "hello this is another test"
-
-	sequence := NewSequence()
-	sequence.Pipe.Env = envish.NewEnv()
-	sequence.Pipe.Env.Setenv(testKey, testValue2)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult := sequence.Expand("hello ${TestSequenceKey}")
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Equal(t, expectedResult, actualResult)
 }
 
 func TestSequenceBytesCopesWithNilSequencePointer(t *testing.T) {
@@ -650,6 +558,126 @@ func TestSequenceParseIntReturnsZeroWhenError(t *testing.T) {
 
 	assert.NotNil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestNewSequenceSetParamsUpdatesParamsCount(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := "5"
+	sequence := NewSequence()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	sequence.SetParams("one", "two", "three", "four", "five")
+	actualResult := sequence.Pipe.Env.Getenv("$#")
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestNewSequenceSetParamsUpdatesPositionalParams(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	sequence := NewSequence()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	sequence.SetParams("one", "two", "three", "four", "five")
+	actualResult1 := sequence.Pipe.Env.Getenv("$1")
+	actualResult2 := sequence.Pipe.Env.Getenv("$2")
+	actualResult3 := sequence.Pipe.Env.Getenv("$3")
+	actualResult4 := sequence.Pipe.Env.Getenv("$4")
+	actualResult5 := sequence.Pipe.Env.Getenv("$5")
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, "one", actualResult1)
+	assert.Equal(t, "two", actualResult2)
+	assert.Equal(t, "three", actualResult3)
+	assert.Equal(t, "four", actualResult4)
+	assert.Equal(t, "five", actualResult5)
+}
+
+func TestNewSequenceSetParamsUpdatesParamsString(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := "one two three four five"
+	sequence := NewSequence()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	sequence.SetParams("one", "two", "three", "four", "five")
+	actualResult := sequence.Pipe.Env.Getenv("$*")
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestNewSequenceSetParamsRemovesPreviousParams(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	sequence := NewSequence()
+	sequence.SetParams("one", "two", "three", "four", "five")
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	sequence.SetParams("six", "seven", "eight")
+
+	actualCount := sequence.Pipe.Env.Getenv("$#")
+	actualParams := sequence.Pipe.Env.Getenv("$*")
+	actualParam1 := sequence.Pipe.Env.Getenv("$1")
+	actualParam2 := sequence.Pipe.Env.Getenv("$2")
+	actualParam3 := sequence.Pipe.Env.Getenv("$3")
+	actualParam4 := sequence.Pipe.Env.Getenv("$4")
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, "3", actualCount)
+	assert.Equal(t, "six seven eight", actualParams)
+	assert.Equal(t, "six", actualParam1)
+	assert.Equal(t, "seven", actualParam2)
+	assert.Equal(t, "eight", actualParam3)
+	assert.Equal(t, "", actualParam4)
+}
+
+func TestNewSequenceSetParamsCopesWithNilPointer(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	var sequence *Sequence = nil
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	sequence.SetParams("one", "two", "three", "four", "five")
+
+	// ----------------------------------------------------------------
+	// test the results
+
 }
 
 func TestSequenceStringCopesWithNilSequencePointer(t *testing.T) {

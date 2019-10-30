@@ -53,10 +53,10 @@ func NewPipeline(steps ...Command) *Sequence {
 
 // NewPipelineFunc creates a pipeline, and wraps it in a function to make
 // it easier to call.
-func NewPipelineFunc(steps ...Command) func() *Pipeline {
+func NewPipelineFunc(steps ...Command) func(...string) *Pipeline {
 	newPipe := NewPipeline(steps...)
-	return func() *Pipeline {
-		return newPipe.Exec()
+	return func(params ...string) *Pipeline {
+		return newPipe.Exec(params...)
 	}
 }
 

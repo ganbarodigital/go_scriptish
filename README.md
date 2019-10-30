@@ -34,6 +34,7 @@ result, err := scriptish.NewPipeline(
   - [NewPipelineFunc()](#newpipelinefunc)
   - [ExecPipeline()](#execpipeline)
 - [Running An Existing Pipeline](#running-an-existing-pipeline)
+- [Passing Parameters Into Pipelines](#passing-parameters-into-pipelines)
 - [Calling A Pipeline From Another Pipeline](#calling-a-pipeline-from-another-pipeline)
 - [Capturing The Output](#capturing-the-output)
 - [Pipelines vs Lists](#pipelines-vs-lists)
@@ -42,6 +43,7 @@ result, err := scriptish.NewPipeline(
   - [NewListFunc()](#newlistfunc)
   - [ExecList()](#execlist)
 - [Running An Existing List](#running-an-existing-list)
+- [Passing Parameters Into Lists](#passing-parameters-into-lists)
 - [Calling A List From Another List Or Pipeline](#calling-a-list-from-another-list-or-pipeline)
 - [Pipelines, Lists and Sequences](#pipelines-lists-and-sequences)
 - [From Bash To Scriptish](#from-bash-to-scriptish)
@@ -404,6 +406,30 @@ result, err := scriptish.NewPipeline(
 ).Exec().ParseInt()
 ```
 
+## Passing Parameters Into Pipelines
+
+Both `Pipeline.Exec()` and the function returned by `NewPipelineFunc()` accept a list of parameters.
+
+```golang
+pipeline := scriptish.NewPipeline(
+    scriptish.CatFile("$1"),
+    scriptish.CountWords()
+)
+wordCount, _ := pipeline.Exec("/path/to/file").ParseInt()
+fmt.Printf("file has %d words\n", wordCount)
+```
+
+```golang
+countWordsInFile := scriptish.NewPipelineFunc(
+    scriptish.CatFile("$1"),
+    scriptish.CountWords()
+)
+wordCount, _ := countWordsInFile("/path/to/file").ParseInt()
+fmt.Printf("file has %d words\n", wordCount)
+```
+
+The positional variables `$1`, `$2`, `$3` et al are available inside the pipeline, just like they would be in a UNIX shell script function.
+
 ## Calling A Pipeline From Another Pipeline
 
 UNIX shell scripts can be broken up into functions to make them easier to maintain. You can do something similar in Scriptish, by calling a pipeline from another pipeline:
@@ -604,7 +630,7 @@ list := scriptish.NewList(
     scriptish.CatFile("/path/to/file1.txt"),
     scriptish.CatFile("/path/to/file2.txt"),
 )
-result, err := pipeline.Exec().ParseInt()
+result, err := pipeline.Exec().String()
 ```
 
 ```go
@@ -612,8 +638,30 @@ result, err := pipeline.Exec().ParseInt()
 result, err := scriptish.NewList(
     scriptish.CatFile("/path/to/file1.txt"),
     scriptish.CatFile("/path/to/file2.txt"),
-).Exec().ParseInt()
+).Exec().String()
 ```
+
+## Passing Parameters Into Lists
+
+Both `List.Exec()` and the function returned by `NewListFunc()` accept a list of parameters.
+
+```golang
+list := scriptish.NewPipeline(
+    scriptish.CatFile("$1"),
+    scriptish.CatFile("$2"),
+)
+fileContents := list.Exec("/path/to/file1.txt", "/path/to/file2.txt").String()
+```
+
+```golang
+getTwoFileContents := scriptish.NewPipelineFunc(
+    scriptish.CatFile("$1"),
+    scriptish.CatFile("$2"),
+)
+fileContents := getTwoFileContents("/path/to/file1.txt", "/path/to/file2.txt").String()
+```
+
+The positional variables `$1`, `$2`, `$3` et al are available inside the list, just like they would be in a UNIX shell script function.
 
 ## Calling A List From Another List Or Pipeline
 

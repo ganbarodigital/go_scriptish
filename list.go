@@ -52,10 +52,10 @@ func NewList(steps ...Command) *List {
 
 // NewListFunc creates a list, and wraps it in a function to make
 // it easier to call.
-func NewListFunc(steps ...Command) func() *List {
+func NewListFunc(steps ...Command) func(params ...string) *List {
 	newList := NewList(steps...)
-	return func() *List {
-		return newList.Exec()
+	return func(params ...string) *List {
+		return newList.Exec(params...)
 	}
 }
 

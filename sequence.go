@@ -40,10 +40,13 @@
 package scriptish
 
 import (
+	"fmt"
 	"io/ioutil"
-	"os"
+	"strconv"
+	"strings"
 
-	pipe "github.com/ganbarodigital/go_pipe/v4"
+	envish "github.com/ganbarodigital/go_envish/v3"
+	pipe "github.com/ganbarodigital/go_pipe/v5"
 )
 
 // Sequence is a set of commands to be executed.
@@ -58,14 +61,25 @@ type Sequence struct {
 
 	// How we will run the sequence
 	Controller SequenceController
+
+	// we store local variables here
+	localVars *envish.LocalEnv
 }
 
 // NewSequence creates a sequence that's ready to run
 func NewSequence(steps ...Command) *Sequence {
 	sequence := Sequence{
-		Pipe:  pipe.NewPipe(),
-		Steps: steps,
+		Pipe:      pipe.NewPipe(),
+		Steps:     steps,
+		localVars: envish.NewLocalEnv(),
 	}
+
+	// we want an environment that supports both local and global
+	// variables
+	sequence.Pipe.Env = envish.NewOverlayEnv(
+		sequence.localVars,
+		envish.NewProgramEnv(),
+	)
 
 	return &sequence
 }
@@ -102,7 +116,7 @@ func (sq *Sequence) Error() error {
 //
 // If you embed the sequence in another struct, make sure to override this
 // to return your own return type!
-func (sq *Sequence) Exec() *Sequence {
+func (sq *Sequence) Exec(params ...string) *Sequence {
 	// do we have a sequence to work with?
 	if sq == nil {
 		return sq
@@ -116,25 +130,14 @@ func (sq *Sequence) Exec() *Sequence {
 	// we start with a new Pipe
 	sq.Pipe = pipe.NewPipe()
 
+	// we need to set the parameters
+	sq.SetParams(params...)
+
 	// use the embedded controller to animate the sequence
 	sq.Controller()
 
 	// all done
 	return sq
-}
-
-// Expand replaces ${var} or $var in the input string.
-//
-// It uses the sequence's private environment (if the sequence has one),
-// or the program's environment otherwise.
-func (sq *Sequence) Expand(fmt string) string {
-	// do we have a sequence to work with?
-	if sq == nil {
-		return os.Expand(fmt, os.Getenv)
-	}
-
-	// yes we do
-	return sq.Pipe.Expand(fmt)
 }
 
 // Okay returns false if a sequence operation set the StatusCode to
@@ -172,6 +175,32 @@ func (sq *Sequence) ParseInt() (int, error) {
 
 	// all done
 	return retval, sq.Error()
+}
+
+// SetParams sets $#, $1... and $* in the pipe's Var store
+func (sq *Sequence) SetParams(params ...string) {
+	// do we have a sequence to work with?
+	if sq == nil || sq.Pipe == nil {
+		return
+	}
+
+	// step one - remove any existing params
+	sq.localVars.Clearenv()
+
+	// step two - set the new param count
+	//
+	// params start at $1
+	newParamCount := len(params)
+	sq.localVars.Setenv("$#", strconv.Itoa(newParamCount))
+
+	for i := 1; i <= newParamCount; i++ {
+		sq.localVars.Setenv(fmt.Sprintf("$%d", i), params[i-1])
+	}
+
+	// step three - set $*
+	sq.localVars.Setenv("$*", strings.Join(params, " "))
+
+	// all done
 }
 
 // StatusCode returns the UNIX-like status code from the last step to execute

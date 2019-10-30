@@ -40,7 +40,7 @@
 package scriptish
 
 import (
-	pipe "github.com/ganbarodigital/go_pipe/v4"
+	pipe "github.com/ganbarodigital/go_pipe/v5"
 )
 
 // Command is an alias for the underlying pipe library's Command
