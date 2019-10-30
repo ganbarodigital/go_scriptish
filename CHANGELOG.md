@@ -18,6 +18,7 @@
   - added `Echo()`
   - added `EchoArgs()`
   - added `EchoSlice()`
+  - added `EchoToStderr()`
   - added `Exec()`
   - added `ListFiles()`
   - added `Lsmod()`

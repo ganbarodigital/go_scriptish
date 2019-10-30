@@ -60,6 +60,7 @@ result, err := scriptish.NewPipeline(
   - [Echo()](#echo)
   - [EchoArgs()](#echoargs)
   - [EchoSlice()](#echoslice)
+  - [EchoToStderr()](#echotostderr)
   - [Exec()](#exec)
   - [ListFiles()](#listfiles)
   - [Lsmod()](#lsmod)
@@ -879,6 +880,16 @@ myStrings := []string{"hello world", "have a nice day"}
 result, err := scriptish.NewPipeline(
     scriptish.EchoSlice(myStrings),
 ).Exec().String()
+```
+
+### EchoToStderr()
+
+`EchoToStderr()` writes a string to the pipeline's `Stderr`.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.EchoToStderr("*** error: file not found"),
+).Exec()
 ```
 
 ### Exec()
