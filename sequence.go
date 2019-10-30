@@ -40,7 +40,9 @@
 package scriptish
 
 import (
+	"fmt"
 	"io/ioutil"
+	"os"
 
 	envish "github.com/ganbarodigital/go_envish/v3"
 	pipe "github.com/ganbarodigital/go_pipe/v5"
@@ -65,7 +67,7 @@ type Sequence struct {
 
 // NewSequence creates a sequence that's ready to run
 func NewSequence(steps ...Command) *Sequence {
-	sequence := Sequence{
+	sq := Sequence{
 		Pipe:      pipe.NewPipe(),
 		Steps:     steps,
 		LocalVars: envish.NewLocalEnv(),
@@ -73,12 +75,25 @@ func NewSequence(steps ...Command) *Sequence {
 
 	// we want an environment that supports both local and global
 	// variables
-	sequence.Pipe.Env = envish.NewOverlayEnv(
-		sequence.LocalVars,
+	//
+	// this will get rebuilt everytime sq.Exec() is called, but we're
+	// building it here anyway to make sure this sequence is ready to go
+	// if it is called from another sequence
+	sq.Pipe.Env = envish.NewOverlayEnv(
+		sq.LocalVars,
 		envish.NewProgramEnv(),
 	)
 
-	return &sequence
+	// set special parameters here ... well, the ones that make sense
+	// for Scriptish, anyways :)
+	//
+	// positional parameters are set when Exec() is called
+	sq.LocalVars.Setenv("$0", os.Args[0])
+	sq.LocalVars.Setenv("$-", os.Args[0])
+	sq.LocalVars.Setenv("$$", fmt.Sprintf("%d", os.Getpid()))
+
+	// all done
+	return &sq
 }
 
 // Bytes returns the contents of the sequence's stdout as a byte slice
