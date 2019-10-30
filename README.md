@@ -46,6 +46,12 @@ result, err := scriptish.NewPipeline(
 - [Passing Parameters Into Lists](#passing-parameters-into-lists)
 - [Calling A List From Another List Or Pipeline](#calling-a-list-from-another-list-or-pipeline)
 - [Pipelines, Lists and Sequences](#pipelines-lists-and-sequences)
+- [UNIX Shell String Expansion](#unix-shell-string-expansion)
+  - [What Is String Expansion?](#what-is-string-expansion)
+  - [Setting Positional Parameters](#setting-positional-parameters)
+  - [Setting Local Variables](#setting-local-variables)
+  - [Escaping Strings](#escaping-strings)
+  - [Filename Globbing / Pathname Expansion](#filename-globbing--pathname-expansion)
 - [From Bash To Scriptish](#from-bash-to-scriptish)
 - [Sources](#sources)
   - [CatFile()](#catfile)
@@ -693,6 +699,65 @@ In UNIX shell programming, pipelines and lists are both examples of a _sequence 
 In Scriptish, a `Pipeline` and a `List` are type aliases for a `Sequence`. A call to `NewPipeline()` or `NewList()` creates a `Sequence` that also has the right execution logic for a pipeline or a list. We've done it this way so that you can use both pipelines and lists in our [logic calls](#logic-calls).
 
 All of our logic calls accept `Sequence` parameters. You can pass in a `Pipeline` or a `List` to suit, and either will work just fine.
+
+## UNIX Shell String Expansion
+
+### What Is String Expansion?
+
+One of the things that makes UNIX shells so powerful is the way they expand a string, or a line of code, before executing it.
+
+```bash
+#!/usr/bin/env bash
+
+PARAM1=hello world
+
+# output: "Hello world"
+echo ${PARAM1^H}
+```
+
+We've integrated the [ShellExpand package](https://github.com/ganbarodigital/go_shellexpand) so that string expansion is available to you.
+
+### Setting Positional Parameters
+
+The positional parameters are `$1`, `$2`, `$3` all the way up to `$9`, as well as `$#` and `$*`. These are exactly the same as their equivalents in shell scripts.
+
+To set these, pass parameters [into pipeline](#passing-parameters-into-pipelines) or [into lists](#passing-parameters-into-lists).
+
+### Setting Local Variables
+
+Every `Pipeline` and `List` struct comes with a `LocalVars` member. You can call its `Setenv()` method to create more variables to use in string expansion:
+
+```golang
+// create a reusable List
+fetch_changes_from_remote := scriptish.NewList(
+    scriptish.Exec("git", "remote", "update", "$REMOTE"),
+    scriptish.Or(dieFunc("Unable to get list of changes from '$REMOTE'")),
+    scriptish.Exec("git", "fetch", "$REMOTE"),
+    scriptish.Or(dieFunc("Unable to fetch latest changes from '$REMOTE'")),
+    scriptish.Exec("git", "fetch", "--tags"),
+    scriptish.Or(dieFunc("Unable to fetch latest tags from '$REMOTE'")),
+)
+
+// set the value of '$REMOTE'
+fetch_changes_from_remote.LocalVars.Setenv("REMOTE", "origin")
+
+// run it
+fetch_changes_from_remote.Exec()
+```
+
+Any local variables that you set will remain set if you reuse the pipeline or list - ie, they are persistent.
+
+### Escaping Strings
+
+The one downside of string expansion is that you will need to escape characters in your strings, to avoid them being interpreted as instructions to the string expansion engine.
+
+The basic rule of thumb is that if you'd need to escape it in a shell script, you'll also need to escape it in a string passed into Scriptish.
+
+### Filename Globbing / Pathname Expansion
+
+At the moment, the string expansion does not support globbing (properly known as _pathname expansion_). That means you can't use wildcards in filepaths anywhere.
+
+This is something we might add in a future release.
 
 ## From Bash To Scriptish
 
