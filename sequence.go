@@ -63,7 +63,7 @@ type Sequence struct {
 	Controller SequenceController
 
 	// we store local variables here
-	localVars *envish.LocalEnv
+	LocalVars *envish.LocalEnv
 }
 
 // NewSequence creates a sequence that's ready to run
@@ -71,13 +71,13 @@ func NewSequence(steps ...Command) *Sequence {
 	sequence := Sequence{
 		Pipe:      pipe.NewPipe(),
 		Steps:     steps,
-		localVars: envish.NewLocalEnv(),
+		LocalVars: envish.NewLocalEnv(),
 	}
 
 	// we want an environment that supports both local and global
 	// variables
 	sequence.Pipe.Env = envish.NewOverlayEnv(
-		sequence.localVars,
+		sequence.LocalVars,
 		envish.NewProgramEnv(),
 	)
 
@@ -184,21 +184,23 @@ func (sq *Sequence) SetParams(params ...string) {
 		return
 	}
 
-	// step one - remove any existing params
-	sq.localVars.Clearenv()
+	// step one - remove any existing positional params
+	for i := 1; i < 9; i++ {
+		sq.LocalVars.Unsetenv(fmt.Sprintf("$%d", i))
+	}
 
 	// step two - set the new param count
 	//
 	// params start at $1
 	newParamCount := len(params)
-	sq.localVars.Setenv("$#", strconv.Itoa(newParamCount))
+	sq.LocalVars.Setenv("$#", strconv.Itoa(newParamCount))
 
 	for i := 1; i <= newParamCount; i++ {
-		sq.localVars.Setenv(fmt.Sprintf("$%d", i), params[i-1])
+		sq.LocalVars.Setenv(fmt.Sprintf("$%d", i), params[i-1])
 	}
 
 	// step three - set $*
-	sq.localVars.Setenv("$*", strings.Join(params, " "))
+	sq.LocalVars.Setenv("$*", strings.Join(params, " "))
 
 	// all done
 }
