@@ -51,6 +51,7 @@
   - added `XargsTruncateFiles()`
 * Sinks:
   - added `AppendToFile()`
+  - added `Exit()`
   - added `Return()`
   - added `RmDir()`
   - added `RmFile()`

@@ -94,6 +94,7 @@ result, err := scriptish.NewPipeline(
   - [XargsTruncateFiles()](#xargstruncatefiles)
 - [Sinks](#sinks)
   - [AppendToFile()](#appendtofile)
+  - [Exit()](#exit)
   - [Return()](#return)
   - [RmDir()](#rmdir)
   - [RmFile()](#rmfile)
@@ -782,6 +783,7 @@ Bash                         | Scriptish
 `dirname ...`                | [`scriptish.Dirname()`](#dirname)
 `echo "..."`                 | [`scriptish.Echo(...)`](#echo)
 `echo "$@"`                  | [`scriptish.EchoArgs()`](#echoargs)
+`exit ...`                   | [`scriptish.Exit()`](#exit)
 `function`                   | [`scriptish.RunPipeline()`](#runpipeline)
 `grep ...`                   | [`scriptish.Grep()`](#grep)
 `grep -v ..`                 | [`scriptish.GrepV()`](#grepv)
@@ -1357,6 +1359,23 @@ err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.AppendToFile("my-app.log"),
 ).Exec().Error()
+```
+
+### Exit()
+
+`Exit()` terminates your Golang program with the given status code. Use with caution.
+
+```golang
+dieFunc := scriptish.NewList(
+    scriptish.Echo("*** error: $*"),
+    scriptish.ToStderr(),
+    scriptish.Exit(1),
+)
+
+scriptish.ExecList(
+    scriptish.TestFilepathExists("./Dockerfile"),
+    scriptish.Or(dieFunc("cannot find Dockerfile")),
+)
 ```
 
 ### Return()
