@@ -2,6 +2,10 @@
 
 ## develop
 
+## v1.0.0
+
+Released Wednesday, 30th October 2019.
+
 ### New
 
 * Added `NewPipeline()` to create a new Pipeline to execute
