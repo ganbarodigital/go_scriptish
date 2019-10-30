@@ -50,7 +50,10 @@ import (
 func Which(cmd string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		filepath, err := exec.LookPath(cmd)
+		// expand our input
+		expCmd := p.Env.Expand(cmd)
+
+		filepath, err := exec.LookPath(expCmd)
 		if err != nil {
 			return StatusNotOkay, err
 		}

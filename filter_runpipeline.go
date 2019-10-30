@@ -55,6 +55,15 @@ func RunPipeline(pl *Pipeline) Command {
 			pl.Pipe.Stdout.WriteRune('\n')
 		}
 
+		// get our parameters
+		params := getParamsFromEnv(p.Env)
+
+		// set them in the target pipeline
+		//
+		// we're not calling pl.Exec() (see below) so we have to set them
+		// this way instead
+		pl.SetParams(params...)
+
 		// run our sub-pipeline
 		//
 		// NOTE that we cannot call pl.Exec(), as that (by design) starts

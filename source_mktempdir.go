@@ -48,8 +48,12 @@ import (
 func MkTempDir(dir string, prefix string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// expand our inputs
+		expDir := p.Env.Expand(dir)
+		expPrefix := p.Env.Expand(prefix)
+
 		// create the file
-		name, err := ioutil.TempDir(dir, prefix)
+		name, err := ioutil.TempDir(expDir, expPrefix)
 		if err != nil {
 			return StatusNotOkay, err
 		}

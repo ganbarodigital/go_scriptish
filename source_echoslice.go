@@ -45,15 +45,21 @@ import (
 
 // EchoSlice writes an array of strings to the pipeline's stdout,
 // one line per array entry
+//
+// it DOES perform string expansion. If you want to avoid that, use the
+// EchoSliceRaw() filter instead
 func EchoSlice(input []string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
 		// send the slice to the pipe
 		for _, line := range input {
-			p.Stdout.WriteString(line)
+			// expand our input
+			expLine := p.Env.Expand(line)
+
+			p.Stdout.WriteString(expLine)
 
 			// does the string already end with an EOL?
-			if !strings.HasSuffix(line, "\n") {
+			if !strings.HasSuffix(expLine, "\n") {
 				p.Stdout.WriteRune('\n')
 			}
 		}

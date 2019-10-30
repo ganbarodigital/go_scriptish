@@ -61,7 +61,12 @@ func Tr(old []string, new []string) Command {
 		// let's get the replacement done
 		for line := range p.Stdin.ReadLines() {
 			for i := range old {
-				line = strings.ReplaceAll(line, old[i], new[i])
+				// expand our inputs
+				expOld := p.Env.Expand(old[i])
+				expNew := p.Env.Expand(new[i])
+
+				// do the replacement
+				line = strings.ReplaceAll(line, expOld, expNew)
 			}
 			p.Stdout.WriteString(line)
 			p.Stdout.WriteRune('\n')

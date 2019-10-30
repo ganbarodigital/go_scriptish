@@ -40,43 +40,27 @@
 package scriptish
 
 import (
-	"os/exec"
+	"strings"
 )
 
-// Exec runs an operating system command, and posts the results to
-// the pipeline's Stdout and Stderr.
+// EchoRawSlice writes an array of strings to the pipeline's stdout,
+// one line per array entry
 //
-// The command's status code is stored in the pipeline.StatusCode.
-func Exec(args ...string) Command {
+// it does not perform string expansion
+func EchoRawSlice(input []string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// expand our input
-		expArgs := make([]string, len(args))
-		for i := 0; i < len(args); i++ {
-			expArgs[i] = p.Env.Expand(args[i])
+		// send the slice to the pipe
+		for _, line := range input {
+			p.Stdout.WriteString(line)
+
+			// does the string already end with an EOL?
+			if !strings.HasSuffix(line, "\n") {
+				p.Stdout.WriteRune('\n')
+			}
 		}
-
-		// build our command
-		cmd := exec.Command(expArgs[0], expArgs[1:]...)
-
-		// attach all of our inputs and outputs
-		cmd.Stdin = p.Stdin
-		cmd.Stdout = p.Stdout
-		cmd.Stderr = p.Stderr
-
-		// let's do it
-		err := cmd.Start()
-		if err != nil {
-			return StatusNotOkay, err
-		}
-
-		// wait for it to finish
-		err = cmd.Wait()
-
-		// we want the process's status code
-		statusCode := cmd.ProcessState.ExitCode()
 
 		// all done
-		return statusCode, err
+		return StatusOkay, nil
 	}
 }

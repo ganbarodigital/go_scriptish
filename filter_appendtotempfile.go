@@ -52,8 +52,12 @@ import (
 func AppendToTempFile(dir string, pattern string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// expand our inputs
+		expDir := p.Env.Expand(dir)
+		expPattern := p.Env.Expand(pattern)
+
 		// create the temporary file
-		fh, err := ioutil.TempFile(dir, pattern)
+		fh, err := ioutil.TempFile(expDir, expPattern)
 		if err != nil {
 			return StatusNotOkay, err
 		}

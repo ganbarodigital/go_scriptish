@@ -51,8 +51,11 @@ import (
 func WriteToFile(filename string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// expand our input
+		expFilename := p.Env.Expand(filename)
+
 		// open / create the file
-		fh, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+		fh, err := os.OpenFile(expFilename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return StatusNotOkay, err
 		}

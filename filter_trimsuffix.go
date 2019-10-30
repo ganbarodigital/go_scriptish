@@ -49,8 +49,11 @@ import (
 func TrimSuffix(ext string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// expand our input
+		expExt := p.Env.Expand(ext)
+
 		for line := range p.Stdin.ReadLines() {
-			newPath := strings.TrimSuffix(line, ext)
+			newPath := strings.TrimSuffix(line, expExt)
 
 			p.Stdout.WriteString(newPath)
 			p.Stdout.WriteRune('\n')

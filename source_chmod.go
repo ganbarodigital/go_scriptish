@@ -52,10 +52,17 @@ import (
 func Chmod(filepath string, mode os.FileMode) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		err := os.Chmod(filepath, mode)
+		// expand our input
+		expFilepath := p.Env.Expand(filepath)
+
+		err := os.Chmod(expFilepath, mode)
 		if err != nil {
 			return StatusNotOkay, err
 		}
+
+		// write it out to the pipeline
+		p.Stdout.WriteString(expFilepath)
+		p.Stdout.WriteRune('\n')
 
 		// all done
 		return StatusOkay, nil

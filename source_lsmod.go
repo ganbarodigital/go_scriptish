@@ -52,7 +52,10 @@ import (
 func Lsmod(filepath string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		fileInfo, err := os.Stat(filepath)
+		// expand our input
+		expFilepath := p.Env.Expand(filepath)
+
+		fileInfo, err := os.Stat(expFilepath)
 		if err != nil {
 			return StatusNotOkay, err
 		}

@@ -49,8 +49,11 @@ import (
 func RunList(pl *List) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// run our sub-list
-		pl.Exec()
+		// get our parameters
+		params := getParamsFromEnv(p.Env)
+
+		// run our sub-list w/ our parameters
+		pl.Exec(params...)
 
 		// append the sub-list's stdout to our own
 		io.Copy(p.Stdout, pl.Pipe.Stdout.NewReader())

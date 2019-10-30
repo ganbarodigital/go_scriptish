@@ -47,10 +47,13 @@ import (
 func Echo(input string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		p.Stdout.WriteString(input)
+		// expand our input
+		expInput := p.Env.Expand(input)
+
+		p.Stdout.WriteString(expInput)
 
 		// make sure we don't accidentally create a blank line
-		if !strings.HasSuffix(input, "\n") {
+		if !strings.HasSuffix(expInput, "\n") {
 			p.Stdout.WriteRune('\n')
 		}
 

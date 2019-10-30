@@ -54,15 +54,18 @@ import (
 func TestFilepathExists(filepath string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// expand our input
+		expFilepath := p.Env.Expand(filepath)
+
 		// does the file exist?
-		_, err := os.Stat(filepath)
+		_, err := os.Stat(expFilepath)
 		if err != nil {
 			return StatusNotOkay, err
 		}
 
 		// write the filepath to the pipeline, in case the next item
 		// can make use of it
-		p.Stdout.WriteString(filepath)
+		p.Stdout.WriteString(expFilepath)
 		p.Stdout.WriteRune('\n')
 
 		// all done

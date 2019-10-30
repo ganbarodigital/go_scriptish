@@ -46,5 +46,5 @@ import (
 // EchoArgs echos the program's command-line arguments into the pipeline,
 // one argument per line
 func EchoArgs() Command {
-	return EchoSlice(os.Args)
+	return EchoRawSlice(os.Args)
 }

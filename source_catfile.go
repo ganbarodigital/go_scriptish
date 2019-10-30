@@ -49,8 +49,11 @@ import (
 func CatFile(filename string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// expand our input
+		expFilename := p.Env.Expand(filename)
+
 		// can we open the file?
-		f, err := os.Open(filename)
+		f, err := os.Open(expFilename)
 		if err != nil {
 			return StatusNotOkay, err
 		}

@@ -47,8 +47,11 @@ import (
 func Grep(regex string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// expand our input
+		expRegex := p.Env.Expand(regex)
+
 		// do we have a valid regex?
-		re, err := regexp.Compile(regex)
+		re, err := regexp.Compile(expRegex)
 		if err != nil {
 			return StatusNotOkay, err
 		}
