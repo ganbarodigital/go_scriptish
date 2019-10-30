@@ -73,13 +73,13 @@ func TestChmodChangesPermissionsOnGivenFile(t *testing.T) {
 
 	actualResult, err := ExecPipeline(
 		Chmod(tmpFile, 0),
-	).String()
+	).TrimmedString()
 
 	// ----------------------------------------------------------------
 	// test the results
 
 	assert.Nil(t, err)
-	assert.Empty(t, actualResult)
+	assert.Equal(t, tmpFile, actualResult)
 
 	// the file should have different permissions now
 	// grab its current permissions
