@@ -103,6 +103,8 @@ result, err := scriptish.NewPipeline(
   - [ToStdout()](#tostdout)
   - [TruncateFile()](#truncatefile)
   - [WriteToFile()](#writetofile)
+- [Builtins](#builtins)
+  - [TestNotEmpty()](#testnotempty)
 - [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
   - [Error()](#error)
@@ -772,6 +774,7 @@ Bash                         | Scriptish
 `${x%$y}%z`                  | [`scriptish.SwapExtensions()](#swapextensions)
 `${x%$y}`                    | [`scriptish.TrimSuffix()`](#trimsuffix)
 `[[ -e $x ]]`                | [`scriptish.TestFilepathExists()`](#filepathexists)
+`[[ -n $x ]]`                | [`scriptish.TestNotEmpty()`](#testnotempty)
 `> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
 `>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
 `||`                         | [`scriptish.Or()`](#or)
@@ -1474,6 +1477,48 @@ err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.WriteToFile("/path/to/new_file.txt"),
 ).Exec().Error()
+```
+
+## Builtins
+
+Builtins are UNIX shell commands and UNIX CLI utilities that don't fall into the [sources](#sources), [sinks](#sinks) and [filters](#filters) categories:
+
+* their input is a parameter; they ignore the pipeline
+* their only output is the status code; they don't write anything new to the pipeline
+
+### TestNotEmpty()
+
+`TestNotEmpty()` returns `StatusOkay` if the (expanded) input is empty; `StatusNotOkay` otherwise.
+
+It is the equivalent to `if [[ -n $VAR ]]` in a UNIX shell script.
+
+```bash
+show_usage() {
+    echo "*** error: $*"
+    echo
+    echo "usage: $0 <name-of-arg>"
+    exit 1
+}
+
+[[ -n $1 ]] || show_usage("missing parameter <name-of-arg>")
+```
+
+Here's the equivalent Scriptish:
+
+```golang
+showUsage := scriptish.NewList(
+    scriptish.Echo("*** error: $*"),
+    scriptish.Echo(""),
+    scriptish.Echo("usage: $0 <name-of-arg>")
+    scriptish.Exit(1),
+)
+
+checkArgs := scriptish.NewList(
+    scriptish.TestNotEmpty("$1"),
+    scriptish.Or(showUsage("missing argument")),
+)
+
+checkArgs.Exec(os.Args...)
 ```
 
 ## Capture Methods

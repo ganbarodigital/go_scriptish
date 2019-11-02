@@ -2,6 +2,10 @@
 
 ## develop
 
+### New
+
+* Added `TestNotEmpty() builtin (emulates `[[ -n $VAR ]]`)
+
 ## v1.0.0
 
 Released Wednesday, 30th October 2019.
