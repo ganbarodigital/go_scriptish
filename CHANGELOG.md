@@ -2,6 +2,10 @@
 
 ## develop
 
+## v1.1.0
+
+Released Saturday, 2nd November 2019.
+
 ### New
 
 * Added `TestEmpty() builtin (emulates `[[ -z $VAR ]]`)
