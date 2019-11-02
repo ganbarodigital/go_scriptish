@@ -47,8 +47,11 @@ import "io"
 func If(expr, body *Sequence) Command {
 	// build our Scriptish Command
 	return func(p *Pipe) (int, error) {
+		// get our parameters
+		params := getParamsFromEnv(p.Env)
+
 		// run the test expression first
-		expr.Exec()
+		expr.Exec(params...)
 
 		// copy the output over to our pipe
 		io.Copy(p.Stdout, expr.Pipe.Stdout.NewReader())
@@ -61,7 +64,7 @@ func If(expr, body *Sequence) Command {
 		}
 
 		// yes we can!
-		body.Exec()
+		body.Exec(params...)
 
 		// copy the output over to our pipe
 		io.Copy(p.Stdout, body.Pipe.Stdout.NewReader())

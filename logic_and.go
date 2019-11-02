@@ -62,8 +62,11 @@ func And(sq *Sequence) Command {
 			return statusCode, err
 		}
 
+		// get our parameters
+		params := getParamsFromEnv(p.Env)
+
 		// run it
-		sq.Exec()
+		sq.Exec(params...)
 
 		// copy the results into our pipe
 		io.Copy(p.Stdout, sq.Pipe.Stdout.NewReader())
