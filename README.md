@@ -54,6 +54,7 @@ result, err := scriptish.NewPipeline(
   - [Filename Globbing / Pathname Expansion](#filename-globbing--pathname-expansion)
 - [From Bash To Scriptish](#from-bash-to-scriptish)
 - [Sources](#sources)
+  - [Basename()](#basename)
   - [CatFile()](#catfile)
   - [CatStdin()](#catstdin)
   - [Chmod()](#chmod)
@@ -819,6 +820,18 @@ Bash                         | Scriptish
 Sources get data from outside the pipeline, and write it into the pipeline's `Stdout`.
 
 Every pipeline normally begins with a source, and is then followed by one or more [filters](#filters).
+
+### Basename()
+
+`Basename()` treats the input as a filepath. Any parent elements are stripped from the input, and the results written to the pipeline's `Stdout`.
+
+Any blank lines are preserved.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Basename("/path/to/folder/or/file"),
+).Exec().TrimmedString()
+```
 
 ### CatFile()
 

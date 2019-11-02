@@ -10,6 +10,7 @@
 
 ### Fixes
 
+* `Basename()` now takes an input (compatibility fix)
 * `Dirname()` now takes an input (compatibility fix)
 * `Exit()` is no longer conditionally-built
   - dents our code coverage figures, but more important that it's available when you build your tests
