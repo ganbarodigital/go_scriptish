@@ -2,6 +2,10 @@
 
 ## develop
 
+### Fixes
+
+* Logic constructs now pass on the positional parameters
+
 ## v1.1.0
 
 Released Saturday, 2nd November 2019.
