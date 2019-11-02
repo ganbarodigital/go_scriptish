@@ -1,5 +1,3 @@
-// +build !test
-
 // scriptish is a library to help you port bash scripts to Golang
 //
 // inspired by:

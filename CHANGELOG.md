@@ -6,6 +6,11 @@
 
 * Added `TestNotEmpty() builtin (emulates `[[ -n $VAR ]]`)
 
+### Fixes
+
+* `Exit()` is no longer conditionally-built
+  - dents our code coverage figures, but more important that it's available when you build your tests
+
 ## v1.0.0
 
 Released Wednesday, 30th October 2019.
