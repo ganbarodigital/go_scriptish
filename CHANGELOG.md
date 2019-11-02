@@ -9,6 +9,7 @@
 
 ### Fixes
 
+* `Dirname()` now takes an input (compatibility fix)
 * `Exit()` is no longer conditionally-built
   - dents our code coverage figures, but more important that it's available when you build your tests
 * `TestFilepathExists()` no longer writes to the pipeline on success

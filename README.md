@@ -57,6 +57,7 @@ result, err := scriptish.NewPipeline(
   - [CatFile()](#catfile)
   - [CatStdin()](#catstdin)
   - [Chmod()](#chmod)
+  - [Dirname()](#dirname)
   - [Echo()](#echo)
   - [EchoArgs()](#echoargs)
   - [EchoSlice()](#echoslice)
@@ -851,6 +852,18 @@ On success, it writes the filepath to the pipeline's stdout, in case anything el
 result, err := scriptish.NewPipeline(
     scriptish.Chmod("/path/to/file", 0644)
 ).Exec().String()
+```
+
+### Dirname()
+
+`Dirname()` treats the input as a filepath. It removes the last element from the input. It writes the result to the pipeline's `Stdout`.
+
+If the input is blank, Dirname() returns a '.'
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Dirname("/path/to/folder/or/file")
+).Exec().TrimmedString()
 ```
 
 ### Echo()
