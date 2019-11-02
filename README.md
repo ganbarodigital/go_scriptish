@@ -70,7 +70,6 @@ result, err := scriptish.NewPipeline(
   - [Which()](#which)
 - [Filters](#filters)
   - [AppendToTempFile()](#appendtotempfile)
-  - [Basename()](#basename)
   - [CountLines()](#countlines)
   - [CountWords()](#countwords)
   - [CutFields()](#cutfields)
@@ -88,6 +87,7 @@ result, err := scriptish.NewPipeline(
   - [TrimSuffix()](#trimsuffix)
   - [TrimWhitespace()](#trimwhitespace)
   - [Uniq()](#uniq)
+  - [XargsBasename()](#xargsbasename)
   - [XargsCat()](#xargscat)
   - [XargsDirname()](#xargsdirname)
   - [XargsRmFile()](#xargsrmfile)
@@ -1031,19 +1031,6 @@ result, err := scriptish.NewPipeline(
 // result now contains the temporary filename
 ```
 
-### Basename()
-
-`Basename()` treats each line in the pipeline's `Stdin` as a filepath. Any parent elements are stripped from the line, and the results written to the pipeline's `Stdout`.
-
-Any blank lines are preserved.
-
-```go
-result, err := scriptish.NewPipeline(
-    scriptish.ListFiles("/path/to/folder/*.txt"),
-    scriptish.Basename()
-).Exec().Strings()
-```
-
 ### CountLines()
 
 `CountLines()` counts the number of lines in the pipeline's `Stdin`, and writes that to the pipeline's `Stdout`.
@@ -1279,6 +1266,19 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.CatFile("/path/to/file.txt"),
     scriptish.Uniq(),
+).Exec().Strings()
+```
+
+### XargsBasename()
+
+`XargsBasename()` treats each line in the pipeline's `Stdin` as a filepath. Any parent elements are stripped from the line, and the results written to the pipeline's `Stdout`.
+
+Any blank lines are preserved.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.txt"),
+    scriptish.XargsBasename()
 ).Exec().Strings()
 ```
 
@@ -1619,7 +1619,7 @@ If the pipeline didn't execute successfully, the contents of the pipeline's `Std
 ```go
 files, err := scriptish.ExecPipeline(
     scriptish.ListFiles("/path/to/folder"),
-    scriptish.Basename(),
+    scriptish.XargsBasename(),
 ).Strings()
 ```
 

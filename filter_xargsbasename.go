@@ -40,69 +40,33 @@
 package scriptish
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
+	"path/filepath"
+	"strings"
 )
 
-func TestBasenameStripsParentFolders(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
+// XargsBasename treats every line in the pipe as a filepath.
+// It removes any parent elements from the line.
+func XargsBasename() Command {
+	// build our Scriptish command
+	return func(p *Pipe) (int, error) {
+		// process each filepath in the pipeline
+		for line := range p.Stdin.ReadLines() {
+			var basename string
 
-	testData := []string{
-		"/path/to/one.file",
-		"/path/to/two.file",
+			if len(strings.TrimSpace(line)) > 0 {
+				// let's get our basename
+				basename = filepath.Base(line)
+			} else {
+				// special case - preserve blank lines
+				basename = ""
+			}
+
+			// send what we've got
+			p.Stdout.WriteString(basename)
+			p.Stdout.WriteRune('\n')
+		}
+
+		// all done
+		return StatusOkay, nil
 	}
-	expectedResult := []string{
-		"one.file",
-		"two.file",
-	}
-
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		Basename(),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().Strings()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestBasenamePreservesBlankLines(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testData := []string{
-		"/path/to/one.file",
-		"/path/to/two.file",
-		"    ",
-	}
-	expectedResult := []string{
-		"one.file",
-		"two.file",
-		"",
-	}
-
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		Basename(),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().Strings()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
 }

@@ -5,6 +5,7 @@
 ### New
 
 * Added `TestNotEmpty() builtin (emulates `[[ -n $VAR ]]`)
+* Added `XargsBasename()`
 * Added `XargsDirname()`
 
 ### Fixes
