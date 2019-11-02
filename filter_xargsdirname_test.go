@@ -45,7 +45,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDirnameStripsFinalElement(t *testing.T) {
+func TestXargsDirnameStripsFinalElement(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
@@ -60,7 +60,7 @@ func TestDirnameStripsFinalElement(t *testing.T) {
 
 	pipeline := NewPipeline(
 		EchoSlice(testData),
-		Dirname(),
+		XargsDirname(),
 	)
 
 	// ----------------------------------------------------------------
@@ -75,7 +75,7 @@ func TestDirnameStripsFinalElement(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestDirnamePreservesRootFolder(t *testing.T) {
+func TestXargsDirnamePreservesRootFolder(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
@@ -91,7 +91,7 @@ func TestDirnamePreservesRootFolder(t *testing.T) {
 
 	pipeline := NewPipeline(
 		EchoSlice(testData),
-		Dirname(),
+		XargsDirname(),
 	)
 
 	// ----------------------------------------------------------------
@@ -106,7 +106,7 @@ func TestDirnamePreservesRootFolder(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestDirnameReplacesBlankLinesWithDots(t *testing.T) {
+func TestXargsDirnameReplacesBlankLinesWithDots(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
@@ -123,7 +123,7 @@ func TestDirnameReplacesBlankLinesWithDots(t *testing.T) {
 
 	pipeline := NewPipeline(
 		EchoSlice(testData),
-		Dirname(),
+		XargsDirname(),
 	)
 
 	// ----------------------------------------------------------------

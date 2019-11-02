@@ -44,11 +44,11 @@ import (
 	"strings"
 )
 
-// Dirname treats every line in the pipeline as a filepath.
+// XargsDirname treats every line in the pipeline as a filepath.
 // It removes the last element from each filepath.
 //
-// If a line is blank, Dirname returns a '.'
-func Dirname() Command {
+// If a line is blank, XargsDirname returns a '.'
+func XargsDirname() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
 		for line := range p.Stdin.ReadLines() {

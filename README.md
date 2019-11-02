@@ -73,7 +73,6 @@ result, err := scriptish.NewPipeline(
   - [CountLines()](#countlines)
   - [CountWords()](#countwords)
   - [CutFields()](#cutfields)
-  - [Dirname](#dirname)
   - [DropEmptyLines()](#dropemptylines)
   - [Grep()](#grep)
   - [GrepV()](#grepv)
@@ -89,6 +88,7 @@ result, err := scriptish.NewPipeline(
   - [TrimWhitespace()](#trimwhitespace)
   - [Uniq()](#uniq)
   - [XargsCat()](#xargscat)
+  - [XargsDirname()](#xargsdirname)
   - [XargsRmFile()](#xargsrmfile)
   - [XargsTestFilepathExists()](#xargstestfilepathexists)
   - [XargsTruncateFiles()](#xargstruncatefiles)
@@ -1064,19 +1064,6 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-### Dirname
-
-`Dirname()` treats each line in the pipeline's `Stdin` as a filepath. The last element is stripped from the line, and the results written to the pipeline's `Stdout`.
-
-Any blank lines are turned in '.'
-
-```go
-result, err := scriptish.NewPipeline(
-    scriptish.ListFiles("/path/to/folder/*.txt"),
-    scriptish.Dirname()
-).Exec().Strings()
-```
-
 ### DropEmptyLines()
 
 `DropEmptyLines()` removes any lines that are blank, or that only contain whitespace.
@@ -1291,6 +1278,19 @@ result, err := scriptish.NewPipeline(
     scriptish.ListFiles("/path/to/folder/*.txt"),
     scriptish.XargsCat()
 ).Exec().String()
+```
+
+### XargsDirname()
+
+`XargsDirname()` treats each line in the pipeline's `Stdin` as a filepath. The last element is stripped from the line, and the results written to the pipeline's `Stdout`.
+
+Any blank lines are turned in '.'
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.txt"),
+    scriptish.XargsDirname()
+).Exec().Strings()
 ```
 
 ### XargsRmFile()
