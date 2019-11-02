@@ -105,6 +105,7 @@ result, err := scriptish.NewPipeline(
   - [WriteToFile()](#writetofile)
 - [Builtins](#builtins)
   - [Chmod()](#chmod)
+  - [TestEmpty()](#testempty)
   - [TestFilepathExists()](#testfilepathexists)
   - [TestNotEmpty()](#testnotempty)
 - [Capture Methods](#capture-methods)
@@ -777,6 +778,7 @@ Bash                         | Scriptish
 `${x%$y}`                    | [`scriptish.TrimSuffix()`](#trimsuffix)
 `[[ -e $x ]]`                | [`scriptish.TestFilepathExists()`](#testfilepathexists)
 `[[ -n $x ]]`                | [`scriptish.TestNotEmpty()`](#testnotempty)
+`[[ -z $x ]]`                | [`scriptish.TestEmpty()`](#testempty)
 `> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
 `>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
 `||`                         | [`scriptish.Or()`](#or)
@@ -1498,6 +1500,45 @@ result, err := scriptish.NewPipeline(
 ).Exec().StatusError()
 ```
 
+### TestEmpty()
+
+`TestEmpty()` returns `StatusOkay` if the (expanded) input is empty; `StatusNotOkay` otherwise.
+
+It is the equivalent to `if [[ -z $VAR ]]` in a UNIX shell script.
+
+```bash
+show_usage() {
+    echo "*** error: $*"
+    echo
+    echo "usage: $0 <name-of-arg>"
+    exit 1
+}
+
+if [[ -z $1 ]] ; then
+    show_usage("missing parameter <name-of-arg>")
+fi
+```
+
+Here's the equivalent Scriptish:
+
+```golang
+showUsage := scriptish.NewList(
+    scriptish.Echo("*** error: $*"),
+    scriptish.Echo(""),
+    scriptish.Echo("usage: $0 <name-of-arg>")
+    scriptish.Exit(1),
+)
+
+checkArgs := scriptish.NewList(
+    scriptish.If(
+        scriptish.NewPipeline(scriptish.TestEmpty("$1")),
+        showUsage("missing argument")
+    ),
+)
+
+checkArgs.Exec(os.Args...)
+```
+
 ### TestFilepathExists()
 
 `TestFilepathExists()` checks to see if the given filepath exists. If it does, it returns `StatusOkay`. If not, it returns `StatusNotOkay`.
@@ -1514,7 +1555,7 @@ fileExists := scriptish.ExecPipeline(
 
 ### TestNotEmpty()
 
-`TestNotEmpty()` returns `StatusOkay` if the (expanded) input is empty; `StatusNotOkay` otherwise.
+`TestNotEmpty()` returns `StatusOkay` if the (expanded) input is not empty; `StatusNotOkay` otherwise.
 
 It is the equivalent to `if [[ -n $VAR ]]` in a UNIX shell script.
 
