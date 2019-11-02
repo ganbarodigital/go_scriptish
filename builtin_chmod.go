@@ -41,71 +41,26 @@ package scriptish
 
 import (
 	"os"
-	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-func TestChmodChangesPermissionsOnGivenFile(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
+// Chmod attempts to change the permissions on the given file.
+//
+// It ignores the contents of the pipeline.
+//
+// On success, it returns the status code `StatusOkay`. On failure,
+// it returns the status code `StatusNotOkay`.
+func Chmod(filepath string, mode os.FileMode) Command {
+	// build our Scriptish command
+	return func(p *Pipe) (int, error) {
+		// expand our input
+		expFilepath := p.Env.Expand(filepath)
 
-	// we need a file to mess with
-	tmpFile, err := ExecPipeline(
-		MkTempFile(os.TempDir(), "scriptify-chmod-"),
-	).TrimmedString()
-	assert.Nil(t, err)
-	assert.NotEmpty(t, tmpFile)
+		err := os.Chmod(expFilepath, mode)
+		if err != nil {
+			return StatusNotOkay, err
+		}
 
-	// clean up after ourselves
-	defer ExecPipeline(RmFile(tmpFile))
-
-	// grab its current permissions
-	//
-	// the actual value of these permissions may depend upon
-	// the local umask
-	origMode, err := ExecPipeline(Lsmod(tmpFile)).TrimmedString()
-	assert.Nil(t, err)
-	assert.NotEmpty(t, origMode)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := ExecPipeline(
-		Chmod(tmpFile, 0),
-	).TrimmedString()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Equal(t, tmpFile, actualResult)
-
-	// the file should have different permissions now
-	// grab its current permissions
-	newMode, err := ExecPipeline(Lsmod(tmpFile)).TrimmedString()
-	assert.Nil(t, err)
-	assert.Equal(t, "----------", newMode)
-	assert.NotEqual(t, origMode, newMode)
-}
-
-func TestChmodSetsErrorIfFileDoesNotExist(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	pipeline := NewPipeline(
-		Chmod("./does/not/exist/and/never/will", 0644),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().String()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.NotNil(t, err)
-	assert.Error(t, err)
-	assert.Empty(t, actualResult)
+		// all done
+		return StatusOkay, nil
+	}
 }

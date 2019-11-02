@@ -11,6 +11,7 @@
 ### Fixes
 
 * `Basename()` now takes an input (compatibility fix)
+* `Chmod()` no longer writes to the pipeline on success (compatibility fix)
 * `Dirname()` now takes an input (compatibility fix)
 * `Exit()` is no longer conditionally-built
   - dents our code coverage figures, but more important that it's available when you build your tests

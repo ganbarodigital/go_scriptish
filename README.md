@@ -57,7 +57,6 @@ result, err := scriptish.NewPipeline(
   - [Basename()](#basename)
   - [CatFile()](#catfile)
   - [CatStdin()](#catstdin)
-  - [Chmod()](#chmod)
   - [Dirname()](#dirname)
   - [Echo()](#echo)
   - [EchoArgs()](#echoargs)
@@ -105,6 +104,7 @@ result, err := scriptish.NewPipeline(
   - [TruncateFile()](#truncatefile)
   - [WriteToFile()](#writetofile)
 - [Builtins](#builtins)
+  - [Chmod()](#chmod)
   - [TestFilepathExists()](#testfilepathexists)
   - [TestNotEmpty()](#testnotempty)
 - [Capture Methods](#capture-methods)
@@ -853,20 +853,6 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-### Chmod()
-
-`Chmod()` attempts to change the permissions on the given filepath.
-
-It ignores the contents of the pipeline.
-
-On success, it writes the filepath to the pipeline's stdout, in case anything else in the pipeline can use it.
-
-```go
-result, err := scriptish.NewPipeline(
-    scriptish.Chmod("/path/to/file", 0644)
-).Exec().String()
-```
-
 ### Dirname()
 
 `Dirname()` treats the input as a filepath. It removes the last element from the input. It writes the result to the pipeline's `Stdout`.
@@ -1497,6 +1483,20 @@ Builtins are UNIX shell commands and UNIX CLI utilities that don't fall into the
 
 * their input is a parameter; they ignore the pipeline
 * their only output is the status code; they don't write anything new to the pipeline
+
+### Chmod()
+
+`Chmod()` attempts to change the permissions on the given filepath.
+
+It ignores the contents of the pipeline.
+
+On success, it returns the status code `StatusOkay`. On failure, it returns the status code `StatusNotOkay`.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Chmod("/path/to/file", 0644)
+).Exec().StatusError()
+```
 
 ### TestFilepathExists()
 
