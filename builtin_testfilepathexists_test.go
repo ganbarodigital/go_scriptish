@@ -46,14 +46,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFilePathExistsWritesFilepathsThatExist(t *testing.T) {
+func TestFilePathExistsReturnsZeroForFilepathsThatExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
 	// we're going to use our own source code as the test data
 	_, filename, _, _ := runtime.Caller(0)
 
-	expectedResult := filename + "\n"
+	expectedResult := 0
 	pipeline := NewPipeline(
 		TestFilepathExists(filename),
 	)
@@ -61,7 +61,7 @@ func TestFilePathExistsWritesFilepathsThatExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, _ := pipeline.Exec().String()
+	actualResult := pipeline.Exec().StatusCode()
 
 	// ----------------------------------------------------------------
 	// test the results
@@ -69,11 +69,11 @@ func TestFilePathExistsWritesFilepathsThatExist(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestFilePathExistsDropsFilepathsThatDoNotExist(t *testing.T) {
+func TestFilePathExistsReturnsOneForFilepathsThatDoNotExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := ""
+	expectedResult := 1
 
 	pipeline := NewPipeline(
 		TestFilepathExists("/does/not/exist/and/never/will"),
@@ -82,7 +82,7 @@ func TestFilePathExistsDropsFilepathsThatDoNotExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, _ := pipeline.Exec().String()
+	actualResult := pipeline.Exec().StatusCode()
 
 	// ----------------------------------------------------------------
 	// test the results

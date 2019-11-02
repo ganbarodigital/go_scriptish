@@ -66,7 +66,6 @@ result, err := scriptish.NewPipeline(
   - [Lsmod()](#lsmod)
   - [MkTempDir()](#mktempdir)
   - [MkTempFile()](#mktempfile)
-  - [TestFilepathExists()](#testfilepathexists)
   - [Which()](#which)
 - [Filters](#filters)
   - [AppendToTempFile()](#appendtotempfile)
@@ -104,6 +103,7 @@ result, err := scriptish.NewPipeline(
   - [TruncateFile()](#truncatefile)
   - [WriteToFile()](#writetofile)
 - [Builtins](#builtins)
+  - [TestFilepathExists()](#testfilepathexists)
   - [TestNotEmpty()](#testnotempty)
 - [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
@@ -773,7 +773,7 @@ Bash                         | Scriptish
 `${x%.*}`                    | [`scriptish.StripExtension()`](#stripextension)
 `${x%$y}%z`                  | [`scriptish.SwapExtensions()](#swapextensions)
 `${x%$y}`                    | [`scriptish.TrimSuffix()`](#trimsuffix)
-`[[ -e $x ]]`                | [`scriptish.TestFilepathExists()`](#filepathexists)
+`[[ -e $x ]]`                | [`scriptish.TestFilepathExists()`](#testfilepathexists)
 `[[ -n $x ]]`                | [`scriptish.TestNotEmpty()`](#testnotempty)
 `> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
 `>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
@@ -811,7 +811,7 @@ Bash                         | Scriptish
 `which`                      | [`scriptish.Which()`](#which)
 `xargs cat`                  | [`scriptish.XargsCat()`](#xargscat)
 `xargs rm`                   | [`scriptish.XargsRmFile()`](#xargsrmfile)
-`xargs test -e`              | [`scriptish.XargsTestFilepathExists()`](#xargsfilepathexists)
+`xargs test -e`              | [`scriptish.XargsTestFilepathExists()`](#xargstestfilepathexists)
 
 ## Sources
 
@@ -981,20 +981,6 @@ result, err := scriptish.NewPipeline(
 result, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-*")
 ).Exec().String()
-```
-
-### TestFilepathExists()
-
-`TestFilepathExists()` checks to see if the given filepath exists. If it does, the filepath is written to the pipeline's `Stdout`.
-
-* It does not care what the filepath points at (file, folder, named pipe, and so on).
-* It ignores the contents of the pipeline.
-* It follows symbolic links.
-
-```go
-fileExists := scriptish.ExecPipeline(
-    scriptish.TestFilepathExists("/path/to/file")
-).Okay()
 ```
 
 ### Which()
@@ -1485,6 +1471,20 @@ Builtins are UNIX shell commands and UNIX CLI utilities that don't fall into the
 
 * their input is a parameter; they ignore the pipeline
 * their only output is the status code; they don't write anything new to the pipeline
+
+### TestFilepathExists()
+
+`TestFilepathExists()` checks to see if the given filepath exists. If it does, it returns `StatusOkay`. If not, it returns `StatusNotOkay`.
+
+* It does not care what the filepath points at (file, folder, named pipe, and so on).
+* It ignores the contents of the pipeline.
+* It follows symbolic links.
+
+```go
+fileExists := scriptish.ExecPipeline(
+    scriptish.TestFilepathExists("/path/to/file")
+).Okay()
+```
 
 ### TestNotEmpty()
 

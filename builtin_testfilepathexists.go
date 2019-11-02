@@ -63,11 +63,6 @@ func TestFilepathExists(filepath string) Command {
 			return StatusNotOkay, err
 		}
 
-		// write the filepath to the pipeline, in case the next item
-		// can make use of it
-		p.Stdout.WriteString(expFilepath)
-		p.Stdout.WriteRune('\n')
-
 		// all done
 		return StatusOkay, nil
 	}
