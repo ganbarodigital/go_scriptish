@@ -39,19 +39,36 @@
 
 package scriptish
 
-import "os"
+import (
+	"path/filepath"
+	"strings"
+)
 
-// Exit terminates the Golang app with the given status code.
+// Basename treats the input as a filepath.
 //
-// It does *NOT* flush the pipe's Stdout or Stderr to your Golang's
-// os.Stdout / os.Stderr first.
-func Exit(statusCode int) Command {
+// It removes any parent elements from the filepath, and writes the result
+// into the pipeline's `Stdout`.
+func Basename(input string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// all done
-		os.Exit(statusCode)
+		// expand our input
+		expInput := p.Env.Expand(input)
 
-		// this is unreachable, but added to keep the compiler happy
-		return statusCode, nil
+		var basename string
+
+		if len(strings.TrimSpace(expInput)) > 0 {
+			// let's get our basename
+			basename = filepath.Base(expInput)
+		} else {
+			// special case - preserve blank lines
+			basename = ""
+		}
+
+		// send what we've got
+		p.Stdout.WriteString(basename)
+		p.Stdout.WriteRune('\n')
+
+		// all done
+		return StatusOkay, nil
 	}
 }

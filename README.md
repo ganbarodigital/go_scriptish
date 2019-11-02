@@ -54,9 +54,10 @@ result, err := scriptish.NewPipeline(
   - [Filename Globbing / Pathname Expansion](#filename-globbing--pathname-expansion)
 - [From Bash To Scriptish](#from-bash-to-scriptish)
 - [Sources](#sources)
+  - [Basename()](#basename)
   - [CatFile()](#catfile)
   - [CatStdin()](#catstdin)
-  - [Chmod()](#chmod)
+  - [Dirname()](#dirname)
   - [Echo()](#echo)
   - [EchoArgs()](#echoargs)
   - [EchoSlice()](#echoslice)
@@ -66,15 +67,12 @@ result, err := scriptish.NewPipeline(
   - [Lsmod()](#lsmod)
   - [MkTempDir()](#mktempdir)
   - [MkTempFile()](#mktempfile)
-  - [TestFilepathExists()](#testfilepathexists)
   - [Which()](#which)
 - [Filters](#filters)
   - [AppendToTempFile()](#appendtotempfile)
-  - [Basename()](#basename)
   - [CountLines()](#countlines)
   - [CountWords()](#countwords)
   - [CutFields()](#cutfields)
-  - [Dirname](#dirname)
   - [DropEmptyLines()](#dropemptylines)
   - [Grep()](#grep)
   - [GrepV()](#grepv)
@@ -89,7 +87,9 @@ result, err := scriptish.NewPipeline(
   - [TrimSuffix()](#trimsuffix)
   - [TrimWhitespace()](#trimwhitespace)
   - [Uniq()](#uniq)
+  - [XargsBasename()](#xargsbasename)
   - [XargsCat()](#xargscat)
+  - [XargsDirname()](#xargsdirname)
   - [XargsRmFile()](#xargsrmfile)
   - [XargsTestFilepathExists()](#xargstestfilepathexists)
   - [XargsTruncateFiles()](#xargstruncatefiles)
@@ -103,6 +103,11 @@ result, err := scriptish.NewPipeline(
   - [ToStdout()](#tostdout)
   - [TruncateFile()](#truncatefile)
   - [WriteToFile()](#writetofile)
+- [Builtins](#builtins)
+  - [Chmod()](#chmod)
+  - [TestEmpty()](#testempty)
+  - [TestFilepathExists()](#testfilepathexists)
+  - [TestNotEmpty()](#testnotempty)
 - [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
   - [Error()](#error)
@@ -771,7 +776,9 @@ Bash                         | Scriptish
 `${x%.*}`                    | [`scriptish.StripExtension()`](#stripextension)
 `${x%$y}%z`                  | [`scriptish.SwapExtensions()](#swapextensions)
 `${x%$y}`                    | [`scriptish.TrimSuffix()`](#trimsuffix)
-`[[ -e $x ]]`                | [`scriptish.TestFilepathExists()`](#filepathexists)
+`[[ -e $x ]]`                | [`scriptish.TestFilepathExists()`](#testfilepathexists)
+`[[ -n $x ]]`                | [`scriptish.TestNotEmpty()`](#testnotempty)
+`[[ -z $x ]]`                | [`scriptish.TestEmpty()`](#testempty)
 `> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
 `>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
 `||`                         | [`scriptish.Or()`](#or)
@@ -808,13 +815,25 @@ Bash                         | Scriptish
 `which`                      | [`scriptish.Which()`](#which)
 `xargs cat`                  | [`scriptish.XargsCat()`](#xargscat)
 `xargs rm`                   | [`scriptish.XargsRmFile()`](#xargsrmfile)
-`xargs test -e`              | [`scriptish.XargsTestFilepathExists()`](#xargsfilepathexists)
+`xargs test -e`              | [`scriptish.XargsTestFilepathExists()`](#xargstestfilepathexists)
 
 ## Sources
 
 Sources get data from outside the pipeline, and write it into the pipeline's `Stdout`.
 
 Every pipeline normally begins with a source, and is then followed by one or more [filters](#filters).
+
+### Basename()
+
+`Basename()` treats the input as a filepath. Any parent elements are stripped from the input, and the results written to the pipeline's `Stdout`.
+
+Any blank lines are preserved.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Basename("/path/to/folder/or/file"),
+).Exec().TrimmedString()
+```
 
 ### CatFile()
 
@@ -836,18 +855,16 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-### Chmod()
+### Dirname()
 
-`Chmod()` attempts to change the permissions on the given filepath.
+`Dirname()` treats the input as a filepath. It removes the last element from the input. It writes the result to the pipeline's `Stdout`.
 
-It ignores the contents of the pipeline.
-
-On success, it writes the filepath to the pipeline's stdout, in case anything else in the pipeline can use it.
+If the input is blank, Dirname() returns a '.'
 
 ```go
 result, err := scriptish.NewPipeline(
-    scriptish.Chmod("/path/to/file", 0644)
-).Exec().String()
+    scriptish.Dirname("/path/to/folder/or/file")
+).Exec().TrimmedString()
 ```
 
 ### Echo()
@@ -980,20 +997,6 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-### TestFilepathExists()
-
-`TestFilepathExists()` checks to see if the given filepath exists. If it does, the filepath is written to the pipeline's `Stdout`.
-
-* It does not care what the filepath points at (file, folder, named pipe, and so on).
-* It ignores the contents of the pipeline.
-* It follows symbolic links.
-
-```go
-fileExists := scriptish.ExecPipeline(
-    scriptish.TestFilepathExists("/path/to/file")
-).Okay()
-```
-
 ### Which()
 
 `Which()` searches the current PATH to find the given path. If one is found, the command's path is written to the pipeline's `Stdout`.
@@ -1029,19 +1032,6 @@ result, err := scriptish.NewPipeline(
 // result now contains the temporary filename
 ```
 
-### Basename()
-
-`Basename()` treats each line in the pipeline's `Stdin` as a filepath. Any parent elements are stripped from the line, and the results written to the pipeline's `Stdout`.
-
-Any blank lines are preserved.
-
-```go
-result, err := scriptish.NewPipeline(
-    scriptish.ListFiles("/path/to/folder/*.txt"),
-    scriptish.Basename()
-).Exec().Strings()
-```
-
 ### CountLines()
 
 `CountLines()` counts the number of lines in the pipeline's `Stdin`, and writes that to the pipeline's `Stdout`.
@@ -1073,19 +1063,6 @@ result, err := scriptish.NewPipeline(
     scriptish.Echo("one two three four five"),
     scriptish.CutFields("2-3,5")
 ).Exec().String()
-```
-
-### Dirname
-
-`Dirname()` treats each line in the pipeline's `Stdin` as a filepath. The last element is stripped from the line, and the results written to the pipeline's `Stdout`.
-
-Any blank lines are turned in '.'
-
-```go
-result, err := scriptish.NewPipeline(
-    scriptish.ListFiles("/path/to/folder/*.txt"),
-    scriptish.Dirname()
-).Exec().Strings()
 ```
 
 ### DropEmptyLines()
@@ -1293,6 +1270,19 @@ result, err := scriptish.NewPipeline(
 ).Exec().Strings()
 ```
 
+### XargsBasename()
+
+`XargsBasename()` treats each line in the pipeline's `Stdin` as a filepath. Any parent elements are stripped from the line, and the results written to the pipeline's `Stdout`.
+
+Any blank lines are preserved.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.txt"),
+    scriptish.XargsBasename()
+).Exec().Strings()
+```
+
 ### XargsCat()
 
 `XargsCat()` treats each line in the pipeline's `Stdin` as a filepath. The contents of each file are written to the pipeline's `Stdout`.
@@ -1302,6 +1292,19 @@ result, err := scriptish.NewPipeline(
     scriptish.ListFiles("/path/to/folder/*.txt"),
     scriptish.XargsCat()
 ).Exec().String()
+```
+
+### XargsDirname()
+
+`XargsDirname()` treats each line in the pipeline's `Stdin` as a filepath. The last element is stripped from the line, and the results written to the pipeline's `Stdout`.
+
+Any blank lines are turned in '.'
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.ListFiles("/path/to/folder/*.txt"),
+    scriptish.XargsDirname()
+).Exec().Strings()
 ```
 
 ### XargsRmFile()
@@ -1476,6 +1479,115 @@ err := scriptish.NewPipeline(
 ).Exec().Error()
 ```
 
+## Builtins
+
+Builtins are UNIX shell commands and UNIX CLI utilities that don't fall into the [sources](#sources), [sinks](#sinks) and [filters](#filters) categories:
+
+* their input is a parameter; they ignore the pipeline
+* their only output is the status code; they don't write anything new to the pipeline
+
+### Chmod()
+
+`Chmod()` attempts to change the permissions on the given filepath.
+
+It ignores the contents of the pipeline.
+
+On success, it returns the status code `StatusOkay`. On failure, it returns the status code `StatusNotOkay`.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.Chmod("/path/to/file", 0644)
+).Exec().StatusError()
+```
+
+### TestEmpty()
+
+`TestEmpty()` returns `StatusOkay` if the (expanded) input is empty; `StatusNotOkay` otherwise.
+
+It is the equivalent to `if [[ -z $VAR ]]` in a UNIX shell script.
+
+```bash
+show_usage() {
+    echo "*** error: $*"
+    echo
+    echo "usage: $0 <name-of-arg>"
+    exit 1
+}
+
+if [[ -z $1 ]] ; then
+    show_usage("missing parameter <name-of-arg>")
+fi
+```
+
+Here's the equivalent Scriptish:
+
+```golang
+showUsage := scriptish.NewList(
+    scriptish.Echo("*** error: $*"),
+    scriptish.Echo(""),
+    scriptish.Echo("usage: $0 <name-of-arg>")
+    scriptish.Exit(1),
+)
+
+checkArgs := scriptish.NewList(
+    scriptish.If(
+        scriptish.NewPipeline(scriptish.TestEmpty("$1")),
+        showUsage("missing argument")
+    ),
+)
+
+checkArgs.Exec(os.Args...)
+```
+
+### TestFilepathExists()
+
+`TestFilepathExists()` checks to see if the given filepath exists. If it does, it returns `StatusOkay`. If not, it returns `StatusNotOkay`.
+
+* It does not care what the filepath points at (file, folder, named pipe, and so on).
+* It ignores the contents of the pipeline.
+* It follows symbolic links.
+
+```go
+fileExists := scriptish.ExecPipeline(
+    scriptish.TestFilepathExists("/path/to/file")
+).Okay()
+```
+
+### TestNotEmpty()
+
+`TestNotEmpty()` returns `StatusOkay` if the (expanded) input is not empty; `StatusNotOkay` otherwise.
+
+It is the equivalent to `if [[ -n $VAR ]]` in a UNIX shell script.
+
+```bash
+show_usage() {
+    echo "*** error: $*"
+    echo
+    echo "usage: $0 <name-of-arg>"
+    exit 1
+}
+
+[[ -n $1 ]] || show_usage("missing parameter <name-of-arg>")
+```
+
+Here's the equivalent Scriptish:
+
+```golang
+showUsage := scriptish.NewList(
+    scriptish.Echo("*** error: $*"),
+    scriptish.Echo(""),
+    scriptish.Echo("usage: $0 <name-of-arg>")
+    scriptish.Exit(1),
+)
+
+checkArgs := scriptish.NewList(
+    scriptish.TestNotEmpty("$1"),
+    scriptish.Or(showUsage("missing argument")),
+)
+
+checkArgs.Exec(os.Args...)
+```
+
 ## Capture Methods
 
 Capture methods available on each `Pipeline`. Use them to get the output from the pipeline.
@@ -1561,7 +1673,7 @@ If the pipeline didn't execute successfully, the contents of the pipeline's `Std
 ```go
 files, err := scriptish.ExecPipeline(
     scriptish.ListFiles("/path/to/folder"),
-    scriptish.Basename(),
+    scriptish.XargsBasename(),
 ).Strings()
 ```
 

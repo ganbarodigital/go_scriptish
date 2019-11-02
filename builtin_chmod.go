@@ -39,19 +39,28 @@
 
 package scriptish
 
-import "os"
+import (
+	"os"
+)
 
-// Exit terminates the Golang app with the given status code.
+// Chmod attempts to change the permissions on the given file.
 //
-// It does *NOT* flush the pipe's Stdout or Stderr to your Golang's
-// os.Stdout / os.Stderr first.
-func Exit(statusCode int) Command {
+// It ignores the contents of the pipeline.
+//
+// On success, it returns the status code `StatusOkay`. On failure,
+// it returns the status code `StatusNotOkay`.
+func Chmod(filepath string, mode os.FileMode) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// all done
-		os.Exit(statusCode)
+		// expand our input
+		expFilepath := p.Env.Expand(filepath)
 
-		// this is unreachable, but added to keep the compiler happy
-		return statusCode, nil
+		err := os.Chmod(expFilepath, mode)
+		if err != nil {
+			return StatusNotOkay, err
+		}
+
+		// all done
+		return StatusOkay, nil
 	}
 }

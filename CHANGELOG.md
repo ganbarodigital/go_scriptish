@@ -2,6 +2,27 @@
 
 ## develop
 
+## v1.1.0
+
+Released Saturday, 2nd November 2019.
+
+### New
+
+* Added `TestEmpty() builtin (emulates `[[ -z $VAR ]]`)
+* Added `TestNotEmpty() builtin (emulates `[[ -n $VAR ]]`)
+* Added `XargsBasename()`
+* Added `XargsDirname()`
+
+### Fixes
+
+* `Basename()` now takes an input (compatibility fix)
+* `Chmod()` no longer writes to the pipeline on success (compatibility fix)
+* `Dirname()` now takes an input (compatibility fix)
+* `Exit()` is no longer conditionally-built
+  - dents our code coverage figures, but more important that it's available when you build your tests
+* `TestFilepathExists()` no longer writes to the pipeline on success
+  - now more accurate for how a UNIX shell `[[ -e filepath ]]` behaves
+
 ## v1.0.0
 
 Released Wednesday, 30th October 2019.

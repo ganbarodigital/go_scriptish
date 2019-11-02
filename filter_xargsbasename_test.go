@@ -40,52 +40,69 @@
 package scriptish
 
 import (
-	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFilePathExistsWritesFilepathsThatExist(t *testing.T) {
+func TestXargsBasenameStripsParentFolders(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we're going to use our own source code as the test data
-	_, filename, _, _ := runtime.Caller(0)
+	testData := []string{
+		"/path/to/one.file",
+		"/path/to/two.file",
+	}
+	expectedResult := []string{
+		"one.file",
+		"two.file",
+	}
 
-	expectedResult := filename + "\n"
 	pipeline := NewPipeline(
-		TestFilepathExists(filename),
+		EchoSlice(testData),
+		XargsBasename(),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, _ := pipeline.Exec().String()
+	actualResult, err := pipeline.Exec().Strings()
 
 	// ----------------------------------------------------------------
 	// test the results
 
+	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestFilePathExistsDropsFilepathsThatDoNotExist(t *testing.T) {
+func TestXargsBasenamePreservesBlankLines(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := ""
+	testData := []string{
+		"/path/to/one.file",
+		"/path/to/two.file",
+		"    ",
+	}
+	expectedResult := []string{
+		"one.file",
+		"two.file",
+		"",
+	}
 
 	pipeline := NewPipeline(
-		TestFilepathExists("/does/not/exist/and/never/will"),
+		EchoSlice(testData),
+		XargsBasename(),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, _ := pipeline.Exec().String()
+	actualResult, err := pipeline.Exec().Strings()
 
 	// ----------------------------------------------------------------
 	// test the results
 
+	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }

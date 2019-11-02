@@ -40,29 +40,33 @@
 package scriptish
 
 import (
-	"os"
+	"path/filepath"
+	"strings"
 )
 
-// Chmod attempts to change the permissions on the given file.
+// XargsDirname treats every line in the pipeline as a filepath.
+// It removes the last element from each filepath.
 //
-// It ignores the contents of the pipeline.
-//
-// On success, it writes the filepath to the pipeline's stdout, in case
-// anything else in the pipeline can use it.
-func Chmod(filepath string, mode os.FileMode) Command {
+// If a line is blank, XargsDirname returns a '.'
+func XargsDirname() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilepath := p.Env.Expand(filepath)
+		for line := range p.Stdin.ReadLines() {
+			// special case:
+			//
+			// filepath.Dir() does not handle trailing slashes correctly
+			// we have to strip the trailing slash ourselves
+			if len(line) > 1 {
+				line = strings.TrimSuffix(line, "/")
+			}
 
-		err := os.Chmod(expFilepath, mode)
-		if err != nil {
-			return StatusNotOkay, err
+			// ask the stdlib to strip the final element from the filepath
+			dirname := filepath.Dir(line)
+
+			// pass it on
+			p.Stdout.WriteString(dirname)
+			p.Stdout.WriteRune('\n')
 		}
-
-		// write it out to the pipeline
-		p.Stdout.WriteString(expFilepath)
-		p.Stdout.WriteRune('\n')
 
 		// all done
 		return StatusOkay, nil

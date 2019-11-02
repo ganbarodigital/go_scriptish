@@ -40,72 +40,52 @@
 package scriptish
 
 import (
-	"os"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestChmodChangesPermissionsOnGivenFile(t *testing.T) {
+func TestFilePathExistsReturnsZeroForFilepathsThatExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we need a file to mess with
-	tmpFile, err := ExecPipeline(
-		MkTempFile(os.TempDir(), "scriptify-chmod-"),
-	).TrimmedString()
-	assert.Nil(t, err)
-	assert.NotEmpty(t, tmpFile)
+	// we're going to use our own source code as the test data
+	_, filename, _, _ := runtime.Caller(0)
 
-	// clean up after ourselves
-	defer ExecPipeline(RmFile(tmpFile))
-
-	// grab its current permissions
-	//
-	// the actual value of these permissions may depend upon
-	// the local umask
-	origMode, err := ExecPipeline(Lsmod(tmpFile)).TrimmedString()
-	assert.Nil(t, err)
-	assert.NotEmpty(t, origMode)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := ExecPipeline(
-		Chmod(tmpFile, 0),
-	).TrimmedString()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Equal(t, tmpFile, actualResult)
-
-	// the file should have different permissions now
-	// grab its current permissions
-	newMode, err := ExecPipeline(Lsmod(tmpFile)).TrimmedString()
-	assert.Nil(t, err)
-	assert.Equal(t, "----------", newMode)
-	assert.NotEqual(t, origMode, newMode)
-}
-
-func TestChmodSetsErrorIfFileDoesNotExist(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
+	expectedResult := 0
 	pipeline := NewPipeline(
-		Chmod("./does/not/exist/and/never/will", 0644),
+		TestFilepathExists(filename),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().String()
+	actualResult := pipeline.Exec().StatusCode()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.NotNil(t, err)
-	assert.Error(t, err)
-	assert.Empty(t, actualResult)
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestFilePathExistsReturnsOneForFilepathsThatDoNotExist(t *testing.T) {
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := 1
+
+	pipeline := NewPipeline(
+		TestFilepathExists("/does/not/exist/and/never/will"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	actualResult := pipeline.Exec().StatusCode()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
 }

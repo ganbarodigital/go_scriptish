@@ -39,33 +39,18 @@
 
 package scriptish
 
-import (
-	"path/filepath"
-	"strings"
-)
+import "strings"
 
-// Dirname treats every line in the pipeline as a filepath.
-// It removes the last element from each filepath.
-//
-// If a line is blank, Dirname returns a '.'
-func Dirname() Command {
-	// build our Scriptish command
+// TestEmpty returns 1 if the given input string (after expansion) is not empty
+func TestEmpty(input string) Command {
+	// built our Scriptish command
 	return func(p *Pipe) (int, error) {
-		for line := range p.Stdin.ReadLines() {
-			// special case:
-			//
-			// filepath.Dir() does not handle trailing slashes correctly
-			// we have to strip the trailing slash ourselves
-			if len(line) > 1 {
-				line = strings.TrimSuffix(line, "/")
-			}
+		// expand our input
+		expInput := p.Env.Expand(input)
 
-			// ask the stdlib to strip the final element from the filepath
-			dirname := filepath.Dir(line)
-
-			// pass it on
-			p.Stdout.WriteString(dirname)
-			p.Stdout.WriteRune('\n')
+		// is it empty?
+		if len(strings.TrimSpace(expInput)) > 0 {
+			return StatusNotOkay, nil
 		}
 
 		// all done

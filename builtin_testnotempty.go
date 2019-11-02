@@ -39,31 +39,18 @@
 
 package scriptish
 
-import (
-	"path/filepath"
-	"strings"
-)
+import "strings"
 
-// Basename treats every line in the pipe as a filepath.
-// It removes any parent elements from the line.
-func Basename() Command {
-	// build our Scriptish command
+// TestNotEmpty returns 1 if the given input string (after expansion) is empty
+func TestNotEmpty(input string) Command {
+	// built our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// process each filepath in the pipeline
-		for line := range p.Stdin.ReadLines() {
-			var basename string
+		// expand our input
+		expInput := p.Env.Expand(input)
 
-			if len(strings.TrimSpace(line)) > 0 {
-				// let's get our basename
-				basename = filepath.Base(line)
-			} else {
-				// special case - preserve blank lines
-				basename = ""
-			}
-
-			// send what we've got
-			p.Stdout.WriteString(basename)
-			p.Stdout.WriteRune('\n')
+		// is it empty?
+		if len(strings.TrimSpace(expInput)) == 0 {
+			return StatusNotOkay, nil
 		}
 
 		// all done

@@ -40,35 +40,53 @@
 package scriptish
 
 import (
-	"os"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// TestFilepathExists checks to see if the given filepath exists. If it does,
-// the filepath is written to the pipeline's Stdout.
-//
-// It does not care what the filepath points at (file, folder, named pipe,
-// and so on).
-//
-// It ignores the contents of the pipeline.
-// It follows symbolic links.
-func TestFilepathExists(filepath string) Command {
-	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilepath := p.Env.Expand(filepath)
+func TestBasenameStripsParentFolders(t *testing.T) {
+	// ----------------------------------------------------------------
+	// setup your test
 
-		// does the file exist?
-		_, err := os.Stat(expFilepath)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+	testData := "/path/to/one.file"
+	expectedResult := "one.file"
 
-		// write the filepath to the pipeline, in case the next item
-		// can make use of it
-		p.Stdout.WriteString(expFilepath)
-		p.Stdout.WriteRune('\n')
+	pipeline := NewPipeline(
+		Basename(testData),
+	)
 
-		// all done
-		return StatusOkay, nil
-	}
+	// ----------------------------------------------------------------
+	// perform the change
+
+	actualResult, err := pipeline.Exec().TrimmedString()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Nil(t, err)
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestBasenamePreservesBlankLines(t *testing.T) {
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "     "
+	expectedResult := ""
+
+	pipeline := NewPipeline(
+		Basename(testData),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	actualResult, err := pipeline.Exec().TrimmedString()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Nil(t, err)
+	assert.Equal(t, expectedResult, actualResult)
 }

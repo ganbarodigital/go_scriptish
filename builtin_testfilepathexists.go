@@ -39,19 +39,31 @@
 
 package scriptish
 
-import "os"
+import (
+	"os"
+)
 
-// Exit terminates the Golang app with the given status code.
+// TestFilepathExists checks to see if the given filepath exists. If it does,
+// the filepath is written to the pipeline's Stdout.
 //
-// It does *NOT* flush the pipe's Stdout or Stderr to your Golang's
-// os.Stdout / os.Stderr first.
-func Exit(statusCode int) Command {
+// It does not care what the filepath points at (file, folder, named pipe,
+// and so on).
+//
+// It ignores the contents of the pipeline.
+// It follows symbolic links.
+func TestFilepathExists(filepath string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// all done
-		os.Exit(statusCode)
+		// expand our input
+		expFilepath := p.Env.Expand(filepath)
 
-		// this is unreachable, but added to keep the compiler happy
-		return statusCode, nil
+		// does the file exist?
+		_, err := os.Stat(expFilepath)
+		if err != nil {
+			return StatusNotOkay, err
+		}
+
+		// all done
+		return StatusOkay, nil
 	}
 }

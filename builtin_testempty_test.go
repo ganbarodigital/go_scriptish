@@ -45,64 +45,91 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBasenameStripsParentFolders(t *testing.T) {
+func TestTestEmptyReturnsZeroIfStringIsEmpty(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := []string{
-		"/path/to/one.file",
-		"/path/to/two.file",
-	}
-	expectedResult := []string{
-		"one.file",
-		"two.file",
-	}
+	testData := ""
+	expectedResult := 0
 
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		Basename(),
+		TestEmpty(testData),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().Strings()
+	actualResult := pipeline.Exec().StatusCode()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestBasenamePreservesBlankLines(t *testing.T) {
+func TestTestEmptyReturnsZeroIfStringExpandsToEmpty(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := []string{
-		"/path/to/one.file",
-		"/path/to/two.file",
-		"    ",
-	}
-	expectedResult := []string{
-		"one.file",
-		"two.file",
-		"",
-	}
+	testData := "$DOES_NOT_EXIST"
+	expectedResult := 0
 
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		Basename(),
+		TestEmpty(testData),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().Strings()
+	actualResult := pipeline.Exec().StatusCode()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, err)
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestTestEmptyReturnsOneIfStringIsNotEmpty(t *testing.T) {
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "not empty"
+	expectedResult := 1
+
+	pipeline := NewPipeline(
+		TestEmpty(testData),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	actualResult := pipeline.Exec().StatusCode()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestTestEmptyReturnsOneIfStringExpandsToNotEmpty(t *testing.T) {
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "$DOES_NOT_EXIST"
+	expectedResult := 1
+
+	pipeline := NewPipeline(
+		TestEmpty(testData),
+	)
+	pipeline.LocalVars.Setenv("DOES_NOT_EXIST", "yes it does")
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	actualResult := pipeline.Exec().StatusCode()
+
+	// ----------------------------------------------------------------
+	// test the results
+
 	assert.Equal(t, expectedResult, actualResult)
 }

@@ -39,19 +39,37 @@
 
 package scriptish
 
-import "os"
+import (
+	"path/filepath"
+	"strings"
+)
 
-// Exit terminates the Golang app with the given status code.
+// Dirname treats the input as a filepath. It removes the last element from
+// the input. It writes the result to the pipeline's `Stdout`.
 //
-// It does *NOT* flush the pipe's Stdout or Stderr to your Golang's
-// os.Stdout / os.Stderr first.
-func Exit(statusCode int) Command {
+// If the input is blank, Dirname returns a '.'
+func Dirname(input string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// all done
-		os.Exit(statusCode)
+		// expand our input
+		expInput := p.Env.Expand(input)
 
-		// this is unreachable, but added to keep the compiler happy
-		return statusCode, nil
+		// special case:
+		//
+		// filepath.Dir() does not handle trailing slashes correctly
+		// we have to strip the trailing slash ourselves
+		if len(expInput) > 1 {
+			expInput = strings.TrimSuffix(expInput, "/")
+		}
+
+		// ask the stdlib to strip the final element from the filepath
+		dirname := filepath.Dir(expInput)
+
+		// pass it on
+		p.Stdout.WriteString(dirname)
+		p.Stdout.WriteRune('\n')
+
+		// all done
+		return StatusOkay, nil
 	}
 }
