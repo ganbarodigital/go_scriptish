@@ -96,3 +96,36 @@ func TestCatFileSetsErrorWhenFilenameDoesNotExist(t *testing.T) {
 	assert.Equal(t, "", actualResult)
 	assert.NotNil(t, err)
 }
+
+func TestCatFileWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ CatFile("$1")
++ => CatFile("./testdata/concatfiles/one.txt")
++ p.Stdout> This is a test file.
++ p.Stdout> ` + "" + `
++ p.Stdout> It contains three lines.
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		CatFile("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec("./testdata/concatfiles/one.txt")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

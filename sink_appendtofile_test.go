@@ -166,7 +166,10 @@ func TestAppendToFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	).Error()
 
 	expectedResult := `+ CatFile("./testdata/truncatefile/content.txt")
-=> CatFile("./testdata/truncatefile/content.txt")
++ => CatFile("./testdata/truncatefile/content.txt")
++ p.Stdout> This is a file of test data.
++ p.Stdout> ` + "" + `
++ p.Stdout> We copy the contents of this file to other files, as part of our testing.
 + AppendToFile("$1")
 + => AppendToFile("` + tmpFilename + `")
 + file> This is a file of test data.
@@ -214,7 +217,10 @@ func TestAppendToFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 	).Error()
 
 	expectedResult := `+ CatFile("./testdata/truncatefile/content.txt")
-=> CatFile("./testdata/truncatefile/content.txt")
++ => CatFile("./testdata/truncatefile/content.txt")
++ p.Stdout> This is a file of test data.
++ p.Stdout> ` + "" + `
++ p.Stdout> We copy the contents of this file to other files, as part of our testing.
 + AppendToFile("$1")
 + => AppendToFile("` + tmpFilename + `")
 + file> This is a file of test data.
