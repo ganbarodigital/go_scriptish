@@ -213,7 +213,7 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 
 	// clean up after ourselves
 	tempFile, err := pipeline.TrimmedString()
-	if err != nil {
+	if err == nil {
 		ExecPipeline(RmFile(tempFile))
 	}
 
