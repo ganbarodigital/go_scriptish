@@ -39,25 +39,10 @@
 
 package scriptish
 
-import (
-	"os"
-)
-
-// RmFile deletes the given file.
-//
-// It ignores the contents of the pipeline.
-//
-// It ignores the file's file permissions, because the underlying
-// Golang os.Remove() behaves that way.
-func RmFile(filepath string) Command {
-	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		err := os.Remove(filepath)
-		if err != nil {
-			return StatusNotOkay, err
-		}
-
-		// all done
-		return StatusOkay, nil
+func getSinkReader(p *Pipe) <-chan string {
+	if p.Flags&contextIsPipeline != 0 {
+		return p.Stdin.ReadLines()
 	}
+
+	return p.Stdout.ReadLines()
 }

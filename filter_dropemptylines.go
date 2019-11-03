@@ -48,12 +48,16 @@ import (
 func DropEmptyLines() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("DropEmptyLines()")
+
 		for line := range p.Stdin.ReadLines() {
 			// what does the line look like if we remove all
 			// leading and trailing whitespace?
 			trimmedLine := strings.TrimSpace(line)
 
 			if len(trimmedLine) > 0 {
+				TracePipeStdout("%s", line)
 				p.Stdout.WriteString(line)
 				p.Stdout.WriteRune('\n')
 			}

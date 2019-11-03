@@ -96,3 +96,44 @@ func TestLsmodSetsErrorIfFileDoesNotExist(t *testing.T) {
 	assert.Error(t, err)
 	assert.Empty(t, actualResult)
 }
+
+func TestLsmodWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we need a file to examine
+	tmpFile, err := ExecPipeline(
+		MkTempFile(os.TempDir(), "scriptify-lsmod-"),
+	).TrimmedString()
+	assert.Nil(t, err)
+	assert.NotEmpty(t, tmpFile)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFile))
+
+	expectedResult := `+ Lsmod("$1")
++ => Lsmod("` + tmpFile + `")
++ p.Stdout> -rw-------
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Lsmod("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec(tmpFile)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

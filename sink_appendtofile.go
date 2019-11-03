@@ -40,7 +40,6 @@
 package scriptish
 
 import (
-	"io"
 	"os"
 )
 
@@ -53,6 +52,10 @@ func AppendToFile(filename string) Command {
 		// expand our input
 		expFilename := p.Env.Expand(filename)
 
+		// debugging support
+		Tracef("AppendToFile(%#v)", filename)
+		Tracef("=> AppendToFile(%#v)", expFilename)
+
 		// open / create the file
 		fh, err := os.OpenFile(expFilename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
@@ -64,9 +67,16 @@ func AppendToFile(filename string) Command {
 		defer fh.Close()
 
 		// write to the file
-		_, err = io.Copy(fh, p.Stdin)
-		if err != nil {
-			return StatusNotOkay, err
+		for line := range getSinkReader(p) {
+			TraceOutput("file", "%s", line)
+			_, err = fh.WriteString(line)
+			if err != nil {
+				return StatusNotOkay, err
+			}
+			_, err = fh.WriteString("\n")
+			if err != nil {
+				return StatusNotOkay, err
+			}
 		}
 
 		// all done

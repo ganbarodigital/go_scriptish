@@ -52,6 +52,10 @@ func CatFile(filename string) Command {
 		// expand our input
 		expFilename := p.Env.Expand(filename)
 
+		// debugging support
+		Tracef("CatFile(%#v)", filename)
+		Tracef("=> CatFile(%#v)", expFilename)
+
 		// can we open the file?
 		f, err := os.Open(expFilename)
 		if err != nil {
@@ -60,7 +64,11 @@ func CatFile(filename string) Command {
 
 		// copy the file into our pipeline
 		p.Stdin = pipe.NewSourceFromReadCloser(f)
-		p.DrainStdinToStdout()
+		for line := range p.Stdin.ReadLines() {
+			TracePipeStdout("%s", line)
+			p.Stdout.WriteString(line)
+			p.Stdout.WriteRune('\n')
+		}
 
 		// all done
 		return StatusOkay, nil

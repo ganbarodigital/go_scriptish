@@ -403,3 +403,50 @@ func TestPipelineExecSetsErrWhenOpReturnsNonZeroStatusCodeAndNilErr(t *testing.T
 	_, ok := pipeline.Error().(pipe.ErrNonZeroStatusCode)
 	assert.True(t, ok)
 }
+
+func TestNewPipelineHasTheContextFlagSet(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline()
+
+	actualResult := pipeline.Pipe.Flags & contextIsPipeline
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, contextIsPipeline, actualResult)
+}
+
+func TestExecutingPipelineHasTheContextFlagSet(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	op := func(p *Pipe) (int, error) {
+		if p.Flags&contextIsPipeline == 0 {
+			return StatusNotOkay, errors.New("context flag not set")
+		}
+
+		return StatusOkay, nil
+	}
+	pipeline := NewPipeline(op)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult, err := pipeline.StatusError()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Nil(t, err)
+	assert.Equal(t, StatusOkay, actualResult)
+}

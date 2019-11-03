@@ -40,103 +40,108 @@
 package scriptish
 
 import (
-	"os"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRmFileRemovesAGivenFile(t *testing.T) {
+func TestPipelineControllerWritesNothingToTheTraceOutputIfStatusCodeIsZero(t *testing.T) {
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(
-		// create the temporary file
-		MkTempFile(os.TempDir(), "scriptify-rmfile-"),
-	).TrimmedString()
-	assert.Nil(t, err)
-	assert.NotEmpty(t, tmpFilename)
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
-	defer ExecPipeline(RmFile(tmpFilename))
+	defer GetShellOptions().DisableTrace()
 
-	// this pipeline will prove if the temporary file does/does not exist
-	tmpFileExists := NewPipelineFunc(TestFilepathExists(tmpFilename))
-	fileExists := tmpFileExists().Okay()
-	assert.True(t, fileExists)
+	op1 := func(p *Pipe) (int, error) {
+		return StatusOkay, nil
+	}
 
-	pipeline := NewPipeline(
-		RmFile(tmpFilename),
-	)
+	expectedResult := ""
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().String()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Empty(t, actualResult)
-
-	// the file should be gone
-	fileExists = tmpFileExists().Okay()
-	assert.False(t, fileExists)
-}
-
-func TestRmFileSetsErrorIfFileDoesNotExist(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
 	pipeline := NewPipeline(
-		RmFile("/does/not/exist/and/never/will"),
+		op1,
 	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().String()
+	pipeline.Exec()
+	actualResult := dest.String()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.NotNil(t, err)
-	assert.Error(t, err)
-	assert.Empty(t, actualResult)
+	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestRmFileDoesNotRespectFilePermissions(t *testing.T) {
+func TestPipelineControllerWritesNonZeroStatusCodesToTheTraceOutput(t *testing.T) {
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we need a valid filename to try to write to
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-rmfile-")).TrimmedString()
-	assert.Nil(t, err)
-
-	// make sure the file cannot be deleted
-	err = ExecPipeline(Chmod(tmpFilename, 0)).Error()
-	assert.Nil(t, err)
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
-	defer ExecPipeline(
-		Chmod(tmpFilename, 0644),
-		RmFile(tmpFilename),
-	)
+	defer GetShellOptions().DisableTrace()
 
-	pipeline := NewPipeline(
-		RmFile(tmpFilename),
-	)
+	op1 := func(p *Pipe) (int, error) {
+		return StatusNotOkay, nil
+	}
+
+	expectedResult := `+ status code: 1
++ error: command exited with non-zero status code 1
+`
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().String()
+	pipeline := NewPipeline(
+		op1,
+	)
+	pipeline.Exec()
+	actualResult := dest.String()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, err)
-	assert.Equal(t, StatusOkay, pipeline.StatusCode())
-	assert.Empty(t, actualResult)
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestPipelineControllerWritesErrorsToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	op1 := func(p *Pipe) (int, error) {
+		return StatusNotOkay, errors.New("this is a test error")
+	}
+
+	expectedResult := `+ status code: 1
++ error: this is a test error
+`
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		op1,
+	)
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
 }

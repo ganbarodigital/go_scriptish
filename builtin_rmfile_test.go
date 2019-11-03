@@ -46,24 +46,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRmDirRemovesAGivenEmptyFolder(t *testing.T) {
+func TestRmFileRemovesAGivenFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpDir, err := ExecPipeline(
-		// create the temporary folder
-		MkTempDir(os.TempDir(), "scriptify-rmdir-"),
+	tmpFilename, err := ExecPipeline(
+		// create the temporary file
+		MkTempFile(os.TempDir(), "scriptify-rmfile-"),
 	).TrimmedString()
 	assert.Nil(t, err)
-	assert.NotEmpty(t, tmpDir)
+	assert.NotEmpty(t, tmpFilename)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
 
 	// this pipeline will prove if the temporary file does/does not exist
-	tmpDirExists := NewPipelineFunc(TestFilepathExists(tmpDir))
-	dirExists := tmpDirExists().Okay()
-	assert.True(t, dirExists)
+	tmpFileExists := NewPipelineFunc(TestFilepathExists(tmpFilename))
+	fileExists := tmpFileExists().Okay()
+	assert.True(t, fileExists)
 
 	pipeline := NewPipeline(
-		RmDir(tmpDir),
+		RmFile(tmpFilename),
 	)
 
 	// ----------------------------------------------------------------
@@ -78,16 +81,16 @@ func TestRmDirRemovesAGivenEmptyFolder(t *testing.T) {
 	assert.Empty(t, actualResult)
 
 	// the file should be gone
-	dirExists = tmpDirExists().Okay()
-	assert.False(t, dirExists)
+	fileExists = tmpFileExists().Okay()
+	assert.False(t, fileExists)
 }
 
-func TestRmDirSetsErrorIfDirDoesNotExist(t *testing.T) {
+func TestRmFileSetsErrorIfFileDoesNotExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
 	pipeline := NewPipeline(
-		RmDir("./does/not/exist/and/never/will"),
+		RmFile("/does/not/exist/and/never/will"),
 	)
 
 	// ----------------------------------------------------------------
@@ -103,26 +106,26 @@ func TestRmDirSetsErrorIfDirDoesNotExist(t *testing.T) {
 	assert.Empty(t, actualResult)
 }
 
-func TestRmDirDoesNotRespectFilePermissions(t *testing.T) {
+func TestRmFileDoesNotRespectFilePermissions(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we need a valid folder to remove
-	tmpDir, err := ExecPipeline(MkTempDir(os.TempDir(), "scriptify-rmfile-")).TrimmedString()
+	// we need a valid filename to try to write to
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-rmfile-")).TrimmedString()
 	assert.Nil(t, err)
 
-	// make sure the dir cannot be deleted
-	err = ExecPipeline(Chmod(tmpDir, 0)).Error()
+	// make sure the file cannot be deleted
+	err = ExecPipeline(Chmod(tmpFilename, 0)).Error()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
 	defer ExecPipeline(
-		Chmod(tmpDir, 0644),
-		RmFile(tmpDir),
+		Chmod(tmpFilename, 0644),
+		RmFile(tmpFilename),
 	)
 
 	pipeline := NewPipeline(
-		RmFile(tmpDir),
+		RmFile(tmpFilename),
 	)
 
 	// ----------------------------------------------------------------
@@ -136,4 +139,44 @@ func TestRmDirDoesNotRespectFilePermissions(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, StatusOkay, pipeline.StatusCode())
 	assert.Empty(t, actualResult)
+}
+
+func TestRmFileWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	tmpFilename, err := ExecPipeline(
+		// create the temporary file
+		MkTempFile(os.TempDir(), "scriptify-rmfile-"),
+	).TrimmedString()
+	assert.Nil(t, err)
+	assert.NotEmpty(t, tmpFilename)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
+
+	expectedResult := `+ RmFile("$1")
++ => RmFile("` + tmpFilename + `")
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		RmFile("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec(tmpFilename)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
 }

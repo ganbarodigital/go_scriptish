@@ -2,6 +2,102 @@
 
 ## develop
 
+## v1.2.0
+
+Released Sunday, 3rd November 2019.
+
+### New
+
+* Added support for shell options
+  - Added `GetShellOptions()`
+* Added debugging output support
+  - Added `ShellOptions.EnableTrace()`
+  - Added `ShellOptions.DisableTrace()`
+  - Added `ShellOptions.IsTraceEnabled()`
+  - Added `IsTraceEnabled()`
+  - Added `Tracef()`
+  - Added `TraceOutput()`
+  - Added `TraceOsStderr()`
+  - Added `TraceOsStdout()`
+  - Added `TracePipeStderr()`
+  - Added `TracePipeStdout()`
+  - Lists now write status code and error message when tracing enabled
+  - Pipelines now write status code and error message when tracing enabled
+  - `And()` now supports tracing
+  - `AppendToFile()` now supports tracing
+  - `AppendToTempFile()` now supports tracing
+  - `Basename()` now supports tracing
+  - `CatFile()` now supports tracing
+  - `CatStdin()` now supports tracing
+  - `Chmod()` now supports tracing
+  - `CountLines()` now supports tracing
+  - `CountWords()` now supports tracing
+  - `CutFields()` now supports tracing
+  - `Dirname()` now supports tracing
+  - `DropEmptyLines()` now supports tracing
+  - `Echo()` now supports tracing
+  - `EchoArgs()` now supports tracing
+  - `EchoRawSlice()` now supports tracing
+  - `EchoSlice()` now supports tracing
+  - `EchoToStderr()` now supports tracing
+  - `Exec()` now supports tracing
+  - `Grep()` now supports tracing
+  - `GrepV()` now supports tracing
+  - `Head()` now supports tracing
+  - `If()` now supports tracing
+  - `IfElse()` now supports tracing
+  - `ListFiles()` now supports tracing
+  - `Lsmod()` now supports tracing
+  - `MkTempDir()` now supports tracing
+  - `MkTempFile()` now supports tracing
+  - `Or()` now supports tracing
+  - `Return()` now supports tracing
+  - `RmDir()` now supports tracing
+  - `RmFile()` now supports tracing
+  - `Rsort()` now supports tracing
+  - `Sort()` now supports tracing
+  - `StripExtension()` now supports tracing
+  - `SwapExtensions()` now supports tracing
+  - `Tail()` now supports tracing
+  - `TestEmpty()` now supports tracing
+  - `TestFilepathExists()` now supports tracing
+  - `TestNotEmpty()` now supports tracing
+  - `ToStderr()` now supports tracing
+  - `ToStdout()` now supports tracing
+  - `Tr()` now supports tracing
+  - `TrimSuffix()` now supports tracing
+  - `TrimWhitespace()` now supports tracing
+  - `TruncateFile()` now supports tracing
+  - `Uniq()` now supports tracing
+  - `Which()` now supports tracing
+  - `WriteToFile()` now supports tracing
+  - `XargsBasename()` now supports tracing
+  - `XargsCat()` now supports tracing
+  - `XargsDirname()` now supports tracing
+  - `XargsRmFile()` now supports tracing
+  - `XargsTestFilepathExists()` now supports tracing
+  - `XargsTruncateFiles()` now supports tracing
+* Pipelines now set a context flag in their Pipe
+  - this is used to tell sinks where to read from!
+
+### Fixes
+
+* `AppendToFile()` now supports lists
+* `AppendToFile()` no longer leaves input data in the pipe for the next command
+* `AppendToTempFile()` now supports lists
+* `AppendToTempFile()` no longer leaves the input data in the pipe for the next command
+* `EchoArgs()` no longer includes `os.Args[0]` in the output (compatibility fix)
+* `WriteToFile()` now supports lists
+* `WriteToFile()` no longer leaves the input data in the pipeline for the next command
+* `ToStderr()` now supports lists
+* `ToStderr()` no longer leaves the input data in the pipeline for the next command
+* `ToStdout()` now supports lists
+* `ToStdout()` no longer leaves the input data in the pipeline for the next command
+
+### Dependencies
+
+* Update to `go_pipe` v5.2.0
+
 ## v1.1.1
 
 Released Saturday, 2nd November 2019.

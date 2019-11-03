@@ -87,3 +87,34 @@ func TestReturnPreservesThePreviousStdout(t *testing.T) {
 	assert.Equal(t, 3, pipeline.StatusCode())
 	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.String())
 }
+
+func TestReturnWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Return(3)
++ status code: 3
++ error: command exited with non-zero status code 3
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Return(3),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

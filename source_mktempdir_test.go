@@ -91,3 +91,41 @@ func TestMkTempDirSetsErrorIfCannotCreateFolder(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestMkTempDirWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		MkTempDir("$1", "scriptify-"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	tmpDir, err := pipeline.Exec(os.TempDir()).TrimmedString()
+	assert.Nil(t, err)
+
+	expectedResult := `+ MkTempDir("$1", "scriptify-")
++ => MkTempDir("` + os.TempDir() + `", "scriptify-")
++ p.Stdout> ` + tmpDir + `
+`
+
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+
+	// clean up after ourselves
+	err = ExecPipeline(RmFile(tmpDir)).Error()
+	assert.Nil(t, err)
+}

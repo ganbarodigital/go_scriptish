@@ -109,3 +109,67 @@ func TestChmodSetsErrorIfFileDoesNotExist(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, StatusNotOkay, actualResult)
 }
+
+func TestChmodWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we use string expansion here to prove that our trace includes
+	// the expansion
+	expectedResult := `+ Chmod("$1", 0644)
++ => Chmod("./builtin_chmod_test.go", 0644)
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		Chmod("$1", 0644),
+	)
+	pipeline.Exec("./builtin_chmod_test.go")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestChmodErrorsAppearInTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we use string expansion here to prove that our trace includes
+	// the expansion
+	expectedResult := `+ Chmod("$1", 0644)
++ => Chmod("./does/not/exist", 0644)
++ status code: 1
++ error: chmod ./does/not/exist: no such file or directory
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		Chmod("$1", 0644),
+	)
+	pipeline.Exec("./does/not/exist")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

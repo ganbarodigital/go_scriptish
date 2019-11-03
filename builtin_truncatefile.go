@@ -43,22 +43,27 @@ import (
 	"os"
 )
 
-// RmDir deletes the given folder, as long as the folder is empty.
+// TruncateFile removes the contents of the given file.
 //
-// It ignores the contents of the pipeline.
-//
-// It ignores the file's file permissions, because the underlying
-// Golang os.Remove() behaves that way.
-func RmDir(filepath string) Command {
+// If the file does not exist, it is created.
+func TruncateFile(filename string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
 		// expand our input
-		expFilepath := p.Env.Expand(filepath)
+		expFilename := p.Env.Expand(filename)
 
-		err := os.Remove(expFilepath)
+		// debugging support
+		Tracef("TruncateFile(%#v)", filename)
+		Tracef("=> TruncateFile(%#v)", expFilename)
+
+		// open / create the file
+		fh, err := os.OpenFile(expFilename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return StatusNotOkay, err
 		}
+
+		// we're done here
+		fh.Close()
 
 		// all done
 		return StatusOkay, nil

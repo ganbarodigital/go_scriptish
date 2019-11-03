@@ -47,6 +47,9 @@ import (
 func CutFields(spec string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("CutFields(%#v)", spec)
+
 		// which columns do we want?
 		columnsSpec, err := ParseRangeSpec(spec)
 		if err != nil {
@@ -55,9 +58,8 @@ func CutFields(spec string) Command {
 
 		// go and get those columns
 		for line := range p.Stdin.ReadLines() {
-			// this will tell us whether we need to write a column-separator
-			// or not
-			hasWritten := false
+			// this will hold our final line
+			var buf []string
 
 			for index, column := range strings.Fields(line) {
 				// adjust for zero-index programming language,
@@ -66,15 +68,15 @@ func CutFields(spec string) Command {
 
 				for _, singleRange := range columnsSpec {
 					if index >= singleRange.Lo && index <= singleRange.Hi {
-						if hasWritten {
-							p.Stdout.WriteRune(' ')
-						}
-
-						p.Stdout.WriteString(column)
-						hasWritten = true
+						buf = append(buf, column)
 					}
 				}
 			}
+
+			finalLine := strings.Join(buf, " ")
+
+			TracePipeStdout("%s", finalLine)
+			p.Stdout.WriteString(finalLine)
 			p.Stdout.WriteString("\n")
 		}
 

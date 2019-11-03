@@ -55,13 +55,19 @@ func Lsmod(filepath string) Command {
 		// expand our input
 		expFilepath := p.Env.Expand(filepath)
 
+		// debugging support
+		Tracef("Lsmod(%#v)", filepath)
+		Tracef("=> Lsmod(%#v)", expFilepath)
+
 		fileInfo, err := os.Stat(expFilepath)
 		if err != nil {
 			return StatusNotOkay, err
 		}
 
 		// write it to the pipe
-		p.Stdout.WriteString(fileInfo.Mode().String())
+		mode := fileInfo.Mode().String()
+		TracePipeStdout("%s", mode)
+		p.Stdout.WriteString(mode)
 		p.Stdout.WriteRune('\n')
 
 		// all done

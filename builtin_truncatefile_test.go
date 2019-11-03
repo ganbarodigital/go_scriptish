@@ -40,123 +40,102 @@
 package scriptish
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSwapExtensionSwapsOldWithNew(t *testing.T) {
+func TestTruncateFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-	expectedResult := []string{
-		"/path/to/one.trout",
-		"/path/to/two.herring",
-		"/path/to/three",
-		"/path/to/four.trout",
-	}
+	// we need a file to truncate
+	tmpFilename, err := NewPipeline(
+		MkTempFile(os.TempDir(), "scriptify-truncatefile-*"),
+	).Exec().TrimmedString()
+	assert.Nil(t, err)
 
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
+
+	// we need to make sure our test file has some content
+	_, err = NewPipeline(
+		CatFile("testdata/truncatefile/content.txt"),
+		AppendToFile(tmpFilename),
+	).Exec().String()
+	assert.Nil(t, err)
+
+	lineCountFunc := NewPipelineFunc(
+		CatFile(tmpFilename),
+		CountLines(),
+	)
+
+	lineCount, err := lineCountFunc().ParseInt()
+	assert.Nil(t, err)
+	assert.True(t, lineCount == 3)
+
+	// this is the pipeline we'll use to test TruncateFile()
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
+		TruncateFile(tmpFilename),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().Strings()
+	// this will truncate the file
+	pipeline.Exec()
 
 	// ----------------------------------------------------------------
 	// test the results
 
+	assert.Nil(t, pipeline.Error())
+
+	// the file should now be empty
+	lineCount, err = lineCountFunc().ParseInt()
 	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
+	assert.Equal(t, 0, lineCount)
 }
 
-func TestSwapExtensionSupportsASingleNew(t *testing.T) {
+func TestTruncateFileSetsErrorWhenSomethingGoesWrong(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-	expectedResult := []string{
-		"/path/to/one.trout",
-		"/path/to/two.trout",
-		"/path/to/three",
-		"/path/to/four.trout",
-	}
+	expectedResult := ""
 
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout"}),
+		TruncateFile("/does/not/exist"),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().Strings()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestSwapExtensionReturnsErrorIfOldAndNewMismatchedLength(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2", ".file3"}, []string{".trout", ".herring"}),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().Strings()
+	actualResult, err := pipeline.Exec().String()
 
 	// ----------------------------------------------------------------
 	// test the results
 
 	assert.NotNil(t, err)
 	assert.Error(t, err)
-	assert.Empty(t, actualResult)
+	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
+func TestTruncateFileWritesToTheTraceOutput(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := `+ EchoSlice([]string{"/path/to/one.file1", "/path/to/two.file2", "/path/to/three", "/path/to/four.file1"})
-+ p.Stdout> /path/to/one.file1
-+ p.Stdout> /path/to/two.file2
-+ p.Stdout> /path/to/three
-+ p.Stdout> /path/to/four.file1
-+ SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"})
-+ p.Stdout> /path/to/one.trout
-+ p.Stdout> /path/to/two.herring
-+ p.Stdout> /path/to/three
-+ p.Stdout> /path/to/four.trout
+	// we need a file to truncate
+	tmpFilename, err := NewPipeline(
+		MkTempFile(os.TempDir(), "scriptify-truncatefile-*"),
+	).Exec().TrimmedString()
+	assert.Nil(t, err)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
+
+	expectedResult := `+ TruncateFile("$1")
++ => TruncateFile("` + tmpFilename + `")
 `
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
@@ -164,21 +143,14 @@ func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
+		TruncateFile("$1"),
 	)
+
 	// ----------------------------------------------------------------
 	// perform the change
 
-	pipeline.Exec()
+	pipeline.Exec(tmpFilename)
 	actualResult := dest.String()
 
 	// ----------------------------------------------------------------

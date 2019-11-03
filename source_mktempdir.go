@@ -52,6 +52,10 @@ func MkTempDir(dir string, prefix string) Command {
 		expDir := p.Env.Expand(dir)
 		expPrefix := p.Env.Expand(prefix)
 
+		// debugging support
+		Tracef("MkTempDir(%#v, %#v)", dir, prefix)
+		Tracef("=> MkTempDir(%#v, %#v)", expDir, expPrefix)
+
 		// create the file
 		name, err := ioutil.TempDir(expDir, expPrefix)
 		if err != nil {
@@ -59,6 +63,7 @@ func MkTempDir(dir string, prefix string) Command {
 		}
 
 		// write the file's name out
+		TracePipeStdout("%s", name)
 		p.Stdout.WriteString(name)
 		p.Stdout.WriteRune('\n')
 

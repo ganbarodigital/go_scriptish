@@ -40,7 +40,10 @@
 package scriptish
 
 import (
+	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestListControllerCopesWithNilSequencePointer(t *testing.T) {
@@ -81,4 +84,104 @@ func TestListControllerCopesWithEmptySequence(t *testing.T) {
 	// test the results
 
 	// as long as it didn't crash, we're good
+}
+
+func TestListControllerWritesNothingToTheTraceOutputIfStatusCodeIsZero(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	op1 := func(p *Pipe) (int, error) {
+		return StatusOkay, nil
+	}
+
+	expectedResult := ""
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list := NewList(
+		op1,
+	)
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestListControllerWritesNonZeroStatusCodesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	op1 := func(p *Pipe) (int, error) {
+		return StatusNotOkay, nil
+	}
+
+	expectedResult := `+ status code: 1
++ error: command exited with non-zero status code 1
+`
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list := NewList(
+		op1,
+	)
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestListControllerWritesErrorsToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	op1 := func(p *Pipe) (int, error) {
+		return StatusNotOkay, errors.New("this is a test error")
+	}
+
+	expectedResult := `+ status code: 1
++ error: this is a test error
+`
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list := NewList(
+		op1,
+	)
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
 }

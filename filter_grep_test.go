@@ -105,3 +105,40 @@ func TestGrepReturnsErrorIfRegexInvalid(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestGrepWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Echo("one two\nthree four\nfive six seven")
++ => Echo("one two\nthree four\nfive six seven")
++ p.Stdout> one two
+three four
+five six seven
++ Grep("$1")
++ => Grep("one|two")
++ p.Stdout> one two
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Echo("one two\nthree four\nfive six seven"),
+		Grep("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec("one|two")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

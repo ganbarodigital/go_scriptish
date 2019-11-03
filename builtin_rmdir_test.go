@@ -40,99 +40,60 @@
 package scriptish
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSwapExtensionSwapsOldWithNew(t *testing.T) {
+func TestRmDirRemovesAGivenEmptyFolder(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-	expectedResult := []string{
-		"/path/to/one.trout",
-		"/path/to/two.herring",
-		"/path/to/three",
-		"/path/to/four.trout",
-	}
+	tmpDir, err := ExecPipeline(
+		// create the temporary folder
+		MkTempDir(os.TempDir(), "scriptify-rmdir-"),
+	).TrimmedString()
+	assert.Nil(t, err)
+	assert.NotEmpty(t, tmpDir)
+
+	// this pipeline will prove if the temporary file does/does not exist
+	tmpDirExists := NewPipelineFunc(TestFilepathExists(tmpDir))
+	dirExists := tmpDirExists().Okay()
+	assert.True(t, dirExists)
 
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
+		RmDir(tmpDir),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().Strings()
+	actualResult, err := pipeline.Exec().String()
 
 	// ----------------------------------------------------------------
 	// test the results
 
 	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
+	assert.Empty(t, actualResult)
+
+	// the file should be gone
+	dirExists = tmpDirExists().Okay()
+	assert.False(t, dirExists)
 }
 
-func TestSwapExtensionSupportsASingleNew(t *testing.T) {
+func TestRmDirSetsErrorIfDirDoesNotExist(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-	expectedResult := []string{
-		"/path/to/one.trout",
-		"/path/to/two.trout",
-		"/path/to/three",
-		"/path/to/four.trout",
-	}
-
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout"}),
+		RmDir("./does/not/exist/and/never/will"),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().Strings()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestSwapExtensionReturnsErrorIfOldAndNewMismatchedLength(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2", ".file3"}, []string{".trout", ".herring"}),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().Strings()
+	actualResult, err := pipeline.Exec().String()
 
 	// ----------------------------------------------------------------
 	// test the results
@@ -142,21 +103,55 @@ func TestSwapExtensionReturnsErrorIfOldAndNewMismatchedLength(t *testing.T) {
 	assert.Empty(t, actualResult)
 }
 
-func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
+func TestRmDirDoesNotRespectFilePermissions(t *testing.T) {
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we need a valid folder to remove
+	tmpDir, err := ExecPipeline(MkTempDir(os.TempDir(), "scriptify-rmfile-")).TrimmedString()
+	assert.Nil(t, err)
+
+	// make sure the dir cannot be deleted
+	err = ExecPipeline(Chmod(tmpDir, 0)).Error()
+	assert.Nil(t, err)
+
+	// clean up after ourselves
+	defer ExecPipeline(
+		Chmod(tmpDir, 0644),
+		RmFile(tmpDir),
+	)
+
+	pipeline := NewPipeline(
+		RmFile(tmpDir),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	actualResult, err := pipeline.Exec().String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Nil(t, err)
+	assert.Equal(t, StatusOkay, pipeline.StatusCode())
+	assert.Empty(t, actualResult)
+}
+
+func TestRmDirWritesToTheTraceOutput(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := `+ EchoSlice([]string{"/path/to/one.file1", "/path/to/two.file2", "/path/to/three", "/path/to/four.file1"})
-+ p.Stdout> /path/to/one.file1
-+ p.Stdout> /path/to/two.file2
-+ p.Stdout> /path/to/three
-+ p.Stdout> /path/to/four.file1
-+ SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"})
-+ p.Stdout> /path/to/one.trout
-+ p.Stdout> /path/to/two.herring
-+ p.Stdout> /path/to/three
-+ p.Stdout> /path/to/four.trout
+	tmpDir, err := ExecPipeline(
+		// create the temporary folder
+		MkTempDir(os.TempDir(), "scriptify-rmdir-"),
+	).TrimmedString()
+	assert.Nil(t, err)
+	assert.NotEmpty(t, tmpDir)
+
+	expectedResult := `+ RmDir("$1")
++ => RmDir("` + tmpDir + `")
 `
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
@@ -164,21 +159,14 @@ func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
+		RmDir("$1"),
 	)
+
 	// ----------------------------------------------------------------
 	// perform the change
 
-	pipeline.Exec()
+	pipeline.Exec(tmpDir)
 	actualResult := dest.String()
 
 	// ----------------------------------------------------------------

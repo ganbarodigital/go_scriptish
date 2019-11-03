@@ -48,6 +48,10 @@ func TestEmpty(input string) Command {
 		// expand our input
 		expInput := p.Env.Expand(input)
 
+		// debugging support
+		Tracef("TestEmpty(%#v)", input)
+		Tracef("=> TestEmpty(%#v)", expInput)
+
 		// is it empty?
 		if len(strings.TrimSpace(expInput)) > 0 {
 			return StatusNotOkay, nil

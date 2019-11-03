@@ -40,7 +40,6 @@
 package scriptish
 
 import (
-	"io"
 	"io/ioutil"
 )
 
@@ -56,25 +55,40 @@ func AppendToTempFile(dir string, pattern string) Command {
 		expDir := p.Env.Expand(dir)
 		expPattern := p.Env.Expand(pattern)
 
+		// debugging support
+		Tracef("AppendToTempFile(%#v, %#v)", dir, pattern)
+		Tracef("=> AppendToTempFile(%#v, %#v)", expDir, expPattern)
+
 		// create the temporary file
 		fh, err := ioutil.TempFile(expDir, expPattern)
 		if err != nil {
 			return StatusNotOkay, err
 		}
 
+		// debugging support
+		Tracef("AppendToTempFile(): created file %#v", fh.Name())
+
 		// remember to automatically close the file when we've finished
 		// in here
-		defer fh.Close()
+		defer func() {
+			fh.Close()
 
-		// write the temporary file's filename out now, so that we have it
-		// no matter what happens
-		p.Stdout.WriteString(fh.Name())
-		p.Stdout.WriteRune('\n')
+			// write the temporary file's filename out last
+			p.Stdout.WriteString(fh.Name())
+			p.Stdout.WriteRune('\n')
+		}()
 
 		// write to the file
-		_, err = io.Copy(fh, p.Stdin)
-		if err != nil {
-			return StatusNotOkay, err
+		for line := range getSinkReader(p) {
+			TraceOutput("tempfile", "%s", line)
+			_, err = fh.WriteString(line)
+			if err != nil {
+				return StatusNotOkay, err
+			}
+			_, err = fh.WriteString("\n")
+			if err != nil {
+				return StatusNotOkay, err
+			}
 		}
 
 		// all done

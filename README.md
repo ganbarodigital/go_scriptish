@@ -97,17 +97,17 @@ result, err := scriptish.NewPipeline(
   - [AppendToFile()](#appendtofile)
   - [Exit()](#exit)
   - [Return()](#return)
-  - [RmDir()](#rmdir)
-  - [RmFile()](#rmfile)
   - [ToStderr()](#tostderr)
   - [ToStdout()](#tostdout)
-  - [TruncateFile()](#truncatefile)
   - [WriteToFile()](#writetofile)
 - [Builtins](#builtins)
   - [Chmod()](#chmod)
+  - [RmDir()](#rmdir)
+  - [RmFile()](#rmfile)
   - [TestEmpty()](#testempty)
   - [TestFilepathExists()](#testfilepathexists)
   - [TestNotEmpty()](#testnotempty)
+  - [TruncateFile()](#truncatefile)
 - [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
   - [Error()](#error)
@@ -1404,34 +1404,6 @@ statusCode := scriptish.NewPipeline(
 // statusCode will be: 3
 ```
 
-### RmDir()
-
-`RmDir()` deletes the given folder, as long as the folder is empty.
-
-It ignores the contents of the pipeline.
-
-It ignores the file's file permissions, because the underlying Golang os.Remove() behaves that way.
-
-```go
-err := scriptish.NewPipeline(
-    scriptish.RmDir("/path/to/folder"),
-).Exec().Error()
-```
-
-### RmFile()
-
-`RmFile()` deletes the given file.
-
-It ignores the contents of the pipeline.
-
-It ignores the file's file permissions, because the underlying Golang os.Remove() behaves that way.
-
-```go
-err := scriptish.NewPipeline(
-    scriptish.RmFile("/path/to/file"),
-).Exec().Error()
-```
-
 ### ToStderr()
 
 `ToStdout()` writes the pipeline's `Stdin` to the program's `stderr` (`os.Stderr` in Golang terms).
@@ -1451,18 +1423,6 @@ err := scriptish.NewPipeline(
 err := scriptish.NewPipeline(
     scriptish.Echo("usage: simpleca <command>"),
     scriptish.ToStdout(),
-).Exec().Error()
-```
-
-### TruncateFile()
-
-`TruncateFile()` removes the contents of the given file.
-
-If the file does not exist, it is created.
-
-```go
-err := scriptish.NewPipeline(
-    scriptish.TruncateFile("/tmp/scriptish-test"),
 ).Exec().Error()
 ```
 
@@ -1498,6 +1458,34 @@ On success, it returns the status code `StatusOkay`. On failure, it returns the 
 result, err := scriptish.NewPipeline(
     scriptish.Chmod("/path/to/file", 0644)
 ).Exec().StatusError()
+```
+
+### RmDir()
+
+`RmDir()` deletes the given folder, as long as the folder is empty.
+
+It ignores the contents of the pipeline.
+
+It ignores the file's file permissions, because the underlying Golang os.Remove() behaves that way.
+
+```go
+err := scriptish.NewPipeline(
+    scriptish.RmDir("/path/to/folder"),
+).Exec().Error()
+```
+
+### RmFile()
+
+`RmFile()` deletes the given file.
+
+It ignores the contents of the pipeline.
+
+It ignores the file's file permissions, because the underlying Golang os.Remove() behaves that way.
+
+```go
+err := scriptish.NewPipeline(
+    scriptish.RmFile("/path/to/file"),
+).Exec().Error()
 ```
 
 ### TestEmpty()
@@ -1586,6 +1574,18 @@ checkArgs := scriptish.NewList(
 )
 
 checkArgs.Exec(os.Args...)
+```
+
+### TruncateFile()
+
+`TruncateFile()` removes the contents of the given file.
+
+If the file does not exist, it is created.
+
+```go
+err := scriptish.NewPipeline(
+    scriptish.TruncateFile("/tmp/scriptish-test"),
+).Exec().Error()
 ```
 
 ## Capture Methods

@@ -79,3 +79,87 @@ func TestToStderrWritesToProgramStderr(t *testing.T) {
 
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestToStderrWritesToTheTraceOutputWhenInList(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// hijack stderr for this test
+	oldStderr := os.Stderr
+	_, w, _ := os.Pipe()
+	os.Stderr = w
+
+	// clean up after ourselves
+	defer func() { os.Stderr = oldStderr }()
+
+	expectedResult := `+ Echo("hello world")
++ => Echo("hello world")
++ p.Stdout> hello world
++ ToStderr()
++ os.Stderr> hello world
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	list := NewList(
+		Echo("hello world"),
+		ToStderr(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestToStderrWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// hijack stderr for this test
+	oldStderr := os.Stderr
+	_, w, _ := os.Pipe()
+	os.Stderr = w
+
+	// clean up after ourselves
+	defer func() { os.Stderr = oldStderr }()
+
+	expectedResult := `+ Echo("hello world")
++ => Echo("hello world")
++ p.Stdout> hello world
++ ToStderr()
++ os.Stderr> hello world
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Echo("hello world"),
+		ToStderr(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

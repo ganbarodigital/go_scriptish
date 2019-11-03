@@ -40,82 +40,90 @@
 package scriptish
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTruncateFile(t *testing.T) {
+func TestEchoRawSliceWritesToPipelineStdout(t *testing.T) {
+	t.Parallel()
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we need a file to truncate
-	tmpFilename, err := NewPipeline(
-		MkTempFile(os.TempDir(), "scriptify-truncatefile-*"),
-	).Exec().TrimmedString()
-	assert.Nil(t, err)
-
-	// clean up after ourselves
-	defer ExecPipeline(RmFile(tmpFilename))
-
-	// we need to make sure our test file has some content
-	_, err = NewPipeline(
-		CatFile("testdata/truncatefile/content.txt"),
-		AppendToFile(tmpFilename),
-	).Exec().String()
-	assert.Nil(t, err)
-
-	lineCountFunc := NewPipelineFunc(
-		CatFile(tmpFilename),
-		CountLines(),
-	)
-
-	lineCount, err := lineCountFunc().ParseInt()
-	assert.Nil(t, err)
-	assert.True(t, lineCount == 3)
-
-	// this is the pipeline we'll use to test TruncateFile()
+	expectedResult := []string{"hello world", "have a nice day"}
 	pipeline := NewPipeline(
-		TruncateFile(tmpFilename),
+		EchoRawSlice(expectedResult),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	// this will truncate the file
 	pipeline.Exec()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, pipeline.Error())
-
-	// the file should now be empty
-	lineCount, err = lineCountFunc().ParseInt()
-	assert.Nil(t, err)
-	assert.Equal(t, 0, lineCount)
+	assert.Equal(t, "", pipeline.Pipe.Stdin.String())
+	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.Strings())
+	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
 }
 
-func TestTruncateFileSetsErrorWhenSomethingGoesWrong(t *testing.T) {
+func TestEchoRawSliceDoesNoStringExpansion(t *testing.T) {
+	t.Parallel()
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := ""
-
+	expectedResult := []string{"$1", "${HOME}"}
 	pipeline := NewPipeline(
-		TruncateFile("/does/not/exist"),
+		EchoRawSlice(expectedResult),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().String()
+	pipeline.Exec()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.NotNil(t, err)
-	assert.Error(t, err)
+	assert.Equal(t, "", pipeline.Pipe.Stdin.String())
+	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.Strings())
+	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
+}
+
+func TestEchoRawSliceWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoRawSlice([]string{"hello world", "have a nice day"})
++ p.Stdout> hello world
++ p.Stdout> have a nice day
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"hello world",
+		"have a nice day",
+	}
+	pipeline := NewPipeline(
+		EchoRawSlice(testData),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
 	assert.Equal(t, expectedResult, actualResult)
 }

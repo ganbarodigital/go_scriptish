@@ -92,3 +92,35 @@ func TestEchoWritesEndOfLineIfMissing(t *testing.T) {
 	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.String())
 	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
 }
+
+func TestEchoWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we use string expansion here to prove that our trace includes
+	// the expansion
+	expectedResult := `+ Echo("$1")
++ => Echo("this is an expanded string")
++ p.Stdout> this is an expanded string
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		Echo("$1"),
+	)
+	pipeline.Exec("this is an expanded string")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

@@ -48,6 +48,9 @@ import (
 	pipe "github.com/ganbarodigital/go_pipe/v5"
 )
 
+// flag we set if we are executing commands in a pipeline
+const contextIsPipeline = 1
+
 // Sequence is a set of commands to be executed.
 //
 // Provide your own logic to do the actual command execution.
@@ -63,6 +66,9 @@ type Sequence struct {
 
 	// we store local variables here
 	LocalVars *envish.LocalEnv
+
+	// the flags we pass into new pipes
+	Flags int
 }
 
 // NewSequence creates a sequence that's ready to run
@@ -171,6 +177,9 @@ func (sq *Sequence) NewPipe() {
 		sq.LocalVars,
 		envish.NewProgramEnv(),
 	)
+
+	// set the flags
+	sq.Pipe.Flags = sq.Flags
 }
 
 // ParseInt returns the pipe's stdout as an integer

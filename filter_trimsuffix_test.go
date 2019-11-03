@@ -80,3 +80,44 @@ func TestTrimSuffix(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestTrimSuffixWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"/path/to/one.file1", "/path/to/two.file2"})
++ p.Stdout> /path/to/one.file1
++ p.Stdout> /path/to/two.file2
++ TrimSuffix("$1")
++ => TrimSuffix(".file1")
++ p.Stdout> /path/to/one
++ p.Stdout> /path/to/two.file2
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"/path/to/one.file1",
+		"/path/to/two.file2",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		TrimSuffix("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec(".file1")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

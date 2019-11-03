@@ -50,11 +50,17 @@ import (
 func CatStdin() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("CatStdin()")
+
 		// attach the program's stdin to our pipe
 		p.Stdin = pipe.NewSourceFromReader(os.Stdin)
 
-		// this will copy everything from there to the pipe's stdout
-		p.DrainStdinToStdout()
+		for line := range p.Stdin.ReadLines() {
+			TracePipeStdout("%s", line)
+			p.Stdout.WriteString(line)
+			p.Stdout.WriteRune('\n')
+		}
 
 		// all done
 		return StatusOkay, nil

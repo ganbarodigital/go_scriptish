@@ -91,3 +91,38 @@ func TestMkTempFileSetsErrorIfCannotCreateFile(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestMkTempFileWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		MkTempFile("$1", "$2"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec(os.TempDir(), "scriptish-mktempfile-*")
+	actualResult := dest.String()
+
+	tmpFile, err := pipeline.TrimmedString()
+	assert.Nil(t, err)
+
+	expectedResult := `+ MkTempFile("$1", "$2")
++ => MkTempFile("/tmp", "scriptish-mktempfile-*")
++ p.Stdout> ` + tmpFile + `
+`
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

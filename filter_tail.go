@@ -48,6 +48,9 @@ func Tail(n int) Command {
 	// special case - deal with horrible values of n
 	if n < 1 {
 		return func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Tail(%d)", n)
+
 			// do nothing
 			return StatusOkay, nil
 		}
@@ -55,6 +58,9 @@ func Tail(n int) Command {
 
 	// general case
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("Tail(%d)", n)
+
 		// we'll use the ring buffer for this
 		buf := ring.New(n)
 
@@ -75,6 +81,7 @@ func Tail(n int) Command {
 			}
 
 			// if we get here, we have a line to preserve
+			TracePipeStdout("%s", line.(string))
 			p.Stdout.WriteString(line.(string))
 			p.Stdout.WriteRune('\n')
 		})

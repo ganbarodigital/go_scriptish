@@ -54,6 +54,10 @@ func Basename(input string) Command {
 		// expand our input
 		expInput := p.Env.Expand(input)
 
+		// debugging support
+		Tracef("Basename(%#v)", input)
+		Tracef("=> Basename(%#v)", expInput)
+
 		var basename string
 
 		if len(strings.TrimSpace(expInput)) > 0 {
@@ -65,6 +69,7 @@ func Basename(input string) Command {
 		}
 
 		// send what we've got
+		TracePipeStdout(basename)
 		p.Stdout.WriteString(basename)
 		p.Stdout.WriteRune('\n')
 

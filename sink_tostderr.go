@@ -49,8 +49,12 @@ import (
 func ToStderr() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// send everything to stdout
-		for line := range p.Stdin.ReadLines() {
+		// debugging support
+		Tracef("ToStderr()")
+
+		// send everything to stderr
+		for line := range getSinkReader(p) {
+			TraceOutput("os.Stderr", "%s", line)
 			fmt.Fprintf(os.Stderr, "%s\n", line)
 		}
 

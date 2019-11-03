@@ -89,3 +89,67 @@ func TestFilePathExistsReturnsOneForFilepathsThatDoNotExist(t *testing.T) {
 
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestTestFilepathExistsWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we use string expansion here to prove that our trace includes
+	// the expansion
+	expectedResult := `+ TestFilepathExists("$1")
++ => TestFilepathExists("./builtin_testfilepathexists_test.go")
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		TestFilepathExists("$1"),
+	)
+	pipeline.Exec("./builtin_testfilepathexists_test.go")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestTestFilepathExistsErrorsAppearInTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we use string expansion here to prove that our trace includes
+	// the expansion
+	expectedResult := `+ TestFilepathExists("$1")
++ => TestFilepathExists("./does/not/exist")
++ status code: 1
++ error: stat ./does/not/exist: no such file or directory
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		TestFilepathExists("$1"),
+	)
+	pipeline.Exec("./does/not/exist")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

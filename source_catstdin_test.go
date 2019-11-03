@@ -76,3 +76,43 @@ func TestCatStdinReadsFromProgramStdin(t *testing.T) {
 
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestCatStdinWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	r, w, _ := os.Pipe()
+
+	// hijack stdin for this test
+	oldStdin := os.Stdin
+	os.Stdin = r
+	w.WriteString("hello world")
+	w.Close()
+
+	defer func() { os.Stdin = oldStdin }()
+
+	expectedResult := `+ CatStdin()
++ p.Stdout> hello world
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		CatStdin(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

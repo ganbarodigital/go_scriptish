@@ -80,3 +80,53 @@ func TestUniq(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestUniqWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"this is a line of data", "this is the second line of test data", "this is a line of data", "this is the fourth line of test data", "this is a line of data", "this is the sixth line of test data"})
++ p.Stdout> this is a line of data
++ p.Stdout> this is the second line of test data
++ p.Stdout> this is a line of data
++ p.Stdout> this is the fourth line of test data
++ p.Stdout> this is a line of data
++ p.Stdout> this is the sixth line of test data
++ Uniq()
++ p.Stdout> this is a line of data
++ p.Stdout> this is the second line of test data
++ p.Stdout> this is the fourth line of test data
++ p.Stdout> this is the sixth line of test data
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"this is a line of data",
+		"this is the second line of test data",
+		"this is a line of data",
+		"this is the fourth line of test data",
+		"this is a line of data",
+		"this is the sixth line of test data",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		Uniq(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
