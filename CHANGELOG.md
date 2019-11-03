@@ -41,6 +41,7 @@
   - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing
   - `Tr()` now supports tracing
+  - `TrimSuffix()` now supports tracing
 * Pipelines now set a context flag in their Pipe
   - this is used to tell sinks where to read from!
 

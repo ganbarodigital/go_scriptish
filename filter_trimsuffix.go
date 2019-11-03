@@ -52,9 +52,14 @@ func TrimSuffix(ext string) Command {
 		// expand our input
 		expExt := p.Env.Expand(ext)
 
+		// debugging support
+		Tracef("TrimSuffix(%#v)", ext)
+		Tracef("=> TrimSuffix(%#v)", expExt)
+
 		for line := range p.Stdin.ReadLines() {
 			newPath := strings.TrimSuffix(line, expExt)
 
+			TracePipeStdout("%s", newPath)
 			p.Stdout.WriteString(newPath)
 			p.Stdout.WriteRune('\n')
 		}
