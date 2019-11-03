@@ -48,8 +48,16 @@ func ToStdout() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
 		// send everything to stdout
-		for line := range p.Stdin.ReadLines() {
-			fmt.Printf("%s\n", line)
+		if p.Flags&contextIsPipeline != 0 {
+			// we are in a pipeline
+			for line := range p.Stdin.ReadLines() {
+				fmt.Printf("%s\n", line)
+			}
+		} else {
+			// we are in a list
+			for line := range p.Stdout.ReadLines() {
+				fmt.Printf("%s\n", line)
+			}
 		}
 
 		// all done

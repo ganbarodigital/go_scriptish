@@ -69,6 +69,7 @@
 * `AppendToTempFile()` now supports lists
 * `EchoArgs()` no longer includes `os.Args[0]` in the output (compatibility fix)
 * `ToStderr()` now supports lists
+* `ToStdout()` now supports lists
 
 ### Dependencies
 
