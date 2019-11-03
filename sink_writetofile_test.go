@@ -211,7 +211,7 @@ func TestWriteToFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
 
-	list := NewPipeline(
+	list := NewList(
 		CatFile("./testdata/truncatefile/content.txt"),
 		WriteToFile("$1"),
 	)

@@ -148,7 +148,55 @@ func TestAppendToFileDoesNothingWhenReadFromPipelineStdinFails(t *testing.T) {
 	assert.Empty(t, actualResult)
 }
 
-func TestAppendToFileWritesToTheTraceOutput(t *testing.T) {
+func TestAppendToFileWritesToTheTraceOutputWhenInList(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile")).TrimmedString()
+	assert.Nil(t, err)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
+
+	// we need to put some content into the temp file to start with
+	err = ExecPipeline(
+		Echo("this is a test line"),
+		WriteToFile(tmpFilename),
+	).Error()
+
+	expectedResult := `+ CatFile("./testdata/truncatefile/content.txt")
+=> CatFile("./testdata/truncatefile/content.txt")
++ AppendToFile("$1")
++ => AppendToFile("` + tmpFilename + `")
++ file> This is a file of test data.
++ file> ` + "" + `
++ file> We copy the contents of this file to other files, as part of our testing.
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	list := NewList(
+		CatFile("./testdata/truncatefile/content.txt"),
+		AppendToFile("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec(tmpFilename)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestAppendToFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test

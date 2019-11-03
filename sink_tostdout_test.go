@@ -80,7 +80,7 @@ func TestToStdoutWritesToProgramStdout(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestToStdoutWritesToTheTraceOutput(t *testing.T) {
+func TestToStdoutWritesToTheTraceOutputWhenInList(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
@@ -114,6 +114,48 @@ func TestToStdoutWritesToTheTraceOutput(t *testing.T) {
 	// perform the change
 
 	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestToStdoutWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// hijack stdout for this test
+	oldStdout := os.Stdout
+	_, w, _ := os.Pipe()
+	os.Stdout = w
+
+	// clean up after ourselves
+	defer func() { os.Stdout = oldStdout }()
+
+	expectedResult := `+ Echo("hello world")
++ => Echo("hello world")
++ p.Stdout> hello world
++ ToStdout()
++ os.Stdout> hello world
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Echo("hello world"),
+		ToStdout(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
 	actualResult := dest.String()
 
 	// ----------------------------------------------------------------
