@@ -25,6 +25,10 @@
   - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing
 
+### Dependencies
+
+* Update to `go_pipe` v5.1.0
+
 ## v1.1.1
 
 Released Saturday, 2nd November 2019.

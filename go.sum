@@ -4,8 +4,8 @@ github.com/ganbarodigital/go_envish/v3 v3.0.1 h1:Vn7w0ZORIOInXKI+DHaPeajDMeI4Ge8
 github.com/ganbarodigital/go_envish/v3 v3.0.1/go.mod h1:N03YV+jsRS04n+oP8D6uf1Yd6XYW0MH/HA0Btch6dX0=
 github.com/ganbarodigital/go_glob v1.0.0 h1:WqTFArtji400U7e84N8qUmUM6L8Rgt2s8ynla6f4D+Q=
 github.com/ganbarodigital/go_glob v1.0.0/go.mod h1:6FIc7UJ1CEsvqMDBb5x5y4eY926Bcfbw4YUSbiBiiqM=
-github.com/ganbarodigital/go_pipe/v5 v5.0.0 h1:q6lN54+JZN4HNn23Su9clx/VPwNXnYIvT4VLmMAMSu4=
-github.com/ganbarodigital/go_pipe/v5 v5.0.0/go.mod h1:CdJgaSSDIBpRs7Sw/jsdEyPtmqpJk55M6aYoQkMh6Pk=
+github.com/ganbarodigital/go_pipe/v5 v5.1.0 h1:XXapWB5RV2IO9ATkpxA9mb48wbwnoBuym01uXpDIYWQ=
+github.com/ganbarodigital/go_pipe/v5 v5.1.0/go.mod h1:CdJgaSSDIBpRs7Sw/jsdEyPtmqpJk55M6aYoQkMh6Pk=
 github.com/ganbarodigital/go_shellexpand v0.1.0 h1:NIU3syhGIWIGQkKR+itN7YNlqQp6ay4YSuyeU+0Q76M=
 github.com/ganbarodigital/go_shellexpand v0.1.0/go.mod h1:vi99uR3k8wGpMfVTuQ4E8+OMMOfFs2CqTCupR+IeXdQ=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
