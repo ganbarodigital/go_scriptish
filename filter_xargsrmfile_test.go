@@ -118,3 +118,56 @@ func TestXargsRmFileSetsErrorWhenSomethingGoesWrong(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestXargsRmFileWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we need somewhere to create our temporary files
+	tmpDir, err := ExecPipeline(MkTempDir(os.TempDir(), "scriptify-xargsrmfile-")).TrimmedString()
+	assert.Nil(t, err)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmDir(tmpDir))
+
+	// we need some files to remove
+	var testData []string
+	for i := 0; i < 2; i++ {
+		tmpFile, err := ExecPipeline(MkTempFile(tmpDir, "scriptish-rmtest-")).TrimmedString()
+		assert.Nil(t, err)
+		testData = append(testData, tmpFile)
+	}
+	// we have to sort the filenames to match the order that ListFiles()
+	// will return
+	testData, _ = ExecPipeline(EchoRawSlice(testData), Sort()).Strings()
+
+	expectedResult := `+ ListFiles("` + tmpDir + `")
++ p.Stdout> ` + testData[0] + `
++ p.Stdout> ` + testData[1] + `
++ XargsRmFile()
++ p.Stdout> ` + testData[0] + `
++ p.Stdout> ` + testData[1] + `
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		ListFiles(tmpDir),
+		XargsRmFile(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

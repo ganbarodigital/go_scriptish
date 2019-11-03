@@ -53,6 +53,9 @@ import (
 func XargsRmFile() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("XargsRmFile()")
+
 		for line := range p.Stdin.ReadLines() {
 			err := os.Remove(line)
 			if err != nil {
@@ -61,6 +64,7 @@ func XargsRmFile() Command {
 
 			// pass it on, in case the next item in the pipeline
 			// can use it
+			TracePipeStdout("%s", line)
 			p.Stdout.WriteString(line)
 			p.Stdout.WriteRune('\n')
 		}

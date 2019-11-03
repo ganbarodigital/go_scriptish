@@ -48,6 +48,7 @@
   - `XargsBasename()` now supports tracing
   - `XargsCat()` now supports tracing
   - `XargsDirname()` now supports tracing
+  - `XargsRmFile()` now supports tracing
 * Pipelines now set a context flag in their Pipe
   - this is used to tell sinks where to read from!
 
