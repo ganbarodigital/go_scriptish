@@ -51,8 +51,8 @@ func Echo(input string) Command {
 		expInput := p.Env.Expand(input)
 
 		// debugging support
-		Tracef("Echo(\"%s\")", input)
-		Tracef("=> Echo(\"%s\")", expInput)
+		Tracef("Echo(%#v)", input)
+		Tracef("=> Echo(%#v)", expInput)
 
 		TracePipeStdout("%s", expInput)
 		p.Stdout.WriteString(expInput)

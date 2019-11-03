@@ -58,8 +58,8 @@ func TestFilepathExists(filepath string) Command {
 		expFilepath := p.Env.Expand(filepath)
 
 		// debugging support
-		Tracef("TestFilepathExists(\"%s\")", filepath)
-		Tracef("=> TestFilepathExists(\"%s\")", expFilepath)
+		Tracef("TestFilepathExists(%#v)", filepath)
+		Tracef("=> TestFilepathExists(%#v)", expFilepath)
 
 		// does the file exist?
 		_, err := os.Stat(expFilepath)

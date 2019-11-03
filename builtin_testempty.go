@@ -49,8 +49,8 @@ func TestEmpty(input string) Command {
 		expInput := p.Env.Expand(input)
 
 		// debugging support
-		Tracef("TestEmpty(\"%s\")", input)
-		Tracef("=> TestEmpty(\"%s\")", expInput)
+		Tracef("TestEmpty(%#v)", input)
+		Tracef("=> TestEmpty(%#v)", expInput)
 
 		// is it empty?
 		if len(strings.TrimSpace(expInput)) > 0 {

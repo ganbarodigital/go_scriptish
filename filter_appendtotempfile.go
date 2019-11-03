@@ -56,8 +56,8 @@ func AppendToTempFile(dir string, pattern string) Command {
 		expPattern := p.Env.Expand(pattern)
 
 		// debugging support
-		Tracef("AppendToTempFile(\"%s\", \"%s\")", dir, pattern)
-		Tracef("=> AppendToTempFile(\"%s\", \"%s\")", expDir, expPattern)
+		Tracef("AppendToTempFile(%#v, %#v)", dir, pattern)
+		Tracef("=> AppendToTempFile(%#v, %#v)", expDir, expPattern)
 
 		// create the temporary file
 		fh, err := ioutil.TempFile(expDir, expPattern)
@@ -66,7 +66,7 @@ func AppendToTempFile(dir string, pattern string) Command {
 		}
 
 		// debugging support
-		Tracef("AppendToTempFile(): created file \"%s\"", fh.Name())
+		Tracef("AppendToTempFile(): created file %#v", fh.Name())
 
 		// remember to automatically close the file when we've finished
 		// in here
