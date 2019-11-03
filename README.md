@@ -111,6 +111,7 @@ result, err := scriptish.NewPipeline(
 - [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
   - [Error()](#error)
+  - [Flush()](#flush)
   - [Okay()](#okay)
   - [ParseInt()](#parseint)
   - [String()](#string)
@@ -1610,6 +1611,20 @@ Normally, you wouldn't call this yourself.
 
 ```go
 err := scriptish.ExecPipeline(scriptish.RmFile("/path/to/file")).Error()
+```
+
+### Flush()
+
+`Flush()` writes the contents of the pipeline or list out to the given destinations.
+
+Use `os.Stdout` and `os.Stderr` to send the output to your program's terminal.
+
+```golang
+scriptish.NewPipeline(
+    scriptish.Echo("usage: simpleca <command>"),
+)
+
+scriptish.Exec().Flush(os.Stdout, os.Stderr)
 ```
 
 ### Okay()
