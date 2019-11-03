@@ -141,21 +141,6 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we use string expansion here to prove that our trace includes
-	// the expansion
-	expectedPrefix := `+ Echo("this is my output")
-+ => Echo("this is my output")
-+ p.Stdout> this is my output
-+ Echo("and so is this")
-+ => Echo("and so is this")
-+ p.Stdout> and so is this
-+ AppendToTempFile("$1", "$2")
-+ => AppendToTempFile("/tmp", "scriptish-appendtotempfile-*")
-+ AppendToTempFile(): created file `
-
-	expectedSuffix := `+ tempfile> this is my output
-+ tempfile> and so is this
-`
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
@@ -173,17 +158,33 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	list.Exec(os.TempDir(), "scriptish-appendtotempfile-*")
 	actualResult := dest.String()
 
-	// ----------------------------------------------------------------
-	// test the results
-
-	// actualResult contains non-deterministic content (the name of the
-	// temporary file)
-	assert.Equal(t, expectedPrefix, actualResult[:len(expectedPrefix)])
-	assert.Equal(t, expectedSuffix, actualResult[len(actualResult)-len(expectedSuffix):])
-
 	// clean up after ourselves
 	tempFile, err := list.TrimmedString()
 	if err != nil {
+		ExecPipeline(RmFile(tempFile))
+	}
+
+	expectedResult := `+ Echo("this is my output")
++ => Echo("this is my output")
++ p.Stdout> this is my output
++ Echo("and so is this")
++ => Echo("and so is this")
++ p.Stdout> and so is this
++ AppendToTempFile("$1", "$2")
++ => AppendToTempFile("/tmp", "scriptish-appendtotempfile-*")
++ AppendToTempFile(): created file "` + tempFile + `"
++ tempfile> this is my output
++ tempfile> and so is this
+`
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+
+	// clean up after ourselves
+	tempFile, err = list.TrimmedString()
+	if err == nil {
 		ExecPipeline(RmFile(tempFile))
 	}
 }
@@ -193,20 +194,6 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we use string expansion here to prove that our trace includes
-	// the expansion
-	expectedPrefix := `+ Echo("this is my output")
-+ => Echo("this is my output")
-+ p.Stdout> this is my output
-+ Echo("and so is this")
-+ => Echo("and so is this")
-+ p.Stdout> and so is this
-+ AppendToTempFile("$1", "$2")
-+ => AppendToTempFile("/tmp", "scriptish-appendtotempfile-*")
-+ AppendToTempFile(): created file `
-
-	expectedSuffix := `+ tempfile> and so is this
-`
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
@@ -224,16 +211,31 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 	pipeline.Exec(os.TempDir(), "scriptish-appendtotempfile-*")
 	actualResult := dest.String()
 
+	// clean up after ourselves
+	tempFile, err := pipeline.TrimmedString()
+	if err != nil {
+		ExecPipeline(RmFile(tempFile))
+	}
+
+	expectedResult := `+ Echo("this is my output")
++ => Echo("this is my output")
++ p.Stdout> this is my output
++ Echo("and so is this")
++ => Echo("and so is this")
++ p.Stdout> and so is this
++ AppendToTempFile("$1", "$2")
++ => AppendToTempFile("/tmp", "scriptish-appendtotempfile-*")
++ AppendToTempFile(): created file "` + tempFile + `"
++ tempfile> and so is this
+`
+
 	// ----------------------------------------------------------------
 	// test the results
 
-	// actualResult contains non-deterministic content (the name of the
-	// temporary file)
-	assert.Equal(t, expectedPrefix, actualResult[:len(expectedPrefix)])
-	assert.Equal(t, expectedSuffix, actualResult[len(actualResult)-len(expectedSuffix):])
+	assert.Equal(t, expectedResult, actualResult)
 
 	// clean up after ourselves
-	tempFile, err := pipeline.TrimmedString()
+	tempFile, err = pipeline.TrimmedString()
 	if err != nil {
 		ExecPipeline(RmFile(tempFile))
 	}

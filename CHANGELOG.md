@@ -77,6 +77,7 @@
 
 * `AppendToFile()` now supports lists
 * `AppendToTempFile()` now supports lists
+* `AppendToTempFile()` no longer leaves the input data in the pipe for the next command
 * `EchoArgs()` no longer includes `os.Args[0]` in the output (compatibility fix)
 * `WriteToFile()` now supports lists
 * `ToStderr()` now supports lists

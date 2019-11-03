@@ -80,6 +80,7 @@ func AppendToTempFile(dir string, pattern string) Command {
 
 		// write to the file
 		if p.Flags&contextIsPipeline != 0 {
+			// we are in a pipeline
 			for line := range p.Stdin.ReadLines() {
 				TraceOutput("tempfile", "%s", line)
 				_, err = fh.WriteString(line)
@@ -92,7 +93,7 @@ func AppendToTempFile(dir string, pattern string) Command {
 				}
 			}
 		} else {
-			// if we are in a list, the content is actually going to be here
+			// we are in a list
 			for line := range p.Stdout.ReadLines() {
 				TraceOutput("tempfile", "%s", line)
 				_, err = fh.WriteString(line)
@@ -105,6 +106,11 @@ func AppendToTempFile(dir string, pattern string) Command {
 				}
 			}
 		}
+
+		// the pipe reads have not been destructive
+		p.SetNewStdin()
+		p.SetNewStderr()
+		p.SetNewStdout()
 
 		// all done
 		return StatusOkay, nil
