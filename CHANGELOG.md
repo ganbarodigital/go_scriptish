@@ -2,6 +2,10 @@
 
 ## develop
 
+### New
+
+* Added `Tracef()` for debugging output
+
 ## v1.1.1
 
 Released Saturday, 2nd November 2019.

@@ -112,3 +112,25 @@ func TestShoptTracingCanBeDisabled(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult1)
 	assert.Equal(t, expectedResult, actualResult2)
 }
+
+func TestShoptTracefWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "+ this is my test output"
+	expectedResult := testData + "\n"
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	Tracef(testData)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

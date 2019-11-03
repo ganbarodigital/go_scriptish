@@ -40,6 +40,7 @@
 package scriptish
 
 import (
+	"fmt"
 	"io"
 )
 
@@ -77,4 +78,11 @@ func (s *ShellOptions) IsTraceEnabled() bool {
 // across Scriptish
 func IsTraceEnabled() bool {
 	return shopt.trace != nil
+}
+
+// Tracef writes a trace message to os.Stderr if tracing is enabled
+func Tracef(format string, args ...interface{}) {
+	if IsTraceEnabled() {
+		fmt.Fprintf(shopt.trace, "+ "+format+"\n", args...)
+	}
 }
