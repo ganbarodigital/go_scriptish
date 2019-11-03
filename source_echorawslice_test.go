@@ -105,6 +105,9 @@ func TestEchoRawSliceWritesToTheTraceOutput(t *testing.T) {
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	testData := []string{
 		"hello world",
 		"have a nice day",

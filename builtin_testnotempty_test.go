@@ -147,6 +147,9 @@ func TestTestNotEmptyWritesToTheTraceOutput(t *testing.T) {
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	// ----------------------------------------------------------------
 	// perform the change
 
@@ -176,6 +179,9 @@ func TestTestNotEmptyErrorsAppearInTheTraceOutput(t *testing.T) {
 `
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
 
 	// ----------------------------------------------------------------
 	// perform the change

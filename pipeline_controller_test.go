@@ -54,6 +54,9 @@ func TestPipelineControllerWritesNothingToTheTraceOutputIfStatusCodeIsZero(t *te
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	op1 := func(p *Pipe) (int, error) {
 		return StatusOkay, nil
 	}
@@ -82,6 +85,9 @@ func TestPipelineControllerWritesNonZeroStatusCodesToTheTraceOutput(t *testing.T
 
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
 
 	op1 := func(p *Pipe) (int, error) {
 		return StatusNotOkay, nil
@@ -113,6 +119,9 @@ func TestPipelineControllerWritesErrorsToTheTraceOutput(t *testing.T) {
 
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
 
 	op1 := func(p *Pipe) (int, error) {
 		return StatusNotOkay, errors.New("this is a test error")

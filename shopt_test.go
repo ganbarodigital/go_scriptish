@@ -77,6 +77,9 @@ func TestShoptTracingCanBeEnabled(t *testing.T) {
 
 	GetShellOptions().EnableTrace(NewDest())
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	actualResult1 := IsTraceEnabled()
 	actualResult2 := GetShellOptions().IsTraceEnabled()
 
@@ -120,6 +123,9 @@ func TestShoptTracefWritesToTheTraceOutput(t *testing.T) {
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	// ----------------------------------------------------------------
 	// perform the change
 
@@ -141,6 +147,9 @@ func TestShoptTraceOutputWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := "+ test> " + testData + "\n"
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -164,6 +173,9 @@ func TestShoptTraceOsStderrWritesToTheTraceOutput(t *testing.T) {
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	// ----------------------------------------------------------------
 	// perform the change
 
@@ -185,6 +197,9 @@ func TestShoptTraceOsStdoutWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := "+ os.Stdout> " + testData + "\n"
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -208,6 +223,9 @@ func TestShoptTracePipeStderrWritesToTheTraceOutput(t *testing.T) {
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	// ----------------------------------------------------------------
 	// perform the change
 
@@ -229,6 +247,9 @@ func TestShoptTracePipeStdoutWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := "+ p.Stdout> " + testData + "\n"
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
 
 	// ----------------------------------------------------------------
 	// perform the change

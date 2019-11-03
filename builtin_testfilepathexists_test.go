@@ -103,6 +103,9 @@ func TestTestFilepathExistsWritesToTheTraceOutput(t *testing.T) {
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	// ----------------------------------------------------------------
 	// perform the change
 
@@ -132,6 +135,9 @@ func TestTestFilepathExistsErrorsAppearInTheTraceOutput(t *testing.T) {
 `
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
 
 	// ----------------------------------------------------------------
 	// perform the change

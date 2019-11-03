@@ -90,6 +90,9 @@ func TestEchoArgsWritesToTheTraceOutput(t *testing.T) {
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
 	testData := []string{"arg0 is not included", "hello world", "have a nice day"}
 
 	oldArgs := os.Args
