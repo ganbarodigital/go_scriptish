@@ -105,7 +105,7 @@ func (r brokenReader) Read(buf []byte) (int, error) {
 	return 0, errors.New("mock reader does not work by design")
 }
 
-func TestAppendToTempFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
+func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
@@ -126,13 +126,61 @@ func TestAppendToTempFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.NotNil(t, err)
-	assert.Error(t, err)
-	assert.Equal(t, StatusNotOkay, statusCode)
+	assert.Nil(t, err)
+	assert.Equal(t, StatusOkay, statusCode)
 
 	// the name of the tempfile DOES exist in the pipe's stdout
 	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
 
 	// clean up after ourselves
 	ExecPipeline(RmFile(actualResult))
+}
+
+func TestAppendToTempFileWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we use string expansion here to prove that our trace includes
+	// the expansion
+	expectedPrefix := `+ Echo("this is my output")
++ => Echo("this is my output")
++ p.Stdout> this is my output
++ Echo("and so is this")
++ => Echo("and so is this")
++ p.Stdout> and so is this
++ AppendToTempFile("$1", "$2")
++ => AppendToTempFile("/tmp", "scriptish-appendtotempfile-*")
++ AppendToTempFile(): created file `
+
+	expectedSuffix := `+ tempfile> this is my output
++ tempfile> and so is this
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list := NewList(
+		Echo("this is my output"),
+		Echo("and so is this"),
+		AppendToTempFile("$1", "$2"),
+	)
+	list.Exec(os.TempDir(), "scriptish-appendtotempfile-*")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	// actualResult contains non-deterministic content (the name of the
+	// temporary file)
+	assert.Equal(t, expectedPrefix, actualResult[:len(expectedPrefix)])
+	assert.Equal(t, expectedSuffix, actualResult[len(actualResult)-len(expectedSuffix):])
+
+	// clean up after ourselves
+	tempFile, err := list.TrimmedString()
+	if err != nil {
+		ExecPipeline(RmFile(tempFile))
+	}
 }

@@ -19,6 +19,7 @@
   - Added `TracePipeStdout()`
   - Lists now write status code and error message when tracing enabled
   - Pipelines now write status code and error message when tracing enabled
+  - `AppendToTempFile()` now supports tracing
   - `Chmod()` now supports tracing
   - `Echo()` now supports tracing
   - `TestEmpty()` now supports tracing

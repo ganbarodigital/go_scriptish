@@ -40,7 +40,6 @@
 package scriptish
 
 import (
-	"io"
 	"io/ioutil"
 )
 
@@ -56,25 +55,55 @@ func AppendToTempFile(dir string, pattern string) Command {
 		expDir := p.Env.Expand(dir)
 		expPattern := p.Env.Expand(pattern)
 
+		// debugging support
+		Tracef("AppendToTempFile(\"%s\", \"%s\")", dir, pattern)
+		Tracef("=> AppendToTempFile(\"%s\", \"%s\")", expDir, expPattern)
+
 		// create the temporary file
 		fh, err := ioutil.TempFile(expDir, expPattern)
 		if err != nil {
 			return StatusNotOkay, err
 		}
 
+		// debugging support
+		Tracef("AppendToTempFile(): created file \"%s\"", fh.Name())
+
 		// remember to automatically close the file when we've finished
 		// in here
-		defer fh.Close()
+		defer func() {
+			fh.Close()
 
-		// write the temporary file's filename out now, so that we have it
-		// no matter what happens
-		p.Stdout.WriteString(fh.Name())
-		p.Stdout.WriteRune('\n')
+			// write the temporary file's filename out last
+			p.Stdout.WriteString(fh.Name())
+			p.Stdout.WriteRune('\n')
+		}()
 
 		// write to the file
-		_, err = io.Copy(fh, p.Stdin)
-		if err != nil {
-			return StatusNotOkay, err
+		if p.Flags&contextIsPipeline != 0 {
+			for line := range p.Stdin.ReadLines() {
+				TraceOutput("tempfile", "%s", line)
+				_, err = fh.WriteString(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+				_, err = fh.WriteString("\n")
+				if err != nil {
+					return StatusNotOkay, err
+				}
+			}
+		} else {
+			// if we are in a list, the content is actually going to be here
+			for line := range p.Stdout.ReadLines() {
+				TraceOutput("tempfile", "%s", line)
+				_, err = fh.WriteString(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+				_, err = fh.WriteString("\n")
+				if err != nil {
+					return StatusNotOkay, err
+				}
+			}
 		}
 
 		// all done
