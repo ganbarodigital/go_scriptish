@@ -46,7 +46,6 @@ import (
 )
 
 func TestShoptTracingIsDisabledByDefault(t *testing.T) {
-	t.Parallel()
 
 	// ----------------------------------------------------------------
 	// setup your test
@@ -67,7 +66,6 @@ func TestShoptTracingIsDisabledByDefault(t *testing.T) {
 }
 
 func TestShoptTracingCanBeEnabled(t *testing.T) {
-	t.Parallel()
 
 	// ----------------------------------------------------------------
 	// setup your test
@@ -90,7 +88,6 @@ func TestShoptTracingCanBeEnabled(t *testing.T) {
 }
 
 func TestShoptTracingCanBeDisabled(t *testing.T) {
-	t.Parallel()
 
 	// ----------------------------------------------------------------
 	// setup your test
