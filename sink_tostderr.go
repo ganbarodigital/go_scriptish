@@ -49,9 +49,17 @@ import (
 func ToStderr() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		// send everything to stdout
-		for line := range p.Stdin.ReadLines() {
-			fmt.Fprintf(os.Stderr, "%s\n", line)
+		// send everything to stderr
+		if p.Flags&contextIsPipeline != 0 {
+			// we are in a pipe
+			for line := range p.Stdin.ReadLines() {
+				fmt.Fprintf(os.Stderr, "%s\n", line)
+			}
+		} else {
+			// we are in a list
+			for line := range p.Stdout.ReadLines() {
+				fmt.Fprintf(os.Stderr, "%s\n", line)
+			}
 		}
 
 		// all done
