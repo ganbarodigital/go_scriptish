@@ -29,6 +29,7 @@
   - `EchoArgs()` now supports tracing
   - `EchoRawSlice()` now supports tracing
   - `EchoSlice()` now supports tracing
+  - `Grep()` now supports tracing
   - `TestEmpty()` now supports tracing
   - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing
