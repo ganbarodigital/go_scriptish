@@ -39,8 +39,15 @@
 
 package scriptish
 
-type shellOptions struct {
+// ShellOptions holds flags and settings that change Scriptish's behaviour
+type ShellOptions struct {
 }
 
 // shopt holds the parameters you can set to change Scriptish's behaviour
-var shopt shellOptions
+var shopt ShellOptions
+
+// GetShellOptions gives you access to the package-wide behaviour flags
+// and settings
+func GetShellOptions() *ShellOptions {
+	return &shopt
+}
