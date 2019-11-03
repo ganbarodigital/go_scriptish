@@ -51,11 +51,15 @@ import (
 func EchoSlice(input []string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("EchoSlice(%#v)", input)
+
 		// send the slice to the pipe
 		for _, line := range input {
 			// expand our input
 			expLine := p.Env.Expand(line)
 
+			TracePipeStdout("%s", expLine)
 			p.Stdout.WriteString(expLine)
 
 			// does the string already end with an EOL?
