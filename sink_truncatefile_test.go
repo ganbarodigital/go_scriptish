@@ -119,3 +119,42 @@ func TestTruncateFileSetsErrorWhenSomethingGoesWrong(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestTruncateFileWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we need a file to truncate
+	tmpFilename, err := NewPipeline(
+		MkTempFile(os.TempDir(), "scriptify-truncatefile-*"),
+	).Exec().TrimmedString()
+	assert.Nil(t, err)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
+
+	expectedResult := `+ TruncateFile("$1")
++ => TruncateFile("` + tmpFilename + `")
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		TruncateFile("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec(tmpFilename)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

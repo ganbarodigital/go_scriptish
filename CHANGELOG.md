@@ -54,6 +54,7 @@
   - `Tr()` now supports tracing
   - `TrimSuffix()` now supports tracing
   - `TrimWhitespace()` now supports tracing
+  - `TruncateFile()` now supports tracing
   - `Uniq()` now supports tracing
   - `XargsBasename()` now supports tracing
   - `XargsCat()` now supports tracing
