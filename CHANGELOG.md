@@ -21,6 +21,7 @@
   - Pipelines now write status code and error message when tracing enabled
   - `AppendToTempFile()` now supports tracing
   - `Chmod()` now supports tracing
+  - `CountLines()` now supports tracing
   - `Echo()` now supports tracing
   - `EchoSlice()` now supports tracing
   - `TestEmpty()` now supports tracing
