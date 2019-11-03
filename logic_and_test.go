@@ -241,3 +241,80 @@ func TestAndReturnsStdoutFromLastSequenceExecuted(t *testing.T) {
 	assert.Equal(t, 5, pipeline.StatusCode())
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestLogicAndWritesToTheTraceOutputIfNotExecutingNextSequence(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Return(1)
++ status code: 1
++ error: command exited with non-zero status code 1
++ And(): not executing the given sequence
++ status code: 1
++ error: command exited with non-zero status code 1
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	list := NewList(
+		Return(1),
+		And(
+			NewPipeline(
+				Echo("hello world"),
+			),
+		),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestLogicAndWritesToTheTraceOutputIfExecutingNextSequence(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Return(0)
++ And(): executing the given sequence
++ Echo("hello world")
++ => Echo("hello world")
++ p.Stdout> hello world
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	list := NewList(
+		Return(0),
+		And(
+			NewPipeline(
+				Echo("hello world"),
+			),
+		),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
