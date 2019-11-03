@@ -50,8 +50,12 @@ import (
 func EchoRawSlice(input []string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("EchoRawSlice(%#v)", input)
+
 		// send the slice to the pipe
 		for _, line := range input {
+			TracePipeStdout("%s", line)
 			p.Stdout.WriteString(line)
 
 			// does the string already end with an EOL?
