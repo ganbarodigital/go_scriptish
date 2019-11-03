@@ -50,6 +50,7 @@
   - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing
   - `ToStderr()` now supports tracing
+  - `ToStdout()` now supports tracing
   - `Tr()` now supports tracing
   - `TrimSuffix()` now supports tracing
   - `TrimWhitespace()` now supports tracing

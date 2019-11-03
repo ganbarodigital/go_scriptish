@@ -47,15 +47,20 @@ import (
 func ToStdout() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("ToStdout()")
+
 		// send everything to stdout
 		if p.Flags&contextIsPipeline != 0 {
 			// we are in a pipeline
 			for line := range p.Stdin.ReadLines() {
+				TraceOutput("os.Stdout", "%s", line)
 				fmt.Printf("%s\n", line)
 			}
 		} else {
 			// we are in a list
 			for line := range p.Stdout.ReadLines() {
+				TraceOutput("os.Stdout", "%s", line)
 				fmt.Printf("%s\n", line)
 			}
 		}
