@@ -45,6 +45,7 @@
   - `ListFiles()` now supports tracing
   - `Lsmod()` now supports tracing
   - `MkTempDir()` now supports tracing
+  - `MkTempFile()` now supports tracing
   - `Or()` now supports tracing
   - `Return()` now supports tracing
   - `RmDir()` now supports tracing
