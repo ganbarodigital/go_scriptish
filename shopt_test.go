@@ -154,6 +154,28 @@ func TestShoptTraceOutputWritesToTheTraceOutput(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
+func TestShoptTraceOsStderrWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "this is my test output"
+	expectedResult := "+ os.Stderr> " + testData + "\n"
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	TraceOsStderr("%s", testData)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
 func TestShoptTracePipeStderrWritesToTheTraceOutput(t *testing.T) {
 
 	// ----------------------------------------------------------------
