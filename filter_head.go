@@ -46,6 +46,9 @@ func Head(n int) Command {
 	// special case - negative n
 	if n < 1 {
 		return func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Head(%d)", n)
+
 			// do nothing
 			return StatusOkay, nil
 		}
@@ -53,8 +56,13 @@ func Head(n int) Command {
 
 	// general case
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("Head(%d)", n)
+
 		count := 0
 		for line := range p.Stdin.ReadLines() {
+			TracePipeStdout("%s", line)
+
 			p.Stdout.WriteString(line)
 			p.Stdout.WriteRune('\n')
 			count++
