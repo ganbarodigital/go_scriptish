@@ -137,3 +137,43 @@ func TestXargsDirnameReplacesBlankLinesWithDots(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestXargsDirnameWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"/path/to/one/file", "/path/to/two/file"})
++ p.Stdout> /path/to/one/file
++ p.Stdout> /path/to/two/file
++ XargsDirname()
++ p.Stdout> /path/to/one
++ p.Stdout> /path/to/two
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"/path/to/one/file",
+		"/path/to/two/file",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		XargsDirname(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

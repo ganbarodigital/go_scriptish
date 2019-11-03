@@ -51,6 +51,9 @@ import (
 func XargsDirname() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("XargsDirname()")
+
 		for line := range p.Stdin.ReadLines() {
 			// special case:
 			//
@@ -64,6 +67,7 @@ func XargsDirname() Command {
 			dirname := filepath.Dir(line)
 
 			// pass it on
+			TracePipeStdout("%s", dirname)
 			p.Stdout.WriteString(dirname)
 			p.Stdout.WriteRune('\n')
 		}
