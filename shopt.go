@@ -63,3 +63,14 @@ func (s *ShellOptions) DisableTrace() {
 func (s *ShellOptions) EnableTrace() {
 	s.trace = true
 }
+
+// IsTraceEnabled return true if execution tracing is currently switched on
+func (s *ShellOptions) IsTraceEnabled() bool {
+	return s.trace
+}
+
+// IsTraceEnabled returns true if execution tracing is currently switched on
+// across Scriptish
+func IsTraceEnabled() bool {
+	return shopt.trace
+}
