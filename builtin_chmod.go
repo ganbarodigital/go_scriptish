@@ -55,6 +55,10 @@ func Chmod(filepath string, mode os.FileMode) Command {
 		// expand our input
 		expFilepath := p.Env.Expand(filepath)
 
+		// debugging support
+		Tracef("Chmod(\"%s\", 0%o)", filepath, mode)
+		Tracef("=> Chmod(\"%s\", 0%o)", expFilepath, mode)
+
 		err := os.Chmod(expFilepath, mode)
 		if err != nil {
 			return StatusNotOkay, err
