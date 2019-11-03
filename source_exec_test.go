@@ -178,3 +178,38 @@ func TestExecSetsErrorIfCommandCannotBeRun(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, expectedResult, pipeline.StatusCode())
 }
+
+func TestExecWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Echo("hello world")
++ => Echo("hello world")
++ p.Stdout> hello world
++ Exec([]string{"/usr/bin/env", "$1"})
++ => Exec([]string{"/usr/bin/env", "cat"})
++ p.Stdout> hello world
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Echo("hello world"),
+		Exec("/usr/bin/env", "$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec("cat")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

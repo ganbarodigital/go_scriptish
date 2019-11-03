@@ -56,13 +56,19 @@ func Exec(args ...string) Command {
 			expArgs[i] = p.Env.Expand(args[i])
 		}
 
+		// debugging support
+		Tracef("Exec(%#v)", args)
+		Tracef("=> Exec(%#v)", expArgs)
+
 		// build our command
 		cmd := exec.Command(expArgs[0], expArgs[1:]...)
 
 		// attach all of our inputs and outputs
+		stdout := NewDest()
+		stderr := NewDest()
 		cmd.Stdin = p.Stdin
-		cmd.Stdout = p.Stdout
-		cmd.Stderr = p.Stderr
+		cmd.Stdout = stdout
+		cmd.Stderr = stderr
 
 		// let's do it
 		err := cmd.Start()
@@ -72,6 +78,24 @@ func Exec(args ...string) Command {
 
 		// wait for it to finish
 		err = cmd.Wait()
+
+		// copy the output to our pipe
+		//
+		// it's not ideal, because we can't preserve the original mixed
+		// order of the command's output atm
+		//
+		// at some point, we'll need a new version of pipe that does
+		// support preserving mixed order output!
+		for line := range stdout.ReadLines() {
+			TracePipeStdout("%s", line)
+			p.Stdout.WriteString(line)
+			p.Stdout.WriteRune('\n')
+		}
+		for line := range stderr.ReadLines() {
+			TracePipeStderr("%s", line)
+			p.Stderr.WriteString(line)
+			p.Stderr.WriteRune('\n')
+		}
 
 		// we want the process's status code
 		statusCode := cmd.ProcessState.ExitCode()
