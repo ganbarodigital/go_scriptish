@@ -50,6 +50,10 @@ func GrepV(regex string) Command {
 		// expand our input
 		expRegex := p.Env.Expand(regex)
 
+		// debugging support
+		Tracef("GrepV(%#v)", regex)
+		Tracef("=> GrepV(%#v)", expRegex)
+
 		// do we have a valid regex?
 		re, err := regexp.Compile(expRegex)
 		if err != nil {
@@ -59,6 +63,7 @@ func GrepV(regex string) Command {
 		// let's apply it
 		for line := range p.Stdin.ReadLines() {
 			if !re.MatchString(line) {
+				TracePipeStdout("%s", line)
 				p.Stdout.WriteString(line)
 				p.Stdout.WriteRune('\n')
 			}
