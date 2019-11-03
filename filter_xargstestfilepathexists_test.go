@@ -91,3 +91,40 @@ func TestXargsTestFilepathExistsDropsFilepathsThatDoNotExist(t *testing.T) {
 
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestXargsTestFilepathExistsWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we're going to use our own source code as the test data
+	_, filename, _, _ := runtime.Caller(0)
+	assert.NotEmpty(t, filename)
+
+	expectedResult := `+ ListFiles("` + filename + `")
++ p.Stdout> ` + filename + `
++ XargsTestFilepathExists()
++ p.Stdout> ` + filename + `
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		ListFiles(filename),
+		XargsTestFilepathExists(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
