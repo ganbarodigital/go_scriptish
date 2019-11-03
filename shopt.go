@@ -41,6 +41,8 @@ package scriptish
 
 // ShellOptions holds flags and settings that change Scriptish's behaviour
 type ShellOptions struct {
+	// trace switches on debugging output across Scriptish
+	trace bool
 }
 
 // shopt holds the parameters you can set to change Scriptish's behaviour
@@ -50,4 +52,14 @@ var shopt ShellOptions
 // and settings
 func GetShellOptions() *ShellOptions {
 	return &shopt
+}
+
+// DisableTrace will switch off execution tracing across Scriptish
+func (s *ShellOptions) DisableTrace() {
+	s.trace = false
+}
+
+// EnableTrace will switch on execution tracing across Scriptish
+func (s *ShellOptions) EnableTrace() {
+	s.trace = true
 }
