@@ -54,6 +54,10 @@ func Dirname(input string) Command {
 		// expand our input
 		expInput := p.Env.Expand(input)
 
+		// debugging support
+		Tracef("Dirname(%#v)", input)
+		Tracef("=> Dirname(%#v)", expInput)
+
 		// special case:
 		//
 		// filepath.Dir() does not handle trailing slashes correctly
@@ -66,6 +70,7 @@ func Dirname(input string) Command {
 		dirname := filepath.Dir(expInput)
 
 		// pass it on
+		TracePipeStdout("%s", dirname)
 		p.Stdout.WriteString(dirname)
 		p.Stdout.WriteRune('\n')
 
