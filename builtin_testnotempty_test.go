@@ -133,3 +133,61 @@ func TestTestNotEmptyReturnsZeroIfStringExpandsToNotEmpty(t *testing.T) {
 
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestTestNotEmptyWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we use string expansion here to prove that our trace includes
+	// the expansion
+	expectedResult := `+ TestNotEmpty("$1")
++ => TestNotEmpty("this is an expanded string")
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		TestNotEmpty("$1"),
+	)
+	pipeline.Exec("this is an expanded string")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestTestNotEmptyErrorsAppearInTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we use string expansion here to prove that our trace includes
+	// the expansion
+	expectedResult := `+ TestNotEmpty("$1")
++ => TestNotEmpty("")
++ status code: 1
++ error: command exited with non-zero status code 1
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		TestNotEmpty("$1"),
+	)
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
