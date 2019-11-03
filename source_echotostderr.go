@@ -50,7 +50,12 @@ func EchoToStderr(input string) Command {
 		// expand our input
 		expInput := p.Env.Expand(input)
 
+		// debugging support
+		Tracef("EchoToStderr(%#v)", input)
+		Tracef("=> EchoToStderr(%#v)", expInput)
+
 		// write it
+		TracePipeStderr("%s", expInput)
 		p.Stderr.WriteString(expInput)
 
 		// make sure we don't accidentally create a blank line

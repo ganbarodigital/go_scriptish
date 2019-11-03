@@ -92,3 +92,34 @@ func TestEchoStderrWritesEndOfLineIfMissing(t *testing.T) {
 	assert.Equal(t, "", pipeline.Pipe.Stdout.String())
 	assert.Equal(t, expectedResult, pipeline.Pipe.Stderr.String())
 }
+
+func TestEchoToStderrWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoToStderr("$1")
++ => EchoToStderr("this is an error message")
++ p.Stderr> this is an error message
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		EchoToStderr("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec("this is an error message")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

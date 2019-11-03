@@ -35,6 +35,7 @@
   - `EchoArgs()` now supports tracing
   - `EchoRawSlice()` now supports tracing
   - `EchoSlice()` now supports tracing
+  - `EchoToStderr()` now supports tracing
   - `Grep()` now supports tracing
   - `GrepV()` now supports tracing
   - `Head()` now supports tracing
