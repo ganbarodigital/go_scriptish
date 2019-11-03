@@ -48,11 +48,15 @@ import (
 func CountWords() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("CountWords()")
+
 		count := 0
 		for range p.Stdin.ReadWords() {
 			count++
 		}
 
+		TracePipeStdout("%d", count)
 		p.Stdout.WriteString(strconv.Itoa(count))
 		p.Stdout.WriteRune('\n')
 
