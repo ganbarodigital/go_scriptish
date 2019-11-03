@@ -7,8 +7,8 @@
 * Added debugging output support
   - Added `Tracef()`
   - Added `TraceOutput()`
-  - Added `TraceStderr()`
-  - Added `TraceStdout()`
+  - Added `TracePipeStderr()`
+  - Added `TracePipeStdout()`
 
 ## v1.1.1
 
