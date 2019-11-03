@@ -4,7 +4,13 @@
 
 ### New
 
+* Added support for shell options
+  - Added `GetShellOptions()`
 * Added debugging output support
+  - Added `ShellOptions.EnableTrace()`
+  - Added `ShellOptions.DisableTrace()`
+  - Added `ShellOptions.IsTraceEnabled()`
+  - Added `IsTraceEnabled()`
   - Added `Tracef()`
   - Added `TraceOutput()`
   - Added `TracePipeStderr()`
