@@ -49,6 +49,9 @@ import (
 func XargsBasename() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("XargsBasename()")
+
 		// process each filepath in the pipeline
 		for line := range p.Stdin.ReadLines() {
 			var basename string
@@ -62,6 +65,7 @@ func XargsBasename() Command {
 			}
 
 			// send what we've got
+			TracePipeStdout("%s", basename)
 			p.Stdout.WriteString(basename)
 			p.Stdout.WriteRune('\n')
 		}

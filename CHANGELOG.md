@@ -44,6 +44,7 @@
   - `TrimSuffix()` now supports tracing
   - `TrimWhitespace()` now supports tracing
   - `Uniq()` now supports tracing
+  - `XargsBasename()` now supports tracing
 * Pipelines now set a context flag in their Pipe
   - this is used to tell sinks where to read from!
 
