@@ -138,3 +138,50 @@ func TestHeadCopiesNoLinesWhenNIsNegative(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestHeadWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"this is the first line of test data", "this is the second line of test data", "this is the third line of test data", "this is the fourth line of test data", "this is the fifth line of test data"})
++ p.Stdout> this is the first line of test data
++ p.Stdout> this is the second line of test data
++ p.Stdout> this is the third line of test data
++ p.Stdout> this is the fourth line of test data
++ p.Stdout> this is the fifth line of test data
++ Head(3)
++ p.Stdout> this is the first line of test data
++ p.Stdout> this is the second line of test data
++ p.Stdout> this is the third line of test data
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"this is the first line of test data",
+		"this is the second line of test data",
+		"this is the third line of test data",
+		"this is the fourth line of test data",
+		"this is the fifth line of test data",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		Head(3),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

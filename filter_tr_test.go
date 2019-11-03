@@ -158,3 +158,42 @@ func TestTrReturnsAnErrorIfParamsNotSameLength(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestTrWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"this is the first line of test data", "this is the second line of test data"})
++ p.Stdout> this is the first line of test data
++ p.Stdout> this is the second line of test data
++ Tr([]string{"this", "test"}, []string{"sith", "trout"})
++ p.Stdout> sith is the first line of trout data
++ p.Stdout> sith is the second line of trout data
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"this is the first line of test data",
+		"this is the second line of test data",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		Tr([]string{"this", "test"}, []string{"sith", "trout"}),
+	)
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

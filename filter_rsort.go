@@ -47,11 +47,16 @@ import (
 func Rsort() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("Rsort()")
+
 		lines := p.Stdin.Strings()
 		var strSlice sort.StringSlice = lines
 		sort.Sort(sort.Reverse(strSlice))
 
 		for _, line := range strSlice {
+			TracePipeStdout("%s", line)
+
 			p.Stdout.WriteString(line)
 			p.Stdout.WriteRune('\n')
 		}

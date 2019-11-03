@@ -48,11 +48,15 @@ import (
 func CountLines() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("CountLines()")
+
 		count := 0
 		for range p.Stdin.ReadLines() {
 			count++
 		}
 
+		TracePipeStdout("%d", count)
 		p.Stdout.WriteString(strconv.Itoa(count))
 		p.Stdout.WriteRune('\n')
 

@@ -204,3 +204,67 @@ func TestListFilesReturnsNothingIfPathWildcardsDoNotMatch(t *testing.T) {
 	assert.Equal(t, "", actualResult)
 	assert.Nil(t, err)
 }
+
+func TestListFilesWritesToTheTraceOutputIfPathToFolder(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ ListFiles("./testdata/listfiles/")
++ p.Stdout> testdata/listfiles/one.txt
++ p.Stdout> testdata/listfiles/three.yaml
++ p.Stdout> testdata/listfiles/two.txt
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		ListFiles("./testdata/listfiles/"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestListFilesWritesToTheTraceOutputIfGlobbing(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ ListFiles("./testdata/listfiles/*")
++ p.Stdout> testdata/listfiles/one.txt
++ p.Stdout> testdata/listfiles/three.yaml
++ p.Stdout> testdata/listfiles/two.txt
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		ListFiles("./testdata/listfiles/*"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

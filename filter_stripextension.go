@@ -49,12 +49,19 @@ import (
 func StripExtension() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("StripExtension()")
+
 		for line := range p.Stdin.ReadLines() {
 			// what extension does this filepath have?
 			fileExt := filepath.Ext(line)
 
-			// remove it, and pass it on
-			p.Stdout.WriteString(strings.TrimSuffix(line, fileExt))
+			// remove it
+			newFilepath := strings.TrimSuffix(line, fileExt)
+
+			// pass it on
+			TracePipeStdout("%s", newFilepath)
+			p.Stdout.WriteString(newFilepath)
 			p.Stdout.WriteRune('\n')
 		}
 

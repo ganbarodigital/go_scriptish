@@ -116,3 +116,34 @@ func TestDirnameReplacesBlankLinesWithDots(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestDirnameWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Dirname("$1")
++ => Dirname("/path/to/folder/or/file")
++ p.Stdout> /path/to/folder/or
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Dirname("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec("/path/to/folder/or/file")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

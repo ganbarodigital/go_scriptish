@@ -57,6 +57,9 @@ import (
 func ListFiles(path string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("ListFiles(%#v)", path)
+
 		// special case: user wants a list of files that match a wildcard
 		if strings.ContainsAny(path, "[]^*?\\{}!") {
 			return globFiles(p, path)
@@ -87,6 +90,7 @@ func globFiles(p *Pipe, path string) (int, error) {
 
 	// we have something to pass on
 	for _, filename := range filenames {
+		TracePipeStdout("%s", filename)
 		p.Stdout.WriteString(filename)
 		p.Stdout.WriteRune('\n')
 	}
@@ -96,6 +100,7 @@ func globFiles(p *Pipe, path string) (int, error) {
 }
 
 func listFile(p *Pipe, path string) (int, error) {
+	TracePipeStdout("%s", path)
 	p.Stdout.WriteString(path)
 	p.Stdout.WriteRune('\n')
 
@@ -111,7 +116,9 @@ func listFolder(p *Pipe, path string) (int, error) {
 
 	// we have some filenames to pass on
 	for _, entry := range files {
-		p.Stdout.WriteString(filepath.Join(path, entry.Name()))
+		filepath := filepath.Join(path, entry.Name())
+		TracePipeStdout("%s", filepath)
+		p.Stdout.WriteString(filepath)
 		p.Stdout.WriteRune('\n')
 	}
 

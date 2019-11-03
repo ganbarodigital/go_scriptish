@@ -47,6 +47,9 @@ import "io"
 func If(expr, body *Sequence) Command {
 	// build our Scriptish Command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("If()")
+
 		// get our parameters
 		params := getParamsFromEnv(p.Env)
 
@@ -62,6 +65,9 @@ func If(expr, body *Sequence) Command {
 		if err != nil {
 			return statusCode, err
 		}
+
+		// debugging support
+		Tracef("If() passed ... executing the body sequence")
 
 		// yes we can!
 		body.Exec(params...)

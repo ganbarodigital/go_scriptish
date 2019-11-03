@@ -106,3 +106,43 @@ func TestXargsBasenamePreservesBlankLines(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestXargsBasenameWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"/path/to/one.file", "/path/to/two.file"})
++ p.Stdout> /path/to/one.file
++ p.Stdout> /path/to/two.file
++ XargsBasename()
++ p.Stdout> one.file
++ p.Stdout> two.file
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"/path/to/one.file",
+		"/path/to/two.file",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		XargsBasename(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

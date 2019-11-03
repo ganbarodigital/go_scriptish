@@ -50,6 +50,11 @@ func Echo(input string) Command {
 		// expand our input
 		expInput := p.Env.Expand(input)
 
+		// debugging support
+		Tracef("Echo(%#v)", input)
+		Tracef("=> Echo(%#v)", expInput)
+
+		TracePipeStdout("%s", expInput)
 		p.Stdout.WriteString(expInput)
 
 		// make sure we don't accidentally create a blank line

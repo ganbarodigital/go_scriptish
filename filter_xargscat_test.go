@@ -96,3 +96,47 @@ func TestXargsCatReturnsErrorIfFileDoesNotExist(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestXargsCatWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ ListFiles("./testdata/concatfiles/*.txt")
++ p.Stdout> testdata/concatfiles/one.txt
++ p.Stdout> testdata/concatfiles/two.txt
++ XargsCat()
++ reading from file "testdata/concatfiles/one.txt"
++ p.Stdout> This is a test file.
+
+It contains three lines.
++ reading from file "testdata/concatfiles/two.txt"
++ p.Stdout> This is another test file.
+
+It is called two.txt.
+It contains five lines.
+
+
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		ListFiles("./testdata/concatfiles/*.txt"),
+		XargsCat(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

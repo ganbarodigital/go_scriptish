@@ -45,118 +45,62 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSwapExtensionSwapsOldWithNew(t *testing.T) {
+func TestEchoRawSliceWritesToPipelineStdout(t *testing.T) {
+	t.Parallel()
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-	expectedResult := []string{
-		"/path/to/one.trout",
-		"/path/to/two.herring",
-		"/path/to/three",
-		"/path/to/four.trout",
-	}
-
+	expectedResult := []string{"hello world", "have a nice day"}
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
+		EchoRawSlice(expectedResult),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().Strings()
+	pipeline.Exec()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
+	assert.Equal(t, "", pipeline.Pipe.Stdin.String())
+	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.Strings())
+	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
 }
 
-func TestSwapExtensionSupportsASingleNew(t *testing.T) {
+func TestEchoRawSliceDoesNoStringExpansion(t *testing.T) {
+	t.Parallel()
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-	expectedResult := []string{
-		"/path/to/one.trout",
-		"/path/to/two.trout",
-		"/path/to/three",
-		"/path/to/four.trout",
-	}
-
+	expectedResult := []string{"$1", "${HOME}"}
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout"}),
+		EchoRawSlice(expectedResult),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult, err := pipeline.Exec().Strings()
+	pipeline.Exec()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
+	assert.Equal(t, "", pipeline.Pipe.Stdin.String())
+	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.Strings())
+	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
 }
 
-func TestSwapExtensionReturnsErrorIfOldAndNewMismatchedLength(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2", ".file3"}, []string{".trout", ".herring"}),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().Strings()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.NotNil(t, err)
-	assert.Error(t, err)
-	assert.Empty(t, actualResult)
-}
-
-func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
+func TestEchoRawSliceWritesToTheTraceOutput(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := `+ EchoSlice([]string{"/path/to/one.file1", "/path/to/two.file2", "/path/to/three", "/path/to/four.file1"})
-+ p.Stdout> /path/to/one.file1
-+ p.Stdout> /path/to/two.file2
-+ p.Stdout> /path/to/three
-+ p.Stdout> /path/to/four.file1
-+ SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"})
-+ p.Stdout> /path/to/one.trout
-+ p.Stdout> /path/to/two.herring
-+ p.Stdout> /path/to/three
-+ p.Stdout> /path/to/four.trout
+	expectedResult := `+ EchoRawSlice([]string{"hello world", "have a nice day"})
++ p.Stdout> hello world
++ p.Stdout> have a nice day
 `
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
@@ -165,16 +109,13 @@ func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
 	defer GetShellOptions().DisableTrace()
 
 	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
+		"hello world",
+		"have a nice day",
 	}
-
 	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
+		EchoRawSlice(testData),
 	)
+
 	// ----------------------------------------------------------------
 	// perform the change
 

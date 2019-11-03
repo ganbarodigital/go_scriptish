@@ -45,105 +45,81 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTestNotEmptyReturnsOneIfStringIsEmpty(t *testing.T) {
+func TestShoptTracingIsDisabledByDefault(t *testing.T) {
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := ""
-	expectedResult := 1
-
-	pipeline := NewPipeline(
-		TestNotEmpty(testData),
-	)
+	expectedResult := false
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult := pipeline.Exec().StatusCode()
+	actualResult1 := IsTraceEnabled()
+	actualResult2 := GetShellOptions().IsTraceEnabled()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Equal(t, expectedResult, actualResult)
+	assert.Equal(t, expectedResult, actualResult1)
+	assert.Equal(t, expectedResult, actualResult2)
 }
 
-func TestTestNotEmptyReturnsOneIfStringExpandsToEmpty(t *testing.T) {
+func TestShoptTracingCanBeEnabled(t *testing.T) {
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := "$DOES_NOT_EXIST"
-	expectedResult := 1
-
-	pipeline := NewPipeline(
-		TestNotEmpty(testData),
-	)
+	expectedResult := true
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult := pipeline.Exec().StatusCode()
+	GetShellOptions().EnableTrace(NewDest())
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	actualResult1 := IsTraceEnabled()
+	actualResult2 := GetShellOptions().IsTraceEnabled()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Equal(t, expectedResult, actualResult)
+	assert.Equal(t, expectedResult, actualResult1)
+	assert.Equal(t, expectedResult, actualResult2)
 }
 
-func TestTestNotEmptyReturnsZeroIfStringIsNotEmpty(t *testing.T) {
+func TestShoptTracingCanBeDisabled(t *testing.T) {
+
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := "not empty"
-	expectedResult := 0
-
-	pipeline := NewPipeline(
-		TestNotEmpty(testData),
-	)
+	expectedResult := false
+	GetShellOptions().EnableTrace(NewDest())
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	actualResult := pipeline.Exec().StatusCode()
+	GetShellOptions().DisableTrace()
+
+	actualResult1 := IsTraceEnabled()
+	actualResult2 := GetShellOptions().IsTraceEnabled()
 
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Equal(t, expectedResult, actualResult)
+	assert.Equal(t, expectedResult, actualResult1)
+	assert.Equal(t, expectedResult, actualResult2)
 }
 
-func TestTestNotEmptyReturnsZeroIfStringExpandsToNotEmpty(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testData := "$DOES_NOT_EXIST"
-	expectedResult := 0
-
-	pipeline := NewPipeline(
-		TestNotEmpty(testData),
-	)
-	pipeline.LocalVars.Setenv("DOES_NOT_EXIST", "yes it does")
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult := pipeline.Exec().StatusCode()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestTestNotEmptyWritesToTheTraceOutput(t *testing.T) {
+func TestShoptTracefWritesToTheTraceOutput(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we use string expansion here to prove that our trace includes
-	// the expansion
-	expectedResult := `+ TestNotEmpty("$1")
-+ => TestNotEmpty("this is an expanded string")
-`
+	testData := "this is my test output"
+	expectedResult := "+ " + testData + "\n"
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
@@ -153,10 +129,7 @@ func TestTestNotEmptyWritesToTheTraceOutput(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	pipeline := NewPipeline(
-		TestNotEmpty("$1"),
-	)
-	pipeline.Exec("this is an expanded string")
+	Tracef(testData)
 	actualResult := dest.String()
 
 	// ----------------------------------------------------------------
@@ -165,18 +138,13 @@ func TestTestNotEmptyWritesToTheTraceOutput(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestTestNotEmptyErrorsAppearInTheTraceOutput(t *testing.T) {
+func TestShoptTraceOutputWritesToTheTraceOutput(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	// we use string expansion here to prove that our trace includes
-	// the expansion
-	expectedResult := `+ TestNotEmpty("$1")
-+ => TestNotEmpty("")
-+ status code: 1
-+ error: command exited with non-zero status code 1
-`
+	testData := "this is my test output"
+	expectedResult := "+ test> " + testData + "\n"
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
@@ -186,10 +154,107 @@ func TestTestNotEmptyErrorsAppearInTheTraceOutput(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	pipeline := NewPipeline(
-		TestNotEmpty("$1"),
-	)
-	pipeline.Exec()
+	TraceOutput("test", "%s", testData)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestShoptTraceOsStderrWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "this is my test output"
+	expectedResult := "+ os.Stderr> " + testData + "\n"
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	TraceOsStderr("%s", testData)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestShoptTraceOsStdoutWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "this is my test output"
+	expectedResult := "+ os.Stdout> " + testData + "\n"
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	TraceOsStdout("%s", testData)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestShoptTracePipeStderrWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "this is my test output"
+	expectedResult := "+ p.Stderr> " + testData + "\n"
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	TracePipeStderr("%s", testData)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestShoptTracePipeStdoutWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "this is my test output"
+	expectedResult := "+ p.Stdout> " + testData + "\n"
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	TracePipeStdout("%s", testData)
 	actualResult := dest.String()
 
 	// ----------------------------------------------------------------

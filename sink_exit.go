@@ -48,6 +48,9 @@ import "os"
 func Exit(statusCode int) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("Exit(%d)", statusCode)
+
 		// all done
 		os.Exit(statusCode)
 

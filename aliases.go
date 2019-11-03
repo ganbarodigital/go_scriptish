@@ -49,6 +49,14 @@ import (
 // file in the project.
 type Command = pipe.Command
 
+// Dest is an alias for the underlying pipe library's Dest
+type Dest = pipe.Dest
+
+// NewDest creates a new pipe.Dest struct
+func NewDest() *Dest {
+	return new(Dest)
+}
+
 // List is an alias for a Sequence
 type List = Sequence
 
@@ -60,6 +68,17 @@ type Pipe = pipe.Pipe
 
 // Pipeline is an alias for a Sequence
 type Pipeline = Sequence
+
+// Source is an alias for the underlying pipe library's Source
+type Source = pipe.Source
+
+// NewSourceFromReader is an alias for the underlying pipe library's
+// NewSourceFromReader()
+var NewSourceFromReader = pipe.NewSourceFromReader
+
+// NewSourceFromString is an alias for the underlying pipe library's
+// NewSourceFromString()
+var NewSourceFromString = pipe.NewSourceFromString
 
 // StatusOkay is an alias for the underlying pipe library's StatusOkay
 //

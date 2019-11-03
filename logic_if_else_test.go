@@ -120,3 +120,99 @@ func TestIfElseDoesNotExecuteTheBodyIfExprReturnedAnError(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestIfElseWritesToTheTraceOutputWhenExecutingThenBranch(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ IfElse()
++ Return(0)
++ If() passed ... executing the body sequence
++ Echo("this is the 'then' branch")
++ => Echo("this is the 'then' branch")
++ p.Stdout> this is the 'then' branch
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	list := NewList(
+		IfElse(
+			// if
+			NewPipeline(
+				Return(0),
+			),
+			// then
+			NewList(
+				Echo("this is the 'then' branch"),
+			),
+			// else
+			NewPipeline(
+				Echo("this is the 'else' branch"),
+			),
+		),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestIfElseWritesToTheTraceOutputWhenExecutingElseBranch(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ IfElse()
++ Return(1)
++ status code: 1
++ error: command exited with non-zero status code 1
++ If() failed ... executing the elseBlock sequence
++ Echo("this is the 'else' branch")
++ => Echo("this is the 'else' branch")
++ p.Stdout> this is the 'else' branch
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	list := NewList(
+		IfElse(
+			// if
+			NewPipeline(
+				Return(1),
+			),
+			// then
+			NewList(
+				Echo("this is the 'then' branch"),
+			),
+			// else
+			NewPipeline(
+				Echo("this is the 'else' branch"),
+			),
+		),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

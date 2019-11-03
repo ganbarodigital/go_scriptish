@@ -72,3 +72,41 @@ func TestCountLinesReturnsNumberOfLinesInPipeline(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestCountLinesWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"hello world", "have a nice day"})
++ p.Stdout> hello world
++ p.Stdout> have a nice day
++ CountLines()
++ p.Stdout> 2
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"hello world",
+		"have a nice day",
+	}
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		CountLines(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

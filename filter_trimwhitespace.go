@@ -47,9 +47,13 @@ import (
 func TrimWhitespace() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("TrimWhitespace()")
+
 		for line := range p.Stdin.ReadLines() {
 			newLine := strings.TrimSpace(line)
 
+			TracePipeStdout("%s", newLine)
 			p.Stdout.WriteString(newLine)
 			p.Stdout.WriteRune('\n')
 		}

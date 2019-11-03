@@ -426,3 +426,50 @@ func TestNewListFuncReturnsAListAsAFunction(t *testing.T) {
 	assert.Equal(t, expectedStatus, actualStatus)
 	assert.Equal(t, expectedError, actualError)
 }
+
+func TestNewListDoesNotHaveThePipelineContextFlagSet(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list := NewList()
+
+	actualResult := list.Pipe.Flags & contextIsPipeline
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, 0, actualResult)
+}
+
+func TestExecutingListDoesNotHaveThePipelineContextFlagSet(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	op := func(p *Pipe) (int, error) {
+		if p.Flags&contextIsPipeline != 0 {
+			return StatusNotOkay, errors.New("pipeline context flag is set")
+		}
+
+		return StatusOkay, nil
+	}
+	list := NewList(op)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec()
+	actualResult, err := list.StatusError()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Nil(t, err)
+	assert.Equal(t, StatusOkay, actualResult)
+}

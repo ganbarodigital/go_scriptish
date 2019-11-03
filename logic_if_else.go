@@ -49,6 +49,9 @@ import "io"
 func IfElse(expr, body, elseBlock *Sequence) Command {
 	// build our Scriptish Command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("IfElse()")
+
 		// get our parameters
 		params := getParamsFromEnv(p.Env)
 
@@ -62,6 +65,9 @@ func IfElse(expr, body, elseBlock *Sequence) Command {
 		// can we proceed?
 		err := expr.Error()
 		if err == nil {
+			// debugging support
+			Tracef("If() passed ... executing the body sequence")
+
 			// yes we can!
 			body.Exec(params...)
 
@@ -72,6 +78,9 @@ func IfElse(expr, body, elseBlock *Sequence) Command {
 			// all done
 			return body.StatusError()
 		}
+
+		// debugging support
+		Tracef("If() failed ... executing the elseBlock sequence")
 
 		// if we get here, we need to execute the other thing
 		elseBlock.Exec()

@@ -110,3 +110,39 @@ func TestCutFieldsReturnsErrorIfRangeSpecInvalid(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestCutFieldsWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Echo("one two three four five six seven\neight nine ten eleven")
++ => Echo("one two three four five six seven\neight nine ten eleven")
++ p.Stdout> one two three four five six seven
+eight nine ten eleven
++ CutFields("2-4,6")
++ p.Stdout> two three four six
++ p.Stdout> nine ten eleven
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Echo("one two three four five six seven\neight nine ten eleven"),
+		CutFields("2-4,6"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

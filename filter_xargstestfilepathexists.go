@@ -53,6 +53,9 @@ import (
 func XargsTestFilepathExists() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("XargsTestFilepathExists()")
+
 		for line := range p.Stdin.ReadLines() {
 			// does the file exist?
 			_, err := os.Stat(line)
@@ -63,6 +66,7 @@ func XargsTestFilepathExists() Command {
 
 			// write the filepath to the pipeline, in case the next item
 			// can make use of it
+			TracePipeStdout("%s", line)
 			p.Stdout.WriteString(line)
 			p.Stdout.WriteRune('\n')
 		}

@@ -79,3 +79,53 @@ func TestDropEmptyLinesRemovesEmptyLines(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestDropEmptyLinesWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"this line should be intact", "    so should this line", "    and this one too", "", "and this should be the forth line now"})
++ p.Stdout> this line should be intact
++ p.Stdout>     so should this line
++ p.Stdout>     and this one too
+` +
+		"+ p.Stdout> " +
+		`
++ p.Stdout> and this should be the forth line now
++ DropEmptyLines()
++ p.Stdout> this line should be intact
++ p.Stdout>     so should this line
++ p.Stdout>     and this one too
++ p.Stdout> and this should be the forth line now
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"this line should be intact",
+		"    so should this line",
+		"    and this one too",
+		"",
+		"and this should be the forth line now",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		DropEmptyLines(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

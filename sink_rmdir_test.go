@@ -137,3 +137,40 @@ func TestRmDirDoesNotRespectFilePermissions(t *testing.T) {
 	assert.Equal(t, StatusOkay, pipeline.StatusCode())
 	assert.Empty(t, actualResult)
 }
+
+func TestRmDirWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	tmpDir, err := ExecPipeline(
+		// create the temporary folder
+		MkTempDir(os.TempDir(), "scriptify-rmdir-"),
+	).TrimmedString()
+	assert.Nil(t, err)
+	assert.NotEmpty(t, tmpDir)
+
+	expectedResult := `+ RmDir("$1")
++ => RmDir("` + tmpDir + `")
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		RmDir("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec(tmpDir)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

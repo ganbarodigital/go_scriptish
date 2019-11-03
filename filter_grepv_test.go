@@ -105,3 +105,48 @@ func TestGrepVReturnsErrorIfRegexInvalid(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestGrepVWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"this is the first line", "this is the second line", "this is the third line", "and this is the fourth line"})
++ p.Stdout> this is the first line
++ p.Stdout> this is the second line
++ p.Stdout> this is the third line
++ p.Stdout> and this is the fourth line
++ GrepV("$1")
++ => GrepV("second|third")
++ p.Stdout> this is the first line
++ p.Stdout> and this is the fourth line
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"this is the first line",
+		"this is the second line",
+		"this is the third line",
+		"and this is the fourth line",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		GrepV("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec("second|third")
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

@@ -58,7 +58,14 @@ func PipelineController(sq *Sequence) SequenceController {
 			sq.Pipe.RunCommand(step)
 
 			// we stop executing the moment something goes wrong
-			if sq.Pipe.Error() != nil {
+			err := sq.Pipe.Error()
+			if err != nil {
+				// debugging support
+				statusCode := sq.StatusCode()
+				Tracef("status code: %d", statusCode)
+				Tracef("error: %s", err.Error())
+
+				// we cannot continue
 				return
 			}
 		}

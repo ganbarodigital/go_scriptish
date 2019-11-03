@@ -40,144 +40,103 @@
 package scriptish
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSwapExtensionSwapsOldWithNew(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-	expectedResult := []string{
-		"/path/to/one.trout",
-		"/path/to/two.herring",
-		"/path/to/three",
-		"/path/to/four.trout",
-	}
-
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().Strings()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestSwapExtensionSupportsASingleNew(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-	expectedResult := []string{
-		"/path/to/one.trout",
-		"/path/to/two.trout",
-		"/path/to/three",
-		"/path/to/four.trout",
-	}
-
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout"}),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().Strings()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestSwapExtensionReturnsErrorIfOldAndNewMismatchedLength(t *testing.T) {
-	// ----------------------------------------------------------------
-	// setup your test
-
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
-	}
-
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2", ".file3"}, []string{".trout", ".herring"}),
-	)
-
-	// ----------------------------------------------------------------
-	// perform the change
-
-	actualResult, err := pipeline.Exec().Strings()
-
-	// ----------------------------------------------------------------
-	// test the results
-
-	assert.NotNil(t, err)
-	assert.Error(t, err)
-	assert.Empty(t, actualResult)
-}
-
-func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
+func TestPipelineControllerWritesNothingToTheTraceOutputIfStatusCodeIsZero(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := `+ EchoSlice([]string{"/path/to/one.file1", "/path/to/two.file2", "/path/to/three", "/path/to/four.file1"})
-+ p.Stdout> /path/to/one.file1
-+ p.Stdout> /path/to/two.file2
-+ p.Stdout> /path/to/three
-+ p.Stdout> /path/to/four.file1
-+ SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"})
-+ p.Stdout> /path/to/one.trout
-+ p.Stdout> /path/to/two.herring
-+ p.Stdout> /path/to/three
-+ p.Stdout> /path/to/four.trout
-`
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
 
-	testData := []string{
-		"/path/to/one.file1",
-		"/path/to/two.file2",
-		"/path/to/three",
-		"/path/to/four.file1",
+	op1 := func(p *Pipe) (int, error) {
+		return StatusOkay, nil
 	}
 
-	pipeline := NewPipeline(
-		EchoSlice(testData),
-		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
-	)
+	expectedResult := ""
+
 	// ----------------------------------------------------------------
 	// perform the change
 
+	pipeline := NewPipeline(
+		op1,
+	)
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestPipelineControllerWritesNonZeroStatusCodesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	op1 := func(p *Pipe) (int, error) {
+		return StatusNotOkay, nil
+	}
+
+	expectedResult := `+ status code: 1
++ error: command exited with non-zero status code 1
+`
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		op1,
+	)
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestPipelineControllerWritesErrorsToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	op1 := func(p *Pipe) (int, error) {
+		return StatusNotOkay, errors.New("this is a test error")
+	}
+
+	expectedResult := `+ status code: 1
++ error: this is a test error
+`
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline := NewPipeline(
+		op1,
+	)
 	pipeline.Exec()
 	actualResult := dest.String()
 

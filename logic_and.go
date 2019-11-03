@@ -55,12 +55,18 @@ func And(sq *Sequence) Command {
 		// do we need to do anything?
 		statusCode, err := p.StatusError()
 		if err != nil {
+			// debugging support
+			Tracef("And(): not executing the given sequence")
+
 			// make sure we do not lose the output of the sequence so far
 			p.DrainStdinToStdout()
 
 			// all done
 			return statusCode, err
 		}
+
+		// debugging support
+		Tracef("And(): executing the given sequence")
 
 		// get our parameters
 		params := getParamsFromEnv(p.Env)

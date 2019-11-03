@@ -52,9 +52,11 @@ func TestEchoArgsWritesToPipelineStdout(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := []string{"hello world", "have a nice day"}
+	testData := []string{"arg0 is not included", "hello world", "have a nice day"}
+	expectedResult := testData[1:]
+
 	oldArgs := os.Args
-	os.Args = expectedResult
+	os.Args = testData
 
 	pipeline := NewPipeline(
 		EchoArgs(),
@@ -74,4 +76,44 @@ func TestEchoArgsWritesToPipelineStdout(t *testing.T) {
 	assert.Equal(t, "", pipeline.Pipe.Stdin.String())
 	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.Strings())
 	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
+}
+
+func TestEchoArgsWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoArgs()
++ p.Stdout> hello world
++ p.Stdout> have a nice day
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{"arg0 is not included", "hello world", "have a nice day"}
+
+	oldArgs := os.Args
+	os.Args = testData
+	// clean up after ourselves
+	defer func() {
+		os.Args = oldArgs
+	}()
+
+	pipeline := NewPipeline(
+		EchoArgs(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
 }

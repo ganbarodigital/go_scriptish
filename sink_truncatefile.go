@@ -52,6 +52,10 @@ func TruncateFile(filename string) Command {
 		// expand our input
 		expFilename := p.Env.Expand(filename)
 
+		// debugging support
+		Tracef("TruncateFile(%#v)", filename)
+		Tracef("=> TruncateFile(%#v)", expFilename)
+
 		// open / create the file
 		fh, err := os.OpenFile(expFilename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
