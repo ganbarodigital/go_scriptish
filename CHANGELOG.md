@@ -24,6 +24,7 @@
   - `CountLines()` now supports tracing
   - `CountWords()` now supports tracing
   - `CutFields()` now supports tracing
+  - `DropEmptyLines()` now supports tracing
   - `Echo()` now supports tracing
   - `EchoArgs()` now supports tracing
   - `EchoRawSlice()` now supports tracing
