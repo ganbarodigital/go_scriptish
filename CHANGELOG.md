@@ -21,6 +21,7 @@
   - Pipelines now write status code and error message when tracing enabled
   - `Chmod()` now supports tracing
   - `TestEmpty()` now supports tracing
+  - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing
 
 ## v1.1.1
