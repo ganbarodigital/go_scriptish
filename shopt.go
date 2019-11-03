@@ -99,6 +99,12 @@ func TraceOsStderr(format string, args ...interface{}) {
 	TraceOutput("os.Stderr", format, args...)
 }
 
+// TraceOsStdout writes a trace message about content written to the
+// program's Stdout
+func TraceOsStdout(format string, args ...interface{}) {
+	TraceOutput("os.Stdout", format, args...)
+}
+
 // TracePipeStderr writes a trace message about content written to a pipe's
 // Stderr buffer
 func TracePipeStderr(format string, args ...interface{}) {

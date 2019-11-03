@@ -13,6 +13,8 @@
   - Added `IsTraceEnabled()`
   - Added `Tracef()`
   - Added `TraceOutput()`
+  - Added `TraceOsStderr()`
+  - Added `TraceOsStdout()`
   - Added `TracePipeStderr()`
   - Added `TracePipeStdout()`
 
