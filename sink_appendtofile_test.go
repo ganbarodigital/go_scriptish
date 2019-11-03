@@ -113,7 +113,7 @@ func TestAppendToFileSetsErrorIfFileCannotBeCreated(t *testing.T) {
 	assert.Empty(t, actualResult)
 }
 
-func TestAppendToFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
+func TestAppendToFileDoesNothingWhenReadFromPipelineStdinFails(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
@@ -141,9 +141,8 @@ func TestAppendToFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.NotNil(t, err)
-	assert.Error(t, err)
-	assert.Equal(t, StatusNotOkay, statusCode)
+	assert.Nil(t, err)
+	assert.Equal(t, StatusOkay, statusCode)
 
 	// AppendToFile() is a sink, Stdout should be empty
 	assert.Empty(t, actualResult)

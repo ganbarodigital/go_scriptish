@@ -40,7 +40,6 @@
 package scriptish
 
 import (
-	"io"
 	"os"
 )
 
@@ -64,11 +63,31 @@ func AppendToFile(filename string) Command {
 		defer fh.Close()
 
 		// write to the file
-		_, err = io.Copy(fh, p.Stdin)
-		if err != nil {
-			return StatusNotOkay, err
+		if p.Flags&contextIsPipeline != 0 {
+			// we are part of a pipe
+			for line := range p.Stdin.ReadLines() {
+				_, err = fh.WriteString(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+				_, err = fh.WriteString("\n")
+				if err != nil {
+					return StatusNotOkay, err
+				}
+			}
+		} else {
+			// we are part of a list
+			for line := range p.Stdout.ReadLines() {
+				_, err = fh.WriteString(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+				_, err = fh.WriteString("\n")
+				if err != nil {
+					return StatusNotOkay, err
+				}
+			}
 		}
-
 		// all done
 		return StatusOkay, nil
 	}
