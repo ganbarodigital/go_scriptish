@@ -52,6 +52,16 @@ func ListController(sq *Sequence) SequenceController {
 		for _, step := range sq.Steps {
 			// run the next step
 			sq.Pipe.RunCommand(step)
+
+			// debugging support
+			statusCode := sq.StatusCode()
+			if statusCode != 0 {
+				Tracef("status code: %d", statusCode)
+			}
+			err := sq.Error()
+			if err != nil {
+				Tracef("error: %s", err.Error())
+			}
 		}
 	}
 }

@@ -17,6 +17,7 @@
   - Added `TraceOsStdout()`
   - Added `TracePipeStderr()`
   - Added `TracePipeStdout()`
+  - Lists now write status code and error message when tracing enabled
   - Pipelines now write status code and error message when tracing enabled
 
 ## v1.1.1
