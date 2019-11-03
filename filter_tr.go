@@ -47,6 +47,9 @@ import (
 func Tr(old []string, new []string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("Tr(%#v, %#v)", old, new)
+
 		// special case - we want to replace *everything* in old with
 		// whatever is in new
 		if len(old) > 1 && len(new) == 1 {
@@ -68,6 +71,7 @@ func Tr(old []string, new []string) Command {
 				// do the replacement
 				line = strings.ReplaceAll(line, expOld, expNew)
 			}
+			TracePipeStdout("%s", line)
 			p.Stdout.WriteString(line)
 			p.Stdout.WriteRune('\n')
 		}
