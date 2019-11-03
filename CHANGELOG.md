@@ -34,6 +34,7 @@
   - `Head()` now supports tracing
   - `Rsort()` now supports tracing
   - `Sort()` now supports tracing
+  - `StripExtension()` now supports tracing
   - `TestEmpty()` now supports tracing
   - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing

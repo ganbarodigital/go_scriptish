@@ -78,3 +78,49 @@ func TestStripExtension(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestStripExtensionWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"/path/to/one.file1", "/path/to/two.file2", "/path/to/three", "/path/to/four.file1"})
++ p.Stdout> /path/to/one.file1
++ p.Stdout> /path/to/two.file2
++ p.Stdout> /path/to/three
++ p.Stdout> /path/to/four.file1
++ StripExtension()
++ p.Stdout> /path/to/one
++ p.Stdout> /path/to/two
++ p.Stdout> /path/to/three
++ p.Stdout> /path/to/four
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"/path/to/one.file1",
+		"/path/to/two.file2",
+		"/path/to/three",
+		"/path/to/four.file1",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		StripExtension(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
