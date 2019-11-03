@@ -115,8 +115,8 @@ func TestShoptTracefWritesToTheTraceOutput(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	testData := "+ this is my test output"
-	expectedResult := testData + "\n"
+	testData := "this is my test output"
+	expectedResult := "+ " + testData + "\n"
 	dest := NewDest()
 	GetShellOptions().EnableTrace(dest)
 
@@ -124,6 +124,28 @@ func TestShoptTracefWritesToTheTraceOutput(t *testing.T) {
 	// perform the change
 
 	Tracef(testData)
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestShoptTraceOutputWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	testData := "this is my test output"
+	expectedResult := "+ test> " + testData + "\n"
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	TraceOutput("test", "%s", testData)
 	actualResult := dest.String()
 
 	// ----------------------------------------------------------------

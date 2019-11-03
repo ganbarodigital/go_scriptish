@@ -86,3 +86,9 @@ func Tracef(format string, args ...interface{}) {
 		fmt.Fprintf(shopt.trace, "+ "+format+"\n", args...)
 	}
 }
+
+// TraceOutput writes a trace message about content written to a file or
+// a buffer
+func TraceOutput(dest string, format string, args ...interface{}) {
+	Tracef(dest+"> "+format, args...)
+}

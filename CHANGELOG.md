@@ -4,7 +4,9 @@
 
 ### New
 
-* Added `Tracef()` for debugging output
+* Added debugging output support
+  - Added `Tracef()`
+  - Added `TraceOutput()`
 
 ## v1.1.1
 
