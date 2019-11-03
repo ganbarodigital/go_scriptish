@@ -43,6 +43,9 @@ package scriptish
 func Return(statusCode int) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("Return(%d)", statusCode)
+
 		// make sure we don't lose anything in stdin
 		p.DrainStdinToStdout()
 
