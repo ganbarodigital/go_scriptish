@@ -39,10 +39,14 @@
 
 package scriptish
 
+import (
+	"io"
+)
+
 // ShellOptions holds flags and settings that change Scriptish's behaviour
 type ShellOptions struct {
-	// trace switches on debugging output across Scriptish
-	trace bool
+	// trace is where we send our debugging output to
+	trace io.Writer
 }
 
 // shopt holds the parameters you can set to change Scriptish's behaviour
@@ -56,21 +60,21 @@ func GetShellOptions() *ShellOptions {
 
 // DisableTrace will switch off execution tracing across Scriptish
 func (s *ShellOptions) DisableTrace() {
-	s.trace = false
+	s.trace = nil
 }
 
 // EnableTrace will switch on execution tracing across Scriptish
-func (s *ShellOptions) EnableTrace() {
-	s.trace = true
+func (s *ShellOptions) EnableTrace(dest io.Writer) {
+	s.trace = dest
 }
 
 // IsTraceEnabled return true if execution tracing is currently switched on
 func (s *ShellOptions) IsTraceEnabled() bool {
-	return s.trace
+	return s.trace != nil
 }
 
 // IsTraceEnabled returns true if execution tracing is currently switched on
 // across Scriptish
 func IsTraceEnabled() bool {
-	return shopt.trace
+	return shopt.trace != nil
 }
