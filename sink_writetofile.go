@@ -53,6 +53,10 @@ func WriteToFile(filename string) Command {
 		// expand our input
 		expFilename := p.Env.Expand(filename)
 
+		// debugging support
+		Tracef("WriteToFile(%#v)", filename)
+		Tracef("=> WriteToFile(%#v)", expFilename)
+
 		// open / create the file
 		fh, err := os.OpenFile(expFilename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
@@ -64,6 +68,7 @@ func WriteToFile(filename string) Command {
 		if p.Flags&contextIsPipeline != 0 {
 			// we are in a pipeline
 			for line := range p.Stdin.ReadLines() {
+				TraceOutput("file", "%s", line)
 				_, err = fh.WriteString(line)
 				if err != nil {
 					return StatusNotOkay, err
@@ -76,6 +81,7 @@ func WriteToFile(filename string) Command {
 		} else {
 			// we are in a list
 			for line := range p.Stdout.ReadLines() {
+				TraceOutput("file", "%s", line)
 				_, err = fh.WriteString(line)
 				if err != nil {
 					return StatusNotOkay, err
