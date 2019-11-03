@@ -53,12 +53,17 @@ func Which(cmd string) Command {
 		// expand our input
 		expCmd := p.Env.Expand(cmd)
 
+		// debugging support
+		Tracef("Which(%#v)", cmd)
+		Tracef("=> Which(%#v)", expCmd)
+
 		filepath, err := exec.LookPath(expCmd)
 		if err != nil {
 			return StatusNotOkay, err
 		}
 
 		// success!
+		TracePipeStdout("%s", filepath)
 		p.Stdout.WriteString(filepath)
 		p.Stdout.WriteRune('\n')
 

@@ -86,3 +86,38 @@ func TestWhichReturnsAnErrorIfNoMatchFound(t *testing.T) {
 	assert.Error(t, err)
 	assert.Empty(t, actualResult)
 }
+
+func TestWhichWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Which("$1"),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec("bash")
+	actualResult := dest.String()
+
+	path, err := pipeline.TrimmedString()
+	assert.Nil(t, err)
+
+	expectedResult := `+ Which("$1")
++ => Which("bash")
++ p.Stdout> ` + path + `
+`
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
