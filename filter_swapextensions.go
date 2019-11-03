@@ -50,6 +50,9 @@ import (
 func SwapExtensions(old []string, new []string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("SwapExtensions(%#v, %#v)", old, new)
+
 		// special case - we want to replace *every extension* in old with
 		// whatever is in new
 		if len(old) > 1 && len(new) == 1 {
@@ -68,8 +71,12 @@ func SwapExtensions(old []string, new []string) Command {
 
 			for i := range old {
 				if fileExt == old[i] {
-					p.Stdout.WriteString(strings.TrimSuffix(line, fileExt))
-					p.Stdout.WriteString(new[i])
+					// remove it
+					newFilepath := strings.TrimSuffix(line, fileExt) + new[i]
+
+					// pass it on
+					TracePipeStdout("%s", newFilepath)
+					p.Stdout.WriteString(newFilepath)
 					p.Stdout.WriteRune('\n')
 
 					// this helps us make sure that we do not output
@@ -84,6 +91,7 @@ func SwapExtensions(old []string, new []string) Command {
 
 			// did we swap anything over?
 			if !swapped {
+				TracePipeStdout("%s", line)
 				p.Stdout.WriteString(line)
 				p.Stdout.WriteRune('\n')
 			}

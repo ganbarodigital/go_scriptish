@@ -141,3 +141,48 @@ func TestSwapExtensionReturnsErrorIfOldAndNewMismatchedLength(t *testing.T) {
 	assert.Error(t, err)
 	assert.Empty(t, actualResult)
 }
+
+func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ EchoSlice([]string{"/path/to/one.file1", "/path/to/two.file2", "/path/to/three", "/path/to/four.file1"})
++ p.Stdout> /path/to/one.file1
++ p.Stdout> /path/to/two.file2
++ p.Stdout> /path/to/three
++ p.Stdout> /path/to/four.file1
++ SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"})
++ p.Stdout> /path/to/one.trout
++ p.Stdout> /path/to/two.herring
++ p.Stdout> /path/to/three
++ p.Stdout> /path/to/four.trout
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	testData := []string{
+		"/path/to/one.file1",
+		"/path/to/two.file2",
+		"/path/to/three",
+		"/path/to/four.file1",
+	}
+
+	pipeline := NewPipeline(
+		EchoSlice(testData),
+		SwapExtensions([]string{".file1", ".file2"}, []string{".trout", ".herring"}),
+	)
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
