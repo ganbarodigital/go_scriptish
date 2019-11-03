@@ -20,6 +20,7 @@
   - Lists now write status code and error message when tracing enabled
   - Pipelines now write status code and error message when tracing enabled
   - `Chmod()` now supports tracing
+  - `Echo()` now supports tracing
   - `TestEmpty()` now supports tracing
   - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing
