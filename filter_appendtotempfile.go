@@ -79,38 +79,17 @@ func AppendToTempFile(dir string, pattern string) Command {
 		}()
 
 		// write to the file
-		if p.Flags&contextIsPipeline != 0 {
-			// we are in a pipeline
-			for line := range p.Stdin.ReadLines() {
-				TraceOutput("tempfile", "%s", line)
-				_, err = fh.WriteString(line)
-				if err != nil {
-					return StatusNotOkay, err
-				}
-				_, err = fh.WriteString("\n")
-				if err != nil {
-					return StatusNotOkay, err
-				}
+		for line := range getSinkReader(p) {
+			TraceOutput("tempfile", "%s", line)
+			_, err = fh.WriteString(line)
+			if err != nil {
+				return StatusNotOkay, err
 			}
-		} else {
-			// we are in a list
-			for line := range p.Stdout.ReadLines() {
-				TraceOutput("tempfile", "%s", line)
-				_, err = fh.WriteString(line)
-				if err != nil {
-					return StatusNotOkay, err
-				}
-				_, err = fh.WriteString("\n")
-				if err != nil {
-					return StatusNotOkay, err
-				}
+			_, err = fh.WriteString("\n")
+			if err != nil {
+				return StatusNotOkay, err
 			}
 		}
-
-		// the pipe reads have not been destructive
-		p.SetNewStdin()
-		p.SetNewStderr()
-		p.SetNewStdout()
 
 		// all done
 		return StatusOkay, nil

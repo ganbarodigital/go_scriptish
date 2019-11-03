@@ -39,24 +39,10 @@
 
 package scriptish
 
-import (
-	"fmt"
-)
-
-// ToStdout writes the contents of the pipeline's stdin to the program's stdout
-func ToStdout() Command {
-	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("ToStdout()")
-
-		// send everything to stdout
-		for line := range getSinkReader(p) {
-			TraceOutput("os.Stdout", "%s", line)
-			fmt.Printf("%s\n", line)
-		}
-
-		// all done
-		return StatusOkay, nil
+func getSinkReader(p *Pipe) <-chan string {
+	if p.Flags&contextIsPipeline != 0 {
+		return p.Stdin.ReadLines()
 	}
+
+	return p.Stdout.ReadLines()
 }

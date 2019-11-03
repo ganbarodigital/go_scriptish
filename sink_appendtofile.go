@@ -67,33 +67,18 @@ func AppendToFile(filename string) Command {
 		defer fh.Close()
 
 		// write to the file
-		if p.Flags&contextIsPipeline != 0 {
-			// we are part of a pipe
-			for line := range p.Stdin.ReadLines() {
-				TraceOutput("file", "%s", line)
-				_, err = fh.WriteString(line)
-				if err != nil {
-					return StatusNotOkay, err
-				}
-				_, err = fh.WriteString("\n")
-				if err != nil {
-					return StatusNotOkay, err
-				}
+		for line := range getSinkReader(p) {
+			TraceOutput("file", "%s", line)
+			_, err = fh.WriteString(line)
+			if err != nil {
+				return StatusNotOkay, err
 			}
-		} else {
-			// we are part of a list
-			for line := range p.Stdout.ReadLines() {
-				TraceOutput("file", "%s", line)
-				_, err = fh.WriteString(line)
-				if err != nil {
-					return StatusNotOkay, err
-				}
-				_, err = fh.WriteString("\n")
-				if err != nil {
-					return StatusNotOkay, err
-				}
+			_, err = fh.WriteString("\n")
+			if err != nil {
+				return StatusNotOkay, err
 			}
 		}
+
 		// all done
 		return StatusOkay, nil
 	}

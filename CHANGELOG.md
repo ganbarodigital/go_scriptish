@@ -76,16 +76,20 @@
 ### Fixes
 
 * `AppendToFile()` now supports lists
+* `AppendToFile()` no longer leaves input data in the pipe for the next command
 * `AppendToTempFile()` now supports lists
 * `AppendToTempFile()` no longer leaves the input data in the pipe for the next command
 * `EchoArgs()` no longer includes `os.Args[0]` in the output (compatibility fix)
 * `WriteToFile()` now supports lists
+* `WriteToFile()` no longer leaves the input data in the pipeline for the next command
 * `ToStderr()` now supports lists
+* `ToStderr()` no longer leaves the input data in the pipeline for the next command
 * `ToStdout()` now supports lists
+* `ToStdout()` no longer leaves the input data in the pipeline for the next command
 
 ### Dependencies
 
-* Update to `go_pipe` v5.1.0
+* Update to `go_pipe` v5.2.0
 
 ## v1.1.1
 

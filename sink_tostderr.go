@@ -53,18 +53,9 @@ func ToStderr() Command {
 		Tracef("ToStderr()")
 
 		// send everything to stderr
-		if p.Flags&contextIsPipeline != 0 {
-			// we are in a pipe
-			for line := range p.Stdin.ReadLines() {
-				TraceOutput("os.Stderr", "%s", line)
-				fmt.Fprintf(os.Stderr, "%s\n", line)
-			}
-		} else {
-			// we are in a list
-			for line := range p.Stdout.ReadLines() {
-				TraceOutput("os.Stderr", "%s", line)
-				fmt.Fprintf(os.Stderr, "%s\n", line)
-			}
+		for line := range getSinkReader(p) {
+			TraceOutput("os.Stderr", "%s", line)
+			fmt.Fprintf(os.Stderr, "%s\n", line)
 		}
 
 		// all done
