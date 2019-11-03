@@ -40,6 +40,7 @@
 package scriptish
 
 import (
+	"bytes"
 	"errors"
 	"testing"
 
@@ -212,6 +213,63 @@ func TestSequenceExecCopesWithEmptySequence(t *testing.T) {
 	// test the results
 
 	// as long as it didn't crash, we're good
+}
+
+func TestSequenceFlushCopesWithNilSequencePointer(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	var sequence *Sequence
+
+	stdout := new(bytes.Buffer)
+	stderr := new(bytes.Buffer)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	sequence.Flush(stdout, stderr)
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Empty(t, stdout.String())
+	assert.Empty(t, stderr.String())
+}
+
+func TestSequenceFlushWritesTheContents(t *testing.T) {
+	t.Parallel()
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	stdout := new(bytes.Buffer)
+	stderr := new(bytes.Buffer)
+
+	expectedStdout := "hello world\nhave a nice day\n"
+	expectedStderr := "this is the stderr content\nit should be different to the stdout content\n"
+	op1 := func(p *Pipe) (int, error) {
+		p.Stdout.WriteString(expectedStdout)
+		p.Stderr.WriteString(expectedStderr)
+
+		// all done
+		return 0, nil
+	}
+
+	sequence := NewSequence(op1)
+	sequence.Pipe.RunCommand(op1)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	sequence.Flush(stdout, stderr)
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedStdout, stdout.String())
+	assert.Equal(t, expectedStderr, stderr.String())
 }
 
 func TestSequenceBytesCopesWithNilSequencePointer(t *testing.T) {

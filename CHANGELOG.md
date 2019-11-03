@@ -2,6 +2,10 @@
 
 ## develop
 
+### New
+
+* Added `Sequence.Flush()`
+
 ## v1.2.1
 
 Released Sunday, 3rd November 2019.

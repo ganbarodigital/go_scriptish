@@ -41,6 +41,7 @@ package scriptish
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -148,6 +149,18 @@ func (sq *Sequence) Exec(params ...string) *Sequence {
 
 	// all done
 	return sq
+}
+
+// Flush writes the output from running this sequence to the given
+// stdout and stderr
+func (sq *Sequence) Flush(stdout io.Writer, stderr io.Writer) {
+	// do we have a sequence to play with?
+	if sq == nil || sq.Pipe == nil {
+		return
+	}
+
+	io.Copy(stdout, sq.Pipe.Stdout)
+	io.Copy(stderr, sq.Pipe.Stderr)
 }
 
 // Okay returns false if a sequence operation set the StatusCode to
