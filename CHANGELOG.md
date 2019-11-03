@@ -24,6 +24,7 @@
   - `AppendToTempFile()` now supports tracing
   - `Basename()` now supports tracing
   - `CatFile()` now supports tracing
+  - `CatStdin()` now supports tracing
   - `Chmod()` now supports tracing
   - `CountLines()` now supports tracing
   - `CountWords()` now supports tracing
