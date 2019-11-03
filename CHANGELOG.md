@@ -36,6 +36,7 @@
   - `Sort()` now supports tracing
   - `StripExtension()` now supports tracing
   - `SwapExtensions()` now supports tracing
+  - `Tail()` now supports tracing
   - `TestEmpty()` now supports tracing
   - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing
