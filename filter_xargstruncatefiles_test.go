@@ -115,3 +115,47 @@ func TestXargsTruncateFilesSetsErrorWhenSomethingGoesWrong(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestXargsTruncateFilesWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	// we need a file to truncate
+	tmpFilename, err := NewPipeline(
+		CatFile("testdata/truncatefile/content.txt"),
+		AppendToTempFile(os.TempDir(), "scriptify-xargstruncatefiles-*"),
+	).Exec().TrimmedString()
+	assert.Nil(t, err)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
+
+	expectedResult := `+ Echo("` + tmpFilename + `")
++ => Echo("` + tmpFilename + `")
++ p.Stdout> ` + tmpFilename + `
++ XargsTruncateFiles()
++ p.Stdout> ` + tmpFilename + `
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Echo(tmpFilename),
+		XargsTruncateFiles(),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

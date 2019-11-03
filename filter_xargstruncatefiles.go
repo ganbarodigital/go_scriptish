@@ -52,6 +52,9 @@ import (
 func XargsTruncateFiles() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("XargsTruncateFiles()")
+
 		for line := range p.Stdin.ReadLines() {
 			// open / create the file
 			fh, err := os.OpenFile(line, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
@@ -64,6 +67,7 @@ func XargsTruncateFiles() Command {
 
 			// write the filename back to the pipeline, in case anyone else
 			// can make use of it
+			TracePipeStdout("%s", line)
 			p.Stdout.WriteString(line)
 			p.Stdout.WriteRune('\n')
 		}
