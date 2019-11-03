@@ -93,6 +93,12 @@ func TraceOutput(dest string, format string, args ...interface{}) {
 	Tracef(dest+"> "+format, args...)
 }
 
+// TracePipeStderr writes a trace message about content written to a pipe's
+// Stderr buffer
+func TracePipeStderr(format string, args ...interface{}) {
+	TraceOutput("p.Stderr", format, args...)
+}
+
 // TracePipeStdout writes a trace message about content written to a pipe's
 // Stdout buffer
 func TracePipeStdout(format string, args ...interface{}) {
