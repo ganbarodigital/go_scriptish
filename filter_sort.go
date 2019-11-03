@@ -47,10 +47,15 @@ import (
 func Sort() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("Sort()")
+
 		lines := p.Stdin.Strings()
 		sort.Strings(lines)
 
 		for _, line := range lines {
+			TracePipeStdout("%s", line)
+
 			p.Stdout.WriteString(line)
 			p.Stdout.WriteRune('\n')
 		}
