@@ -2,6 +2,14 @@
 
 ## develop
 
+## v1.2.1
+
+Released Sunday, 3rd November 2019.
+
+### Fixes
+
+* `NewDest()` now wraps `pipe.NewDest()`
+
 ## v1.2.0
 
 Released Sunday, 3rd November 2019.

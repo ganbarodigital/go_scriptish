@@ -54,7 +54,7 @@ type Dest = pipe.Dest
 
 // NewDest creates a new pipe.Dest struct
 func NewDest() *Dest {
-	return new(Dest)
+	return pipe.NewDest()
 }
 
 // List is an alias for a Sequence
