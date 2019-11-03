@@ -154,11 +154,13 @@ func TestWriteToFileSetsErrorWhenCreateFileFails(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestWriteToFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
+func TestWriteToFileDoesNothingReadFromPipelineStdinFails(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-writetofile-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(
+		MkTempFile(os.TempDir(), "scriptify-writetofile-"),
+	).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -180,7 +182,6 @@ func TestWriteToFileSetsErrorWhenReadFromPipelineStdinFails(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.NotNil(t, err)
-	assert.Error(t, err)
-	assert.Equal(t, StatusNotOkay, statusCode)
+	assert.Nil(t, err)
+	assert.Equal(t, StatusOkay, statusCode)
 }
