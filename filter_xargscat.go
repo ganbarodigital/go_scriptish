@@ -49,8 +49,13 @@ import (
 func XargsCat() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("XargsCat()")
+
 		// treat each line as a valid filepath
 		for line := range p.Stdin.ReadLines() {
+			Tracef("reading from file %#v", line)
+
 			// can we read the file?
 			contents, err := ioutil.ReadFile(line)
 			if err != nil {
@@ -59,6 +64,7 @@ func XargsCat() Command {
 
 			// add the file contents to the pipeline
 			fileContents := string(contents)
+			TracePipeStdout("%s", fileContents)
 			p.Stdout.WriteString(fileContents)
 
 			// we don't want content from two files ending up on
