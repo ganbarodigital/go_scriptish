@@ -55,6 +55,10 @@ func RmDir(filepath string) Command {
 		// expand our input
 		expFilepath := p.Env.Expand(filepath)
 
+		// debugging support
+		Tracef("RmDir(%#v)", filepath)
+		Tracef("=> RmDir(%#v)", expFilepath)
+
 		err := os.Remove(expFilepath)
 		if err != nil {
 			return StatusNotOkay, err
