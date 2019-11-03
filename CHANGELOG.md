@@ -2,6 +2,10 @@
 
 ## develop
 
+## v1.2.0
+
+Released Sunday, 3rd November 2019.
+
 ### New
 
 * Added support for shell options
