@@ -51,9 +51,12 @@ import (
 func EchoArgs() Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
+		// debugging support
+		Tracef("EchoArgs()")
 
 		// send the slice to the pipe
 		for _, line := range os.Args[1:] {
+			TracePipeStdout("%s", line)
 			p.Stdout.WriteString(line)
 
 			// does the string already end with an EOL?

@@ -24,6 +24,7 @@
   - `CountLines()` now supports tracing
   - `CountWords()` now supports tracing
   - `Echo()` now supports tracing
+  - `EchoArgs()` now supports tracing
   - `EchoSlice()` now supports tracing
   - `TestEmpty()` now supports tracing
   - `TestFilepathExists()` now supports tracing
