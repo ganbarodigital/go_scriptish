@@ -204,3 +204,78 @@ func TestOrReturnsStdoutFromLastSequenceExecuted(t *testing.T) {
 	assert.Equal(t, 5, pipeline.StatusCode())
 	assert.Equal(t, expectedResult, actualResult)
 }
+
+func TestOrWritesToTheTraceOutputWhenExecutingTheOrBranch(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Return(1)
++ status code: 1
++ error: command exited with non-zero status code 1
++ Or(): executing the given sequence
++ Echo("this is the 'or' option")
++ => Echo("this is the 'or' option")
++ p.Stdout> this is the 'or' option
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	list := NewList(
+		Return(1),
+		Or(
+			NewList(
+				Echo("this is the 'or' option"),
+			),
+		),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}
+
+func TestOrWritesToTheTraceOutputWhenNotExecutingTheOrBranch(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ Return(0)
++ Or(): not executing the given sequence
+`
+	dest := NewDest()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	list := NewList(
+		Return(0),
+		Or(
+			NewList(
+				Echo("this is the 'or' option"),
+			),
+		),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	list.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
+}

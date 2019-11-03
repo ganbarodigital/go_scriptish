@@ -36,6 +36,7 @@
   - `If()` now supports tracing
   - `IfElse()` now supports tracing
   - `ListFiles()` now supports tracing
+  - `Or()` now supports tracing
   - `Return()` now supports tracing
   - `Rsort()` now supports tracing
   - `Sort()` now supports tracing
