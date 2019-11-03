@@ -47,6 +47,12 @@ func NewPipeline(steps ...Command) *Sequence {
 	// tell the underlying sequence how we want these commands to run
 	retval.Controller = PipelineController(retval)
 
+	// tell the commands what context they are running in
+	retval.Flags = contextIsPipeline
+
+	// we already have a pipe, so it needs to get our flags too
+	retval.Pipe.Flags = retval.Flags
+
 	// all done
 	return retval
 }
