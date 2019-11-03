@@ -31,6 +31,10 @@
 * Pipelines now set a context flag in their Pipe
   - this is used to tell sinks where to read from!
 
+### Fixes
+
+* `EchoArgs()` no longer includes `os.Args[0]` in the output (compatibility fix)
+
 ### Dependencies
 
 * Update to `go_pipe` v5.1.0

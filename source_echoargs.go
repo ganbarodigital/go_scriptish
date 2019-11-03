@@ -41,10 +41,28 @@ package scriptish
 
 import (
 	"os"
+	"strings"
 )
 
 // EchoArgs echos the program's command-line arguments into the pipeline,
 // one argument per line
+//
+// We do not perform string expansion on the arguments.
 func EchoArgs() Command {
-	return EchoRawSlice(os.Args)
+	// build our Scriptish command
+	return func(p *Pipe) (int, error) {
+
+		// send the slice to the pipe
+		for _, line := range os.Args[1:] {
+			p.Stdout.WriteString(line)
+
+			// does the string already end with an EOL?
+			if !strings.HasSuffix(line, "\n") {
+				p.Stdout.WriteRune('\n')
+			}
+		}
+
+		// all done
+		return StatusOkay, nil
+	}
 }

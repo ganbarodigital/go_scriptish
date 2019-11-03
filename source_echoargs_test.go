@@ -52,9 +52,11 @@ func TestEchoArgsWritesToPipelineStdout(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := []string{"hello world", "have a nice day"}
+	testData := []string{"arg0 is not included", "hello world", "have a nice day"}
+	expectedResult := testData[1:]
+
 	oldArgs := os.Args
-	os.Args = expectedResult
+	os.Args = testData
 
 	pipeline := NewPipeline(
 		EchoArgs(),
