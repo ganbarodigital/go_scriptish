@@ -32,6 +32,7 @@
   - `Grep()` now supports tracing
   - `GrepV()` now supports tracing
   - `Head()` now supports tracing
+  - `Rsort()` now supports tracing
   - `TestEmpty()` now supports tracing
   - `TestFilepathExists()` now supports tracing
   - `TestNotEmpty()` now supports tracing
