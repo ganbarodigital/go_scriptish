@@ -32,6 +32,7 @@
   - `Grep()` now supports tracing
   - `GrepV()` now supports tracing
   - `Head()` now supports tracing
+  - `ListFiles()` now supports tracing
   - `Rsort()` now supports tracing
   - `Sort()` now supports tracing
   - `StripExtension()` now supports tracing
