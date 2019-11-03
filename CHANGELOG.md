@@ -40,6 +40,7 @@
   - `Or()` now supports tracing
   - `Return()` now supports tracing
   - `RmDir()` now supports tracing
+  - `RmFile()` now supports tracing
   - `Rsort()` now supports tracing
   - `Sort()` now supports tracing
   - `StripExtension()` now supports tracing

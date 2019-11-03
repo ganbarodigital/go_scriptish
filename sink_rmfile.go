@@ -52,7 +52,14 @@ import (
 func RmFile(filepath string) Command {
 	// build our Scriptish command
 	return func(p *Pipe) (int, error) {
-		err := os.Remove(filepath)
+		// expand our input
+		expFilepath := p.Env.Expand(filepath)
+
+		// debugging support
+		Tracef("RmFile(%#v)", filepath)
+		Tracef("=> RmFile(%#v)", expFilepath)
+
+		err := os.Remove(expFilepath)
 		if err != nil {
 			return StatusNotOkay, err
 		}
