@@ -2,6 +2,10 @@
 
 ## develop
 
+## v1.4.0
+
+Released Friday, 8th November 2019.
+
 ### New
 
 * Added `Mkdir()`
