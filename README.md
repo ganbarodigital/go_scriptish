@@ -67,6 +67,7 @@ result, err := scriptish.NewPipeline(
   - [Lsmod()](#lsmod)
   - [MkTempDir()](#mktempdir)
   - [MkTempFile()](#mktempfile)
+  - [MkTempFilename()](#mktempfilename)
   - [Which()](#which)
 - [Filters](#filters)
   - [AppendToTempFile()](#appendtotempfile)
@@ -102,15 +103,18 @@ result, err := scriptish.NewPipeline(
   - [WriteToFile()](#writetofile)
 - [Builtins](#builtins)
   - [Chmod()](#chmod)
+  - [Mkdir()](#mkdir)
   - [RmDir()](#rmdir)
   - [RmFile()](#rmfile)
   - [TestEmpty()](#testempty)
   - [TestFilepathExists()](#testfilepathexists)
   - [TestNotEmpty()](#testnotempty)
+  - [Touch()](#touch)
   - [TruncateFile()](#truncatefile)
 - [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
   - [Error()](#error)
+  - [Flush()](#flush)
   - [Okay()](#okay)
   - [ParseInt()](#parseint)
   - [String()](#string)
@@ -800,14 +804,17 @@ Bash                         | Scriptish
 `if expr ; then body ; else elseBlock ; fi` | [`scriptish.IfElse()`](#ifelse)
 `ls -1 ...`                  | [`scriptish.ListFiles(...)`](#listfiles)
 `ls -l | awk '{ print $1 }'` | [`scriptish.Lsmod()`](#lsmod)
+`mkdir`                      | [`scriptish.Mkdir()`](#mkdir)
 `mktemp`                     | [`scriptish.MkTempFile()`](#mktempfile)
 `mktemp -d`                  | [`scriptish.MkTempDir()`](#mktempdir)
+`mktemp -u`                  | [`scriptish.MkTempFilename()`](#mktempfilename)
 `return`                     | [`scriptish.Return()`](#return)
 `rm -f`                      | [`scriptish.RmFile()`](#rmfile)
 `rm -r`                      | [`scriptish.RmDir()`](#rmdir)
 `sort`                       | [`scriptish.Sort()`](#sort)
 `sort -r`                    | [`scriptish.Rsort()`](#rsort)
 `tail -n X`                  | [`scriptish.Tail(X)`](#tail)
+`touch`                      | [`scriptish.Touch()`](#touch)
 `tr old new`                 | [`scriptish.Tr(old, new)`](#tr)
 `uniq`                       | [`scriptish.Uniq()`](#uniq)
 `wc -l`                      | [`scriptish.CountLines()`](#countlines)
@@ -982,9 +989,9 @@ result, err := scriptish.NewPipeline(
 `MkTempDir()` creates a temporary folder, and writes the filename to the pipeline's `Stdout`.
 
 ```go
-result, err := scriptish.NewPipeline(
+tmpDir, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-")
-).Exec().String()
+).Exec().TrimmedString()
 ```
 
 ### MkTempFile()
@@ -992,9 +999,19 @@ result, err := scriptish.NewPipeline(
 `MkTempFile()` creates a temporary file, and writes the filename to the pipeline's `Stdout`.
 
 ```go
-result, err := scriptish.NewPipeline(
+tmpFilename, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-*")
-).Exec().String()
+).Exec().TrimmedString()
+```
+
+### MkTempFilename()
+
+`MkTempFilename()` generates a temporary filename, and writes the filename to the pipeline's `Stdout`.
+
+```go
+tmpFilename, err := scriptish.NewPipeline(
+    scriptish.MkTempFilename(os.TempDir(), "scriptish-*")
+).Exec().TrimmedString()
 ```
 
 ### Which()
@@ -1456,7 +1473,21 @@ On success, it returns the status code `StatusOkay`. On failure, it returns the 
 
 ```go
 result, err := scriptish.NewPipeline(
-    scriptish.Chmod("/path/to/file", 0644)
+    scriptish.Chmod("/path/to/file", 0644),
+).Exec().StatusError()
+```
+
+### Mkdir()
+
+`Mkdir()` creates the named directory, along with any parent folders that are needed.
+
+It ignores the contents of the pipeline.
+
+On success, it returns the status code `StatusOkay`. On failure, it returns the status code `StatusNotOkay`.
+
+```golang
+result, err := scriptish.NewPipeline(
+    scriptish.Mkdir("/path/to/folder", 0755),
 ).Exec().StatusError()
 ```
 
@@ -1576,6 +1607,21 @@ checkArgs := scriptish.NewList(
 checkArgs.Exec(os.Args...)
 ```
 
+### Touch()
+
+`Touch()` creates the named file (if it doesn't exist), or updates its atime and mtime (if it does exist).
+
+It ignores the contents of the pipeline.
+
+On success, it returns the status code `StatusOkay`. On failure, it returns the status code `StatusNotOkay`.
+
+```golang
+pipeline := NewPipeline(
+    Touch("./config.yaml")
+)
+success, err := pipeline.Exec().StatusError()
+```
+
 ### TruncateFile()
 
 `TruncateFile()` removes the contents of the given file.
@@ -1610,6 +1656,20 @@ Normally, you wouldn't call this yourself.
 
 ```go
 err := scriptish.ExecPipeline(scriptish.RmFile("/path/to/file")).Error()
+```
+
+### Flush()
+
+`Flush()` writes the contents of the pipeline or list out to the given destinations.
+
+Use `os.Stdout` and `os.Stderr` to send the output to your program's terminal.
+
+```golang
+scriptish.NewPipeline(
+    scriptish.Echo("usage: simpleca <command>"),
+)
+
+scriptish.Exec().Flush(os.Stdout, os.Stderr)
 ```
 
 ### Okay()

@@ -2,6 +2,20 @@
 
 ## develop
 
+## v1.4.0
+
+Released Friday, 8th November 2019.
+
+### New
+
+* Added `Mkdir()`
+* Added `MkTempFilename()`
+* Added `Touch()`
+
+### Examples
+
+* Added `git-current-branch` example
+
 ## v1.3.0
 
 Released Sunday, 3rd November 2019.
