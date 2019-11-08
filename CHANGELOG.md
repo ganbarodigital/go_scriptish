@@ -2,6 +2,10 @@
 
 ## develop
 
+### New
+
+* Added `MkTempFilename()`
+
 ## v1.3.0
 
 Released Sunday, 3rd November 2019.

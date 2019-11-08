@@ -67,6 +67,7 @@ result, err := scriptish.NewPipeline(
   - [Lsmod()](#lsmod)
   - [MkTempDir()](#mktempdir)
   - [MkTempFile()](#mktempfile)
+  - [MkTempFilename()](#mktempfilename)
   - [Which()](#which)
 - [Filters](#filters)
   - [AppendToTempFile()](#appendtotempfile)
@@ -803,6 +804,7 @@ Bash                         | Scriptish
 `ls -l | awk '{ print $1 }'` | [`scriptish.Lsmod()`](#lsmod)
 `mktemp`                     | [`scriptish.MkTempFile()`](#mktempfile)
 `mktemp -d`                  | [`scriptish.MkTempDir()`](#mktempdir)
+`mktemp -u`                  | [`scriptish.MkTempFilename()`](#mktempfilename)
 `return`                     | [`scriptish.Return()`](#return)
 `rm -f`                      | [`scriptish.RmFile()`](#rmfile)
 `rm -r`                      | [`scriptish.RmDir()`](#rmdir)
@@ -983,9 +985,9 @@ result, err := scriptish.NewPipeline(
 `MkTempDir()` creates a temporary folder, and writes the filename to the pipeline's `Stdout`.
 
 ```go
-result, err := scriptish.NewPipeline(
+tmpDir, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-")
-).Exec().String()
+).Exec().TrimmedString()
 ```
 
 ### MkTempFile()
@@ -993,9 +995,19 @@ result, err := scriptish.NewPipeline(
 `MkTempFile()` creates a temporary file, and writes the filename to the pipeline's `Stdout`.
 
 ```go
-result, err := scriptish.NewPipeline(
+tmpFilename, err := scriptish.NewPipeline(
     scriptish.MkTempFile(os.TempDir(), "scriptish-*")
-).Exec().String()
+).Exec().TrimmedString()
+```
+
+### MkTempFilename()
+
+`MkTempFilename()` generates a temporary filename, and writes the filename to the pipeline's `Stdout`.
+
+```go
+tmpFilename, err := scriptish.NewPipeline(
+    scriptish.MkTempFilename(os.TempDir(), "scriptish-*")
+).Exec().TrimmedString()
 ```
 
 ### Which()
