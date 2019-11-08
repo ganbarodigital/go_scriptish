@@ -814,6 +814,7 @@ Bash                         | Scriptish
 `sort`                       | [`scriptish.Sort()`](#sort)
 `sort -r`                    | [`scriptish.Rsort()`](#rsort)
 `tail -n X`                  | [`scriptish.Tail(X)`](#tail)
+`touch`                      | [`scriptish.Touch()`](#touch)
 `tr old new`                 | [`scriptish.Tr(old, new)`](#tr)
 `uniq`                       | [`scriptish.Uniq()`](#uniq)
 `wc -l`                      | [`scriptish.CountLines()`](#countlines)
