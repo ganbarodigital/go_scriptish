@@ -8,6 +8,10 @@
 * Added `MkTempFilename()`
 * Added `Touch()`
 
+### Examples
+
+* Added `git-current-branch` example
+
 ## v1.3.0
 
 Released Sunday, 3rd November 2019.
