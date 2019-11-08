@@ -4,6 +4,7 @@
 
 ### New
 
+* Added `Mkdir()`
 * Added `MkTempFilename()`
 * Added `Touch()`
 

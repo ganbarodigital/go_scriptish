@@ -103,6 +103,7 @@ result, err := scriptish.NewPipeline(
   - [WriteToFile()](#writetofile)
 - [Builtins](#builtins)
   - [Chmod()](#chmod)
+  - [Mkdir()](#mkdir)
   - [RmDir()](#rmdir)
   - [RmFile()](#rmfile)
   - [TestEmpty()](#testempty)
@@ -803,6 +804,7 @@ Bash                         | Scriptish
 `if expr ; then body ; else elseBlock ; fi` | [`scriptish.IfElse()`](#ifelse)
 `ls -1 ...`                  | [`scriptish.ListFiles(...)`](#listfiles)
 `ls -l | awk '{ print $1 }'` | [`scriptish.Lsmod()`](#lsmod)
+`mkdir`                      | [`scriptish.Mkdir()`](#mkdir)
 `mktemp`                     | [`scriptish.MkTempFile()`](#mktempfile)
 `mktemp -d`                  | [`scriptish.MkTempDir()`](#mktempdir)
 `mktemp -u`                  | [`scriptish.MkTempFilename()`](#mktempfilename)
@@ -1470,7 +1472,21 @@ On success, it returns the status code `StatusOkay`. On failure, it returns the 
 
 ```go
 result, err := scriptish.NewPipeline(
-    scriptish.Chmod("/path/to/file", 0644)
+    scriptish.Chmod("/path/to/file", 0644),
+).Exec().StatusError()
+```
+
+### Mkdir()
+
+`Mkdir()` creates the named directory, along with any parent folders that are needed.
+
+It ignores the contents of the pipeline.
+
+On success, it returns the status code `StatusOkay`. On failure, it returns the status code `StatusNotOkay`.
+
+```golang
+result, err := scriptish.NewPipeline(
+    scriptish.Mkdir("/path/to/folder", 0755),
 ).Exec().StatusError()
 ```
 
