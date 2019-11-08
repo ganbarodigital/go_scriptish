@@ -5,6 +5,7 @@
 ### New
 
 * Added `MkTempFilename()`
+* Added `Touch()`
 
 ## v1.3.0
 

@@ -108,6 +108,7 @@ result, err := scriptish.NewPipeline(
   - [TestEmpty()](#testempty)
   - [TestFilepathExists()](#testfilepathexists)
   - [TestNotEmpty()](#testnotempty)
+  - [Touch()](#touch)
   - [TruncateFile()](#truncatefile)
 - [Capture Methods](#capture-methods)
   - [Bytes()](#bytes)
@@ -1587,6 +1588,21 @@ checkArgs := scriptish.NewList(
 )
 
 checkArgs.Exec(os.Args...)
+```
+
+### Touch()
+
+`Touch()` creates the named file (if it doesn't exist), or updates its atime and mtime (if it does exist).
+
+It ignores the contents of the pipeline.
+
+On success, it returns the status code `StatusOkay`. On failure, it returns the status code `StatusNotOkay`.
+
+```golang
+pipeline := NewPipeline(
+    Touch("./config.yaml")
+)
+success, err := pipeline.Exec().StatusError()
 ```
 
 ### TruncateFile()
