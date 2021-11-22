@@ -40,8 +40,6 @@
 package scriptish
 
 func sourceToSink(in *Pipe, out *Dest) {
-	getSinkReader(in)
-
 	for line := range getSinkReader(in) {
 		TracePipeStdout("%s", line)
 		out.WriteString(line)
