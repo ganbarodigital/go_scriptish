@@ -67,7 +67,7 @@ func TestStderrToDevNullEmptiesThePipesStderr(t *testing.T) {
 	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
 }
 
-func TestStderrToDevNullPreservesStdout(t *testing.T) {
+func TestStderrToDevNullPreservesStdoutInAPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 

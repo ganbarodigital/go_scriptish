@@ -48,11 +48,16 @@ func StderrToDevNull() Command {
 		// debugging support
 		Tracef("StderrToDevNull()")
 
+		// copy the existing Stdin to Stdout in a pipeline
+		//
+		// we don't need to do this in a list, because lists do not
+		// set stdin for the next command
+		if p.Flags&contextIsPipeline != 0 {
+			sourceToSink(p, p.Stdout)
+		}
+
 		// replace the existing Stderr with a new one
 		p.SetNewStderr()
-
-		// copy the existing Stdin to Stdout
-		sourceToSink(p, p.Stdout)
 
 		// all done
 		return StatusOkay, nil
