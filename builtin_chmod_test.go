@@ -52,7 +52,7 @@ func TestChmodChangesPermissionsOnGivenFile(t *testing.T) {
 
 	// we need a file to mess with
 	tmpFile, err := ExecPipeline(
-		MkTempFile(os.TempDir(), "scriptify-chmod-"),
+		MkTempFile(os.TempDir(), "scriptish-chmod-"),
 	).TrimmedString()
 	assert.Nil(t, err)
 	assert.NotEmpty(t, tmpFile)

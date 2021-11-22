@@ -57,9 +57,9 @@ func TestAppendToTempFileReturnsFilename(t *testing.T) {
 	// this is the pipeline we'll use to test TruncateFile()
 	pipeline := NewPipeline(
 		CatFile("testdata/truncatefile/content.txt"),
-		AppendToTempFile(os.TempDir(), "scriptify-appendtotempfile-*"),
+		AppendToTempFile(os.TempDir(), "scriptish-appendtotempfile-*"),
 	)
-	expectedPrefix := filepath.Join(os.TempDir(), "scriptify-")
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptish-")
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -84,7 +84,7 @@ func TestAppendToTempFileSetsErrorWhenTempFileCannotBeCreated(t *testing.T) {
 	expectedResult := ""
 
 	pipeline := NewPipeline(
-		AppendToTempFile("/does/not/exist", "scriptify-*"),
+		AppendToTempFile("/does/not/exist", "scriptish-*"),
 	)
 
 	// ----------------------------------------------------------------
@@ -118,12 +118,12 @@ func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing
 	// broken version
 	singlePipe.Stdin = pipe.NewSourceFromReader(brokenReader{})
 
-	expectedPrefix := filepath.Join(os.TempDir(), "scriptify-")
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptish-")
 
 	// ----------------------------------------------------------------
 	// perform the change
 
-	op := AppendToTempFile(os.TempDir(), "scriptify-appendtotempfile-*")
+	op := AppendToTempFile(os.TempDir(), "scriptish-appendtotempfile-*")
 	statusCode, err := op(singlePipe)
 	actualResult := singlePipe.Stdout.TrimmedString()
 

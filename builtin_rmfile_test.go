@@ -52,7 +52,7 @@ func TestRmFileRemovesAGivenFile(t *testing.T) {
 
 	tmpFilename, err := ExecPipeline(
 		// create the temporary file
-		MkTempFile(os.TempDir(), "scriptify-rmfile-"),
+		MkTempFile(os.TempDir(), "scriptish-rmfile-"),
 	).TrimmedString()
 	assert.Nil(t, err)
 	assert.NotEmpty(t, tmpFilename)
@@ -111,7 +111,7 @@ func TestRmFileDoesNotRespectFilePermissions(t *testing.T) {
 	// setup your test
 
 	// we need a valid filename to try to write to
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-rmfile-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-rmfile-")).TrimmedString()
 	assert.Nil(t, err)
 
 	// make sure the file cannot be deleted
@@ -148,7 +148,7 @@ func TestRmFileWritesToTheTraceOutput(t *testing.T) {
 
 	tmpFilename, err := ExecPipeline(
 		// create the temporary file
-		MkTempFile(os.TempDir(), "scriptify-rmfile-"),
+		MkTempFile(os.TempDir(), "scriptish-rmfile-"),
 	).TrimmedString()
 	assert.Nil(t, err)
 	assert.NotEmpty(t, tmpFilename)

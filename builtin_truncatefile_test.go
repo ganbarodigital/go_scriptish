@@ -52,7 +52,7 @@ func TestTruncateFile(t *testing.T) {
 
 	// we need a file to truncate
 	tmpFilename, err := NewPipeline(
-		MkTempFile(os.TempDir(), "scriptify-truncatefile-*"),
+		MkTempFile(os.TempDir(), "scriptish-truncatefile-*"),
 	).Exec().TrimmedString()
 	assert.Nil(t, err)
 
@@ -127,7 +127,7 @@ func TestTruncateFileWritesToTheTraceOutput(t *testing.T) {
 
 	// we need a file to truncate
 	tmpFilename, err := NewPipeline(
-		MkTempFile(os.TempDir(), "scriptify-truncatefile-*"),
+		MkTempFile(os.TempDir(), "scriptish-truncatefile-*"),
 	).Exec().TrimmedString()
 	assert.Nil(t, err)
 

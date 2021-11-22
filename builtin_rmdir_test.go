@@ -52,7 +52,7 @@ func TestRmDirRemovesAGivenEmptyFolder(t *testing.T) {
 
 	tmpDir, err := ExecPipeline(
 		// create the temporary folder
-		MkTempDir(os.TempDir(), "scriptify-rmdir-"),
+		MkTempDir(os.TempDir(), "scriptish-rmdir-"),
 	).TrimmedString()
 	assert.Nil(t, err)
 	assert.NotEmpty(t, tmpDir)
@@ -108,7 +108,7 @@ func TestRmDirDoesNotRespectFilePermissions(t *testing.T) {
 	// setup your test
 
 	// we need a valid folder to remove
-	tmpDir, err := ExecPipeline(MkTempDir(os.TempDir(), "scriptify-rmfile-")).TrimmedString()
+	tmpDir, err := ExecPipeline(MkTempDir(os.TempDir(), "scriptish-rmfile-")).TrimmedString()
 	assert.Nil(t, err)
 
 	// make sure the dir cannot be deleted
@@ -145,7 +145,7 @@ func TestRmDirWritesToTheTraceOutput(t *testing.T) {
 
 	tmpDir, err := ExecPipeline(
 		// create the temporary folder
-		MkTempDir(os.TempDir(), "scriptify-rmdir-"),
+		MkTempDir(os.TempDir(), "scriptish-rmdir-"),
 	).TrimmedString()
 	assert.Nil(t, err)
 	assert.NotEmpty(t, tmpDir)

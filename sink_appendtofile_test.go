@@ -51,7 +51,7 @@ func TestAppendToFileWritesPipelineToGivenFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -118,7 +118,7 @@ func TestAppendToFileDoesNothingWhenReadFromPipelineStdinFails(t *testing.T) {
 	// setup your test
 
 	// we need a valid filename to try to write to
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile-")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -153,7 +153,7 @@ func TestAppendToFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -204,7 +204,7 @@ func TestAppendToFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -255,7 +255,7 @@ func TestAppendToFileEmptiesThePipeWhenInList(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -290,7 +290,7 @@ func TestAppendToFileEmptiesThePipeWhenInPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptify-appendtofile")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves

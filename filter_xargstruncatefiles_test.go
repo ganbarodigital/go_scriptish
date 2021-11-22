@@ -53,7 +53,7 @@ func TestXargsTruncateFiles(t *testing.T) {
 	// we need a file to truncate
 	tmpFilename, err := NewPipeline(
 		CatFile("testdata/truncatefile/content.txt"),
-		AppendToTempFile(os.TempDir(), "scriptify-xargstruncatefiles-*"),
+		AppendToTempFile(os.TempDir(), "scriptish-xargstruncatefiles-*"),
 	).Exec().TrimmedString()
 	assert.Nil(t, err)
 
@@ -124,7 +124,7 @@ func TestXargsTruncateFilesWritesToTheTraceOutput(t *testing.T) {
 	// we need a file to truncate
 	tmpFilename, err := NewPipeline(
 		CatFile("testdata/truncatefile/content.txt"),
-		AppendToTempFile(os.TempDir(), "scriptify-xargstruncatefiles-*"),
+		AppendToTempFile(os.TempDir(), "scriptish-xargstruncatefiles-*"),
 	).Exec().TrimmedString()
 	assert.Nil(t, err)
 

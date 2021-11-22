@@ -53,10 +53,10 @@ func TestMkTempDirWritesFolderToPipeline(t *testing.T) {
 	// setup your test
 
 	pipeline := NewPipeline(
-		MkTempDir(os.TempDir(), "scriptify-"),
+		MkTempDir(os.TempDir(), "scriptish-"),
 	)
 
-	expectedPrefix := filepath.Join(os.TempDir(), "scriptify-")
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptish-")
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -79,7 +79,7 @@ func TestMkTempDirSetsErrorIfCannotCreateFolder(t *testing.T) {
 
 	expectedResult := ""
 	pipeline := NewPipeline(
-		MkTempDir("/does/not/exist", "scriptify-"),
+		MkTempDir("/does/not/exist", "scriptish-"),
 	)
 
 	// ----------------------------------------------------------------
@@ -107,7 +107,7 @@ func TestMkTempDirWritesToTheTraceOutput(t *testing.T) {
 	defer GetShellOptions().DisableTrace()
 
 	pipeline := NewPipeline(
-		MkTempDir("$1", "scriptify-"),
+		MkTempDir("$1", "scriptish-"),
 	)
 
 	// ----------------------------------------------------------------
@@ -116,8 +116,8 @@ func TestMkTempDirWritesToTheTraceOutput(t *testing.T) {
 	tmpDir, err := pipeline.Exec(os.TempDir()).TrimmedString()
 	assert.Nil(t, err)
 
-	expectedResult := `+ MkTempDir("$1", "scriptify-")
-+ => MkTempDir("` + os.TempDir() + `", "scriptify-")
+	expectedResult := `+ MkTempDir("$1", "scriptish-")
++ => MkTempDir("` + os.TempDir() + `", "scriptish-")
 + p.Stdout> ` + tmpDir + `
 `
 

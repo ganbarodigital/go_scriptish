@@ -53,7 +53,7 @@ func TestTouchWillCreateAFileIfItDoesNotExist(t *testing.T) {
 
 	// we need a file to touch
 	tmpFilename, err := NewPipeline(
-		MkTempFilename(os.TempDir(), "scriptify-truncatefile-*"),
+		MkTempFilename(os.TempDir(), "scriptish-truncatefile-*"),
 	).Exec().TrimmedString()
 	assert.Nil(t, err)
 
