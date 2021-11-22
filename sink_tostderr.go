@@ -54,7 +54,7 @@ func ToStderr() Command {
 
 		// send everything to stderr
 		for line := range getSinkReader(p) {
-			TraceOutput("os.Stderr", "%s", line)
+			TraceOsStderr("%s", line)
 			fmt.Fprintf(os.Stderr, "%s\n", line)
 		}
 

@@ -52,7 +52,7 @@ func ToStdout() Command {
 
 		// send everything to stdout
 		for line := range getSinkReader(p) {
-			TraceOutput("os.Stdout", "%s", line)
+			TraceOsStdout("%s", line)
 			fmt.Printf("%s\n", line)
 		}
 
