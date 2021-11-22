@@ -4,6 +4,7 @@
 
 ### New
 
+* Added `StderrToDevNull()`
 * Added `StdoutToDevNull()`
 
 ## v1.4.0
