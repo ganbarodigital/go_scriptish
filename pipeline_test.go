@@ -118,8 +118,7 @@ func ExecCopesWithANilPipelinePointer(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	var pipeline *Pipeline
-	pipeline = nil
+	var pipeline *Pipeline = nil
 
 	// ----------------------------------------------------------------
 	// perform the change
