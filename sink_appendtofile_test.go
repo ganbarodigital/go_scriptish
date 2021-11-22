@@ -64,10 +64,10 @@ func TestAppendToFileWritesPipelineToGivenFile(t *testing.T) {
 	)
 
 	// we need to put some content into the temp file to start with
-	err = ExecPipeline(
+	ExecPipeline(
 		Echo("this is a test line"),
 		WriteToFile(tmpFilename),
-	).Error()
+	)
 
 	pipeline := NewPipeline(
 		CatFile("./testdata/truncatefile/content.txt"),
@@ -160,10 +160,10 @@ func TestAppendToFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	defer ExecPipeline(RmFile(tmpFilename))
 
 	// we need to put some content into the temp file to start with
-	err = ExecPipeline(
+	ExecPipeline(
 		Echo("this is a test line"),
 		WriteToFile(tmpFilename),
-	).Error()
+	)
 
 	expectedResult := `+ CatFile("./testdata/truncatefile/content.txt")
 + => CatFile("./testdata/truncatefile/content.txt")
@@ -211,10 +211,10 @@ func TestAppendToFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 	defer ExecPipeline(RmFile(tmpFilename))
 
 	// we need to put some content into the temp file to start with
-	err = ExecPipeline(
+	ExecPipeline(
 		Echo("this is a test line"),
 		WriteToFile(tmpFilename),
-	).Error()
+	)
 
 	expectedResult := `+ CatFile("./testdata/truncatefile/content.txt")
 + => CatFile("./testdata/truncatefile/content.txt")
@@ -262,10 +262,10 @@ func TestAppendToFileEmptiesThePipeWhenInList(t *testing.T) {
 	defer ExecPipeline(RmFile(tmpFilename))
 
 	// we need to put some content into the temp file to start with
-	err = ExecPipeline(
+	ExecPipeline(
 		Echo("this is a test line"),
 		WriteToFile(tmpFilename),
-	).Error()
+	)
 
 	list := NewList(
 		CatFile("./testdata/truncatefile/content.txt"),
@@ -297,10 +297,10 @@ func TestAppendToFileEmptiesThePipeWhenInPipeline(t *testing.T) {
 	defer ExecPipeline(RmFile(tmpFilename))
 
 	// we need to put some content into the temp file to start with
-	err = ExecPipeline(
+	ExecPipeline(
 		Echo("this is a test line"),
 		WriteToFile(tmpFilename),
-	).Error()
+	)
 
 	pipeline := NewPipeline(
 		CatFile("./testdata/truncatefile/content.txt"),
