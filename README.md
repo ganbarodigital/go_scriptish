@@ -647,7 +647,7 @@ list := scriptish.NewList(
     scriptish.CatFile("/path/to/file1.txt"),
     scriptish.CatFile("/path/to/file2.txt"),
 )
-result, err := pipeline.Exec().String()
+result, err := list.Exec().String()
 ```
 
 ```go
