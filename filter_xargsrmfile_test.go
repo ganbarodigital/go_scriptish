@@ -41,6 +41,7 @@ package scriptish
 
 import (
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -58,18 +59,22 @@ func TestXargsRmFile(t *testing.T) {
 	defer ExecPipeline(RmDir(tmpDir))
 
 	// we need some files to remove
-	var testData []string
+	var expectedTestFilenames []string
 	for i := 0; i < 5; i++ {
 		tmpFile, err := ExecPipeline(MkTempFile(tmpDir, "rmtest-")).TrimmedString()
 		assert.Nil(t, err)
-		testData = append(testData, tmpFile)
+		expectedTestFilenames = append(expectedTestFilenames, tmpFile)
 	}
+	// we need to sort the list of files that we've just created,
+	// so that we can use it for comparisons later
+	sort.Strings(expectedTestFilenames)
 
 	// prove that the files exist
-	listingFunc := NewPipelineFunc(EchoSlice(testData))
-	expectedResult, err := listingFunc().Strings()
+	listingFunc := NewPipelineFunc(ListFiles(tmpDir))
+	actualTestFilenames, err := listingFunc().Strings()
 	assert.Nil(t, err)
-	assert.Equal(t, 5, len(expectedResult))
+	assert.Equal(t, 5, len(actualTestFilenames))
+	assert.Equal(t, expectedTestFilenames, actualTestFilenames)
 
 	// this is the pipeline we'll use to test XargsRmFile()
 	pipeline := NewPipeline(
@@ -87,7 +92,7 @@ func TestXargsRmFile(t *testing.T) {
 	// test the results
 
 	assert.Nil(t, err)
-	assert.Equal(t, expectedResult, actualResult)
+	assert.Equal(t, expectedTestFilenames, actualResult)
 
 	// the folder should now be empty
 	listing, err := listingFunc().Strings()
