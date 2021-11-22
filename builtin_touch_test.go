@@ -104,6 +104,7 @@ func TestTouchUpdatesTheModifiedTimeOfAFile(t *testing.T) {
 
 	// prove that worked
 	fi, err := os.Stat(tmpFilename)
+	assert.Nil(t, err)
 	assert.Equal(t, then, fi.ModTime())
 
 	// this is the pipeline we are going to use

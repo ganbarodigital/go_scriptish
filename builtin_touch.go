@@ -68,6 +68,9 @@ func Touch(filepath string) Command {
 		if err != nil {
 			if os.IsNotExist(err) {
 				fh, err = os.OpenFile(expFilepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+				if err != nil {
+					return StatusNotOkay, err
+				}
 				defer fh.Close()
 			}
 		} else {

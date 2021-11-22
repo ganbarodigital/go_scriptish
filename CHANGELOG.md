@@ -7,6 +7,10 @@
 * Added `StderrToDevNull()`
 * Added `StdoutToDevNull()`
 
+### Fixes
+
+* `Touch()` now checks for errors when creating new files
+
 ## v1.4.0
 
 Released Friday, 8th November 2019.
