@@ -53,7 +53,7 @@ func TestTouchWillCreateAFileIfItDoesNotExist(t *testing.T) {
 
 	// we need a file to touch
 	tmpFilename, err := NewPipeline(
-		MkTempFilename(os.TempDir(), "scriptish-truncatefile-*"),
+		MkTempFilename(os.TempDir(), "scriptish-touch-*"),
 	).Exec().TrimmedString()
 	assert.Nil(t, err)
 
@@ -66,6 +66,9 @@ func TestTouchWillCreateAFileIfItDoesNotExist(t *testing.T) {
 	_, err = os.Stat(tmpFilename)
 	assert.Error(t, err)
 	assert.True(t, os.IsNotExist(err))
+
+	// make sure we clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -85,16 +88,17 @@ func TestTouchWillCreateAFileIfItDoesNotExist(t *testing.T) {
 }
 
 func TestTouchUpdatesTheModifiedTimeOfAFile(t *testing.T) {
-	t.Parallel()
-
 	// ----------------------------------------------------------------
 	// setup your test
 
 	// we need a file to touch
 	tmpFilename, err := NewPipeline(
-		MkTempFile(os.TempDir(), "scriptify-truncatefile-*"),
+		MkTempFile(os.TempDir(), "scriptish-touch-*"),
 	).Exec().TrimmedString()
 	assert.Nil(t, err)
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFilename))
 
 	now := time.Now()
 	then := now.AddDate(0, 0, -1)

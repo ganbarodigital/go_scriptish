@@ -66,6 +66,9 @@ func TestAppendToTempFileReturnsFilename(t *testing.T) {
 
 	actualResult, err := pipeline.Exec().TrimmedString()
 
+	// cleanup after ourselves
+	defer ExecPipeline(RmFile(actualResult))
+
 	// ----------------------------------------------------------------
 	// test the results
 
@@ -118,7 +121,7 @@ func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing
 	// broken version
 	singlePipe.Stdin = pipe.NewSourceFromReader(brokenReader{})
 
-	expectedPrefix := filepath.Join(os.TempDir(), "scriptish-")
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptish-appendtotempfile-")
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -126,6 +129,9 @@ func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing
 	op := AppendToTempFile(os.TempDir(), "scriptish-appendtotempfile-*")
 	statusCode, err := op(singlePipe)
 	actualResult := singlePipe.Stdout.TrimmedString()
+
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(actualResult))
 
 	// ----------------------------------------------------------------
 	// test the results
@@ -135,9 +141,6 @@ func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing
 
 	// the name of the tempfile DOES exist in the pipe's stdout
 	assert.True(t, strings.HasPrefix(actualResult, expectedPrefix))
-
-	// clean up after ourselves
-	ExecPipeline(RmFile(actualResult))
 }
 
 func TestAppendToTempFileWritesToTheTraceOutputWhenInList(t *testing.T) {

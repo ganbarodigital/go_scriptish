@@ -52,7 +52,7 @@ func TestLsmodListsPermissionsOnGivenFile(t *testing.T) {
 
 	// we need a file to example
 	tmpFile, err := ExecPipeline(
-		MkTempFile(os.TempDir(), "scriptish-lsmod-"),
+		MkTempFile(os.TempDir(), "scriptish-lsmod-*"),
 	).TrimmedString()
 	assert.Nil(t, err)
 	assert.NotEmpty(t, tmpFile)
@@ -104,7 +104,7 @@ func TestLsmodWritesToTheTraceOutput(t *testing.T) {
 
 	// we need a file to examine
 	tmpFile, err := ExecPipeline(
-		MkTempFile(os.TempDir(), "scriptish-lsmod-"),
+		MkTempFile(os.TempDir(), "scriptish-lsmod-*"),
 	).TrimmedString()
 	assert.Nil(t, err)
 	assert.NotEmpty(t, tmpFile)

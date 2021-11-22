@@ -157,6 +157,10 @@ func TestRmDirWritesToTheTraceOutput(t *testing.T) {
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
+	defer ExecPipeline(
+		Chmod(tmpDir, 0644),
+		RmFile(tmpDir),
+	)
 	defer GetShellOptions().DisableTrace()
 
 	pipeline := NewPipeline(

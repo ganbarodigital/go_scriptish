@@ -56,7 +56,7 @@ func TestMkTempFileWritesFilenameToPipeline(t *testing.T) {
 		MkTempFile(os.TempDir(), "scriptish-mktempfile-*"),
 	)
 
-	expectedPrefix := filepath.Join(os.TempDir(), "scriptish-")
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptish-mktempfile-")
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -114,15 +114,21 @@ func TestMkTempFileWritesToTheTraceOutput(t *testing.T) {
 	// perform the change
 
 	pipeline.Exec(os.TempDir(), "scriptish-mktempfile-*")
-	actualResult := dest.String()
-
 	tmpFile, err := pipeline.TrimmedString()
 	assert.Nil(t, err)
 
+	// clean up after ourselves
+	defer ExecPipeline(RmFile(tmpFile))
+
+	// now that we've created the file, we know what should appear
+	// in the trace data
 	expectedResult := `+ MkTempFile("$1", "$2")
 + => MkTempFile("` + os.TempDir() + `", "scriptish-mktempfile-*")
 + p.Stdout> ` + tmpFile + `
 `
+
+	// get the actual trace data
+	actualResult := dest.String()
 
 	// ----------------------------------------------------------------
 	// test the results

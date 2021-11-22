@@ -51,7 +51,7 @@ func TestWriteToFileWritesPipelineToGivenFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-writetofile-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-writetofile-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -89,7 +89,7 @@ func TestWriteToFileOverwritesExistingFileContents(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-writetofile-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-writetofile-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -159,7 +159,7 @@ func TestWriteToFileDoesNothingReadFromPipelineStdinFails(t *testing.T) {
 	// setup your test
 
 	tmpFilename, err := ExecPipeline(
-		MkTempFile(os.TempDir(), "scriptish-writetofile-"),
+		MkTempFile(os.TempDir(), "scriptish-writetofile-*"),
 	).TrimmedString()
 	assert.Nil(t, err)
 
@@ -191,7 +191,7 @@ func TestWriteToFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-writetofile-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-writetofile-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -236,7 +236,7 @@ func TestWriteToFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-writetofile-")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-writetofile-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
