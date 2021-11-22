@@ -66,7 +66,7 @@ func TestXargsRmFile(t *testing.T) {
 	}
 
 	// prove that the files exist
-	listingFunc := NewPipelineFunc(ListFiles(tmpDir))
+	listingFunc := NewPipelineFunc(EchoSlice(testData))
 	expectedResult, err := listingFunc().Strings()
 	assert.Nil(t, err)
 	assert.Equal(t, 5, len(expectedResult))
@@ -86,7 +86,7 @@ func TestXargsRmFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.Nil(t, pipeline.Error())
+	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
 
 	// the folder should now be empty
