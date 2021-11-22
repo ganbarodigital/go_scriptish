@@ -42,6 +42,7 @@ package scriptish
 import (
 	"errors"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -58,6 +59,7 @@ func TestAppendToTempFileReturnsFilename(t *testing.T) {
 		CatFile("testdata/truncatefile/content.txt"),
 		AppendToTempFile(os.TempDir(), "scriptify-appendtotempfile-*"),
 	)
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptify-")
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -68,7 +70,7 @@ func TestAppendToTempFileReturnsFilename(t *testing.T) {
 	// test the results
 
 	assert.Nil(t, err)
-	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
+	assert.True(t, strings.HasPrefix(actualResult, expectedPrefix))
 
 	// clean up after ourselves
 	err = ExecPipeline(RmFile(actualResult)).Error()
@@ -116,6 +118,8 @@ func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing
 	// broken version
 	singlePipe.Stdin = pipe.NewSourceFromReader(brokenReader{})
 
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptify-")
+
 	// ----------------------------------------------------------------
 	// perform the change
 
@@ -130,7 +134,7 @@ func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing
 	assert.Equal(t, StatusOkay, statusCode)
 
 	// the name of the tempfile DOES exist in the pipe's stdout
-	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
+	assert.True(t, strings.HasPrefix(actualResult, expectedPrefix))
 
 	// clean up after ourselves
 	ExecPipeline(RmFile(actualResult))
@@ -171,7 +175,7 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 + => Echo("and so is this")
 + p.Stdout> and so is this
 + AppendToTempFile("$1", "$2")
-+ => AppendToTempFile("/tmp", "scriptish-appendtotempfile-*")
++ => AppendToTempFile("` + os.TempDir() + `", "scriptish-appendtotempfile-*")
 + AppendToTempFile(): created file "` + tempFile + `"
 + tempfile> this is my output
 + tempfile> and so is this
@@ -224,7 +228,7 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 + => Echo("and so is this")
 + p.Stdout> and so is this
 + AppendToTempFile("$1", "$2")
-+ => AppendToTempFile("/tmp", "scriptish-appendtotempfile-*")
++ => AppendToTempFile("` + os.TempDir() + `", "scriptish-appendtotempfile-*")
 + AppendToTempFile(): created file "` + tempFile + `"
 + tempfile> and so is this
 `

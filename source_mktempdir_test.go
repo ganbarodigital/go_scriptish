@@ -41,6 +41,7 @@ package scriptish
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -55,6 +56,8 @@ func TestMkTempDirWritesFolderToPipeline(t *testing.T) {
 		MkTempDir(os.TempDir(), "scriptify-"),
 	)
 
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptify-")
+
 	// ----------------------------------------------------------------
 	// perform the change
 
@@ -63,7 +66,7 @@ func TestMkTempDirWritesFolderToPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
+	assert.True(t, strings.HasPrefix(actualResult, expectedPrefix))
 
 	// clean up after ourselves
 	err := ExecPipeline(RmFile(actualResult)).Error()

@@ -41,6 +41,7 @@ package scriptish
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -55,6 +56,8 @@ func TestMkTempFileWritesFilenameToPipeline(t *testing.T) {
 		MkTempFile(os.TempDir(), "scriptify-mktempfile-*"),
 	)
 
+	expectedPrefix := filepath.Join(os.TempDir(), "scriptify-")
+
 	// ----------------------------------------------------------------
 	// perform the change
 
@@ -63,7 +66,7 @@ func TestMkTempFileWritesFilenameToPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
-	assert.True(t, strings.HasPrefix(actualResult, os.TempDir()+"/scriptify-"))
+	assert.True(t, strings.HasPrefix(actualResult, expectedPrefix))
 
 	// clean up after ourselves
 	err := ExecPipeline(RmFile(actualResult)).Error()
@@ -117,7 +120,7 @@ func TestMkTempFileWritesToTheTraceOutput(t *testing.T) {
 	assert.Nil(t, err)
 
 	expectedResult := `+ MkTempFile("$1", "$2")
-+ => MkTempFile("/tmp", "scriptish-mktempfile-*")
++ => MkTempFile("` + os.TempDir() + `", "scriptish-mktempfile-*")
 + p.Stdout> ` + tmpFile + `
 `
 
