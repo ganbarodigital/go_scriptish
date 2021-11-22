@@ -2,6 +2,10 @@
 
 ## develop
 
+### New
+
+* Added `StdoutToDevNull()`
+
 ## v1.4.0
 
 Released Friday, 8th November 2019.

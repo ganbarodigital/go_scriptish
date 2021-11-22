@@ -106,6 +106,7 @@ result, err := scriptish.NewPipeline(
   - [Mkdir()](#mkdir)
   - [RmDir()](#rmdir)
   - [RmFile()](#rmfile)
+  - [StdoutToDevNull()](#stdouttodevnull)
   - [TestEmpty()](#testempty)
   - [TestFilepathExists()](#testfilepathexists)
   - [TestNotEmpty()](#testnotempty)
@@ -784,6 +785,7 @@ Bash                         | Scriptish
 `[[ -n $x ]]`                | [`scriptish.TestNotEmpty()`](#testnotempty)
 `[[ -z $x ]]`                | [`scriptish.TestEmpty()`](#testempty)
 `> $file`                    | [`scriptish.WriteToFile()`](#writetofile)
+`> /dev/null`                | [`scriptish.StdoutToDevNull()`](#stdouttodevnull)
 `>> $file`                   | [`scriptish.AppendToFile()`](#appendtofile)
 `||`                         | [`scriptish.Or()`](#or)
 `&&`                         | [`scriptish.And()`](#and)
@@ -1517,6 +1519,19 @@ It ignores the file's file permissions, because the underlying Golang os.Remove(
 err := scriptish.NewPipeline(
     scriptish.RmFile("/path/to/file"),
 ).Exec().Error()
+```
+
+### StdoutToDevNull()
+
+`StdoutToDevNull()` throws away the contents of the pipeline's `Stdin`.
+
+```go
+result, err := scriptish.NewPipeline(
+    scriptish.CatFile("/path/to/file.txt"),
+    scriptish.StdoutToDevNull(),
+).Exec().TrimmedString()
+
+// result now contains an empty string
 ```
 
 ### TestEmpty()
