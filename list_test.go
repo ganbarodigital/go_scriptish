@@ -65,13 +65,13 @@ func TestNewListCreatesEmptyList(t *testing.T) {
 	assert.Equal(t, "", list.Pipe.Stderr.String())
 }
 
-func ExecListCreatesAndRunsAList(t *testing.T) {
+func TestExecListCreatesAndRunsAList(t *testing.T) {
 	t.Parallel()
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := "hello world\n"
+	expectedResult := "hello world!\n"
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -88,13 +88,13 @@ func ExecListCreatesAndRunsAList(t *testing.T) {
 	assert.Nil(t, list.Error())
 }
 
-func ListFuncCreatesAListAsAFunction(t *testing.T) {
+func TestListFuncCreatesAListAsAFunction(t *testing.T) {
 	t.Parallel()
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := "hello world\n"
+	expectedResult := "hello world!\n"
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -111,7 +111,7 @@ func ListFuncCreatesAListAsAFunction(t *testing.T) {
 	assert.Nil(t, list.Error())
 }
 
-func ListExecCopesWithANilListPointer(t *testing.T) {
+func TestListExecCopesWithANilListPointer(t *testing.T) {
 	t.Parallel()
 
 	// ----------------------------------------------------------------
@@ -130,7 +130,7 @@ func ListExecCopesWithANilListPointer(t *testing.T) {
 	// as long as the test doesn't crash, it has passed
 }
 
-func ListExecCopesWithAnEmptyListStruct(t *testing.T) {
+func TestListExecCopesWithAnEmptyListStruct(t *testing.T) {
 	t.Parallel()
 
 	// ----------------------------------------------------------------
