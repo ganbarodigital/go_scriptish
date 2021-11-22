@@ -664,7 +664,7 @@ result, err := scriptish.NewList(
 Both `List.Exec()` and the function returned by `NewListFunc()` accept a list of parameters.
 
 ```golang
-list := scriptish.NewPipeline(
+list := scriptish.NewList(
     scriptish.CatFile("$1"),
     scriptish.CatFile("$2"),
 )
@@ -672,7 +672,7 @@ fileContents := list.Exec("/path/to/file1.txt", "/path/to/file2.txt").String()
 ```
 
 ```golang
-getTwoFileContents := scriptish.NewPipelineFunc(
+getTwoFileContents := scriptish.NewListFunc(
     scriptish.CatFile("$1"),
     scriptish.CatFile("$2"),
 )
