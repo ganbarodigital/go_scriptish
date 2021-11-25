@@ -45,14 +45,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStderrToDevNullEmptiesThePipesStderr(t *testing.T) {
+func TestRedirectStderrToDevNullEmptiesThePipesStderr(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
 	pipeline := NewPipeline(
-		Echo("this is a test"),
-		ToStderr(),
-		StderrToDevNull(),
+		EchoToStderr("this is a test", RedirectStderrToDevNull),
 	)
 
 	// ----------------------------------------------------------------
@@ -65,9 +63,10 @@ func TestStderrToDevNullEmptiesThePipesStderr(t *testing.T) {
 
 	assert.Nil(t, pipeline.Error())
 	assert.Equal(t, "", pipeline.Pipe.Stderr.String())
+	assert.Equal(t, "", pipeline.Pipe.Stdout.String())
 }
 
-func TestStderrToDevNullPreservesStdoutInAPipeline(t *testing.T) {
+func TestRedirectStderrToDevNullPreservesStdoutInAPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
@@ -79,10 +78,7 @@ func TestStderrToDevNullPreservesStdoutInAPipeline(t *testing.T) {
 
 	expectedResult := "this is a test\n"
 	pipeline := NewPipeline(
-		Echo("this content should not disappear"),
-		StderrToDevNull(),
-		Echo(expectedResult),
-		StderrToDevNull(),
+		Echo(expectedResult, RedirectStderrToDevNull),
 	)
 
 	// ----------------------------------------------------------------
@@ -98,32 +94,31 @@ func TestStderrToDevNullPreservesStdoutInAPipeline(t *testing.T) {
 	assert.Equal(t, expectedResult, pipeline.Pipe.Stdout.String())
 }
 
-func TestStderrToDevNullWritesToTheTraceOutput(t *testing.T) {
+func TestRedirectStderrToDevNullWritesToTheTraceOutput(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := `+ Echo("this is a test")
-+ => Echo("this is a test")
-+ p.Stdout> this is a test
-+ StderrToDevNull()
+	expectedResult := `+ RedirectStderrToDevNull()
++ EchoToStderr("this is a test")
++ => EchoToStderr("this is a test")
++ p.Stderr> this is a test
 `
-	dest := NewTextBuffer()
-	GetShellOptions().EnableTrace(dest)
+	traceBuf := NewTextBuffer()
+	GetShellOptions().EnableTrace(traceBuf)
 
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
 
 	pipeline := NewPipeline(
-		Echo("this is a test"),
-		StderrToDevNull(),
+		EchoToStderr("this is a test", RedirectStderrToDevNull),
 	)
 
 	// ----------------------------------------------------------------
 	// perform the change
 
 	pipeline.Exec()
-	actualResult := dest.String()
+	actualResult := traceBuf.String()
 
 	// ----------------------------------------------------------------
 	// test the results

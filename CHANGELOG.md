@@ -10,6 +10,7 @@
 ### New
 
 * Added new category Redirects
+  - added `RedirectStderrToDevNull()`
   - added `RedirectStdoutToDevNull()`
 
 ### Fixes

@@ -1534,6 +1534,20 @@ output := pipeline.String()
 ### OverwriteFilenameWithStderr
 ### RedirectStderrToStdout
 ### RedirectStderrToDevNull
+
+`RedirectStderrToDevNull()` replaces the pipe's Stderr with an `ioextra.TextDevNull`.
+
+It is an emulation of UNIX shell scripting's `2> /dev/null`.
+
+It's must useful when running external commands that produce output that you're just not interested in. If you redirect the pipeline's stderr using `RedirectStderrToDevNull()`, you avoid Golang having to allocate any memory to store that output.
+
+```golang
+pipeline := scriptish.NewPipeline(
+    // run an external command, and throw away the output you do not need
+    scriptish.Exec('some-noisy-command', scriptish.RedirectStderrToDevNull)
+).Exec()
+```
+
 ### RedirectStderrToTmpfile
 ### RedirectStdoutToDevNull
 

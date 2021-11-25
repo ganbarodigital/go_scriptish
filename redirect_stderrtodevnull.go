@@ -41,28 +41,18 @@ package scriptish
 
 import "github.com/ganbarodigital/go-ioextra/v2"
 
-// StderrToDevNull deletes the current contents of the pipeline's Stderr.
+// RedirectStderrToDevNull replaces the pipe's Stderr with an
+// ioextra.TextDevNull.
 //
 // It is an emulation of UNIX shell scripting's `2> /dev/null`.
-func StderrToDevNull() Command {
-	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("StderrToDevNull()")
+func RedirectStderrToDevNull(p *Pipe) (int, error) {
+	// debugging support
+	Tracef("RedirectStderrToDevNull()")
 
-		// copy the existing Stdin to Stdout in a pipeline
-		//
-		// we don't need to do this in a list, because lists do not
-		// set stdin for the next command
-		if p.Flags&contextIsPipeline != 0 {
-			p.DrainStdinToStdout()
-		}
+	// replace the existing Stderr with one that throws everything
+	// away
+	p.Stderr = ioextra.NewTextDevNull()
 
-		// replace the existing Stderr with one that throws everything
-		// away
-		p.Stderr = ioextra.NewTextDevNull()
-
-		// all done
-		return StatusOkay, nil
-	}
+	// all done
+	return StatusOkay, nil
 }
