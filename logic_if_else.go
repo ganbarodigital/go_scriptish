@@ -46,50 +46,53 @@ import "io"
 //
 // IfElse is an emulation of UNIX shell scripting's
 // `if expr ; then body ; else elseBlock ; fi`
-func IfElse(expr, body, elseBlock *Sequence) Command {
+func IfElse(expr, body, elseBlock *Sequence, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish Command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("IfElse()")
-
-		// get our parameters
-		params := getParamsFromEnv(p.Env)
-
-		// run the test expression first
-		expr.Exec(params...)
-
-		// copy the output over to our pipe
-		io.Copy(p.Stdout, expr.Pipe.Stdout)
-		io.Copy(p.Stderr, expr.Pipe.Stderr)
-
-		// can we proceed?
-		err := expr.Error()
-		if err == nil {
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
 			// debugging support
-			Tracef("If() passed ... executing the body sequence")
+			Tracef("IfElse()")
 
-			// yes we can!
-			body.Exec(params...)
+			// get our parameters
+			params := getParamsFromEnv(p.Env)
+
+			// run the test expression first
+			expr.Exec(params...)
 
 			// copy the output over to our pipe
-			io.Copy(p.Stdout, body.Pipe.Stdout)
-			io.Copy(p.Stderr, body.Pipe.Stderr)
+			io.Copy(p.Stdout, expr.Pipe.Stdout)
+			io.Copy(p.Stderr, expr.Pipe.Stderr)
+
+			// can we proceed?
+			err := expr.Error()
+			if err == nil {
+				// debugging support
+				Tracef("If() passed ... executing the body sequence")
+
+				// yes we can!
+				body.Exec(params...)
+
+				// copy the output over to our pipe
+				io.Copy(p.Stdout, body.Pipe.Stdout)
+				io.Copy(p.Stderr, body.Pipe.Stderr)
+
+				// all done
+				return body.StatusError()
+			}
+
+			// debugging support
+			Tracef("If() failed ... executing the elseBlock sequence")
+
+			// if we get here, we need to execute the other thing
+			elseBlock.Exec()
+
+			// copy the output over to our pipe
+			io.Copy(p.Stdout, elseBlock.Pipe.Stdout)
+			io.Copy(p.Stderr, elseBlock.Pipe.Stderr)
 
 			// all done
-			return body.StatusError()
-		}
-
-		// debugging support
-		Tracef("If() failed ... executing the elseBlock sequence")
-
-		// if we get here, we need to execute the other thing
-		elseBlock.Exec()
-
-		// copy the output over to our pipe
-		io.Copy(p.Stdout, elseBlock.Pipe.Stdout)
-		io.Copy(p.Stderr, elseBlock.Pipe.Stderr)
-
-		// all done
-		return elseBlock.StatusError()
-	}
+			return elseBlock.StatusError()
+		},
+		opts...,
+	)
 }

@@ -48,32 +48,35 @@ import (
 //
 // It removes any parent elements from the filepath, and writes the result
 // into the pipeline's `Stdout`.
-func Basename(input string) Command {
+func Basename(input string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expInput := p.Env.Expand(input)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expInput := p.Env.Expand(input)
 
-		// debugging support
-		Tracef("Basename(%#v)", input)
-		Tracef("=> Basename(%#v)", expInput)
+			// debugging support
+			Tracef("Basename(%#v)", input)
+			Tracef("=> Basename(%#v)", expInput)
 
-		var basename string
+			var basename string
 
-		if len(strings.TrimSpace(expInput)) > 0 {
-			// let's get our basename
-			basename = filepath.Base(expInput)
-		} else {
-			// special case - preserve blank lines
-			basename = ""
-		}
+			if len(strings.TrimSpace(expInput)) > 0 {
+				// let's get our basename
+				basename = filepath.Base(expInput)
+			} else {
+				// special case - preserve blank lines
+				basename = ""
+			}
 
-		// send what we've got
-		TracePipeStdout(basename)
-		p.Stdout.WriteString(basename)
-		p.Stdout.WriteRune('\n')
+			// send what we've got
+			TracePipeStdout(basename)
+			p.Stdout.WriteString(basename)
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

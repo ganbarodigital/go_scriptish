@@ -51,41 +51,44 @@ import (
 //
 // On success, it returns the status code `StatusOkay`. On failure,
 // it returns the status code `StatusNotOkay`.
-func Touch(filepath string) Command {
+func Touch(filepath string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilepath := p.Env.Expand(filepath)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilepath := p.Env.Expand(filepath)
 
-		// debugging support
-		Tracef("Touch(%#v)", filepath)
-		Tracef("=> Touch(%#v)", expFilepath)
+			// debugging support
+			Tracef("Touch(%#v)", filepath)
+			Tracef("=> Touch(%#v)", expFilepath)
 
-		var fh *os.File
+			var fh *os.File
 
-		// does the file exist?
-		_, err := os.Stat(expFilepath)
-		if err != nil {
-			if os.IsNotExist(err) {
-				fh, err = os.OpenFile(expFilepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-				if err != nil {
-					return StatusNotOkay, err
+			// does the file exist?
+			_, err := os.Stat(expFilepath)
+			if err != nil {
+				if os.IsNotExist(err) {
+					fh, err = os.OpenFile(expFilepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+					if err != nil {
+						return StatusNotOkay, err
+					}
+					defer fh.Close()
 				}
-				defer fh.Close()
+			} else {
+				// if we get here, then the file does exist
+				//
+				// we need to modify its inode data
+				now := time.Now()
+				err = os.Chtimes(expFilepath, now, now)
 			}
-		} else {
-			// if we get here, then the file does exist
-			//
-			// we need to modify its inode data
-			now := time.Now()
-			err = os.Chtimes(expFilepath, now, now)
-		}
 
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -50,7 +50,7 @@ func TestRedirectStderrToDevNullEmptiesThePipesStderr(t *testing.T) {
 	// setup your test
 
 	pipeline := NewPipeline(
-		EchoToStderr("this is a test", RedirectStderrToDevNull),
+		EchoToStderr("this is a test", RedirectStderrToDevNull()),
 	)
 
 	// ----------------------------------------------------------------
@@ -78,7 +78,7 @@ func TestRedirectStderrToDevNullPreservesStdoutInAPipeline(t *testing.T) {
 
 	expectedResult := "this is a test\n"
 	pipeline := NewPipeline(
-		Echo(expectedResult, RedirectStderrToDevNull),
+		Echo(expectedResult, RedirectStderrToDevNull()),
 	)
 
 	// ----------------------------------------------------------------
@@ -111,7 +111,7 @@ func TestRedirectStderrToDevNullWritesToTheTraceOutput(t *testing.T) {
 	defer GetShellOptions().DisableTrace()
 
 	pipeline := NewPipeline(
-		EchoToStderr("this is a test", RedirectStderrToDevNull),
+		EchoToStderr("this is a test", RedirectStderrToDevNull()),
 	)
 
 	// ----------------------------------------------------------------

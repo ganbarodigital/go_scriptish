@@ -51,23 +51,26 @@ import (
 //
 // It ignores the contents of the pipeline.
 // It follows symbolic links.
-func TestFilepathExists(filepath string) Command {
+func TestFilepathExists(filepath string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilepath := p.Env.Expand(filepath)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilepath := p.Env.Expand(filepath)
 
-		// debugging support
-		Tracef("TestFilepathExists(%#v)", filepath)
-		Tracef("=> TestFilepathExists(%#v)", expFilepath)
+			// debugging support
+			Tracef("TestFilepathExists(%#v)", filepath)
+			Tracef("=> TestFilepathExists(%#v)", expFilepath)
 
-		// does the file exist?
-		_, err := os.Stat(expFilepath)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			// does the file exist?
+			_, err := os.Stat(expFilepath)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

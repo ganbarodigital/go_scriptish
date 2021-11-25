@@ -46,31 +46,34 @@ import (
 )
 
 // CatFile writes the contents of a file to the pipeline's stdout
-func CatFile(filename string) Command {
+func CatFile(filename string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilename := p.Env.Expand(filename)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilename := p.Env.Expand(filename)
 
-		// debugging support
-		Tracef("CatFile(%#v)", filename)
-		Tracef("=> CatFile(%#v)", expFilename)
+			// debugging support
+			Tracef("CatFile(%#v)", filename)
+			Tracef("=> CatFile(%#v)", expFilename)
 
-		// can we open the file?
-		f, err := os.Open(expFilename)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			// can we open the file?
+			f, err := os.Open(expFilename)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// copy the file into our pipeline
-		p.Stdin = ioextra.NewTextFile(f)
-		for line := range p.Stdin.ReadLines() {
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
+			// copy the file into our pipeline
+			p.Stdin = ioextra.NewTextFile(f)
+			for line := range p.Stdin.ReadLines() {
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

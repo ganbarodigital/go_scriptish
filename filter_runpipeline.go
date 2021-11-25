@@ -46,37 +46,40 @@ import (
 // RunPipeline allows you to call one pipeline from another.
 //
 // Use this to create reusable pipelines.
-func RunPipeline(pl *Pipeline) Command {
+func RunPipeline(pl *Pipeline, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// make sure our sub pipeline starts nice and empty
-		pl.NewPipe()
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// make sure our sub pipeline starts nice and empty
+			pl.NewPipe()
 
-		// copy the pipeline's content into our sub pipeline
-		for line := range p.Stdin.ReadLines() {
-			pl.Pipe.Stdout.WriteString(line)
-			pl.Pipe.Stdout.WriteRune('\n')
-		}
+			// copy the pipeline's content into our sub pipeline
+			for line := range p.Stdin.ReadLines() {
+				pl.Pipe.Stdout.WriteString(line)
+				pl.Pipe.Stdout.WriteRune('\n')
+			}
 
-		// get our parameters
-		params := getParamsFromEnv(p.Env)
+			// get our parameters
+			params := getParamsFromEnv(p.Env)
 
-		// set them in the target pipeline
-		//
-		// we're not calling pl.Exec() (see below) so we have to set them
-		// this way instead
-		pl.SetParams(params...)
+			// set them in the target pipeline
+			//
+			// we're not calling pl.Exec() (see below) so we have to set them
+			// this way instead
+			pl.SetParams(params...)
 
-		// run our sub-pipeline
-		//
-		// NOTE that we cannot call pl.Exec(), as that (by design) starts
-		// the pipeline with a brand-new pipe
-		pl.Controller()
+			// run our sub-pipeline
+			//
+			// NOTE that we cannot call pl.Exec(), as that (by design) starts
+			// the pipeline with a brand-new pipe
+			pl.Controller()
 
-		// copy our pipeline's stdout to become the pipe's next stdin
-		io.Copy(p.Stdout, pl.Pipe.Stdout)
+			// copy our pipeline's stdout to become the pipe's next stdin
+			io.Copy(p.Stdout, pl.Pipe.Stdout)
 
-		// all done
-		return pl.StatusError()
-	}
+			// all done
+			return pl.StatusError()
+		},
+		opts...,
+	)
 }

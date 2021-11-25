@@ -46,40 +46,43 @@ import (
 // AppendToFile writes the contents of the pipeline's stdin to the given file
 //
 // If the file does not exist, it is created.
-func AppendToFile(filename string) Command {
+func AppendToFile(filename string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilename := p.Env.Expand(filename)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilename := p.Env.Expand(filename)
 
-		// debugging support
-		Tracef("AppendToFile(%#v)", filename)
-		Tracef("=> AppendToFile(%#v)", expFilename)
+			// debugging support
+			Tracef("AppendToFile(%#v)", filename)
+			Tracef("=> AppendToFile(%#v)", expFilename)
 
-		// open / create the file
-		fh, err := os.OpenFile(expFilename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			return StatusNotOkay, err
-		}
-
-		// remember to automatically close the file when we've finished
-		// in here
-		defer fh.Close()
-
-		// write to the file
-		for line := range getSinkReader(p) {
-			TraceOutput("file", "%s", line)
-			_, err = fh.WriteString(line)
+			// open / create the file
+			fh, err := os.OpenFile(expFilename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
 				return StatusNotOkay, err
 			}
-			_, err = fh.WriteString("\n")
-			if err != nil {
-				return StatusNotOkay, err
-			}
-		}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// remember to automatically close the file when we've finished
+			// in here
+			defer fh.Close()
+
+			// write to the file
+			for line := range getSinkReader(p) {
+				TraceOutput("file", "%s", line)
+				_, err = fh.WriteString(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+				_, err = fh.WriteString("\n")
+				if err != nil {
+					return StatusNotOkay, err
+				}
+			}
+
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

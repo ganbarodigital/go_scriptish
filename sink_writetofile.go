@@ -47,37 +47,40 @@ import (
 // The existing contents of the file are replaced.
 //
 // If the file does not exist, it is created.
-func WriteToFile(filename string) Command {
+func WriteToFile(filename string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilename := p.Env.Expand(filename)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilename := p.Env.Expand(filename)
 
-		// debugging support
-		Tracef("WriteToFile(%#v)", filename)
-		Tracef("=> WriteToFile(%#v)", expFilename)
+			// debugging support
+			Tracef("WriteToFile(%#v)", filename)
+			Tracef("=> WriteToFile(%#v)", expFilename)
 
-		// open / create the file
-		fh, err := os.OpenFile(expFilename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			return StatusNotOkay, err
-		}
-		defer fh.Close()
-
-		// write to the file
-		for line := range getSinkReader(p) {
-			TraceOutput("file", "%s", line)
-			_, err = fh.WriteString(line)
+			// open / create the file
+			fh, err := os.OpenFile(expFilename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
 				return StatusNotOkay, err
 			}
-			_, err = fh.WriteString("\n")
-			if err != nil {
-				return StatusNotOkay, err
-			}
-		}
+			defer fh.Close()
 
-		// all done
-		return StatusOkay, err
-	}
+			// write to the file
+			for line := range getSinkReader(p) {
+				TraceOutput("file", "%s", line)
+				_, err = fh.WriteString(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+				_, err = fh.WriteString("\n")
+				if err != nil {
+					return StatusNotOkay, err
+				}
+			}
+
+			// all done
+			return StatusOkay, err
+		},
+		opts...,
+	)
 }

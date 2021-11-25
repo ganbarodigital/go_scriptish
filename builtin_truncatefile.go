@@ -46,26 +46,29 @@ import (
 // TruncateFile removes the contents of the given file.
 //
 // If the file does not exist, it is created.
-func TruncateFile(filename string) Command {
+func TruncateFile(filename string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilename := p.Env.Expand(filename)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilename := p.Env.Expand(filename)
 
-		// debugging support
-		Tracef("TruncateFile(%#v)", filename)
-		Tracef("=> TruncateFile(%#v)", expFilename)
+			// debugging support
+			Tracef("TruncateFile(%#v)", filename)
+			Tracef("=> TruncateFile(%#v)", expFilename)
 
-		// open / create the file
-		fh, err := os.OpenFile(expFilename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			// open / create the file
+			fh, err := os.OpenFile(expFilename, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// we're done here
-		fh.Close()
+			// we're done here
+			fh.Close()
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

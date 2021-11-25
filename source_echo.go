@@ -44,25 +44,28 @@ import (
 )
 
 // Echo writes a string to the pipeline's stdout
-func Echo(input string) Command {
+func Echo(input string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expInput := p.Env.Expand(input)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expInput := p.Env.Expand(input)
 
-		// debugging support
-		Tracef("Echo(%#v)", input)
-		Tracef("=> Echo(%#v)", expInput)
+			// debugging support
+			Tracef("Echo(%#v)", input)
+			Tracef("=> Echo(%#v)", expInput)
 
-		TracePipeStdout("%s", expInput)
-		p.Stdout.WriteString(expInput)
+			TracePipeStdout("%s", expInput)
+			p.Stdout.WriteString(expInput)
 
-		// make sure we don't accidentally create a blank line
-		if !strings.HasSuffix(expInput, "\n") {
-			p.Stdout.WriteRune('\n')
-		}
+			// make sure we don't accidentally create a blank line
+			if !strings.HasSuffix(expInput, "\n") {
+				p.Stdout.WriteRune('\n')
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

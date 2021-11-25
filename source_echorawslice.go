@@ -47,24 +47,27 @@ import (
 // one line per array entry
 //
 // it does not perform string expansion
-func EchoRawSlice(input []string) Command {
+func EchoRawSlice(input []string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("EchoRawSlice(%#v)", input)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("EchoRawSlice(%#v)", input)
 
-		// send the slice to the pipe
-		for _, line := range input {
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
+			// send the slice to the pipe
+			for _, line := range input {
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
 
-			// does the string already end with an EOL?
-			if !strings.HasSuffix(line, "\n") {
-				p.Stdout.WriteRune('\n')
+				// does the string already end with an EOL?
+				if !strings.HasSuffix(line, "\n") {
+					p.Stdout.WriteRune('\n')
+				}
 			}
-		}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

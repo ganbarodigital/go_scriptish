@@ -40,7 +40,7 @@
 package scriptish
 
 // NewList creates a list ready to be executed
-func NewList(steps ...Command) *List {
+func NewList(steps ...*SequenceStep) *List {
 	retval := NewSequence(steps...)
 
 	// tell the underlying sequence how we want these commands to run
@@ -52,7 +52,7 @@ func NewList(steps ...Command) *List {
 
 // NewListFunc creates a list, and wraps it in a function to make
 // it easier to call.
-func NewListFunc(steps ...Command) func(params ...string) *List {
+func NewListFunc(steps ...*SequenceStep) func(params ...string) *List {
 	newList := NewList(steps...)
 	return func(params ...string) *List {
 		return newList.Exec(params...)
@@ -61,7 +61,7 @@ func NewListFunc(steps ...Command) func(params ...string) *List {
 
 // ExecList creates and runs a list. Use this for short, throwaway
 // actions.
-func ExecList(steps ...Command) *List {
+func ExecList(steps ...*SequenceStep) *List {
 	list := NewList(steps...).Exec()
 	return list
 }

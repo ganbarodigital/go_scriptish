@@ -42,37 +42,43 @@ package scriptish
 // Head copies the first N lines from the pipeline's Stdin to its Stdout
 //
 // If `n` is less than 1 (ie 0, or negative), no lines are copied
-func Head(n int) Command {
+func Head(n int, opts ...*StepOption) *SequenceStep {
 	// special case - negative n
 	if n < 1 {
-		return func(p *Pipe) (int, error) {
-			// debugging support
-			Tracef("Head(%d)", n)
+		return NewSequenceStep(
+			func(p *Pipe) (int, error) {
+				// debugging support
+				Tracef("Head(%d)", n)
 
-			// do nothing
-			return StatusOkay, nil
-		}
+				// do nothing
+				return StatusOkay, nil
+			},
+			opts...,
+		)
 	}
 
 	// general case
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("Head(%d)", n)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Head(%d)", n)
 
-		count := 0
-		for line := range p.Stdin.ReadLines() {
-			TracePipeStdout("%s", line)
+			count := 0
+			for line := range p.Stdin.ReadLines() {
+				TracePipeStdout("%s", line)
 
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-			count++
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
+				count++
 
-			// are we done?
-			if count >= n {
-				break
+				// are we done?
+				if count >= n {
+					break
+				}
 			}
-		}
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

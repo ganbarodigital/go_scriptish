@@ -45,24 +45,27 @@ import (
 
 // DropEmptyLines removes any lines that are blank, or that only contain
 // whitespace
-func DropEmptyLines() Command {
+func DropEmptyLines(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("DropEmptyLines()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("DropEmptyLines()")
 
-		for line := range p.Stdin.ReadLines() {
-			// what does the line look like if we remove all
-			// leading and trailing whitespace?
-			trimmedLine := strings.TrimSpace(line)
+			for line := range p.Stdin.ReadLines() {
+				// what does the line look like if we remove all
+				// leading and trailing whitespace?
+				trimmedLine := strings.TrimSpace(line)
 
-			if len(trimmedLine) > 0 {
-				TracePipeStdout("%s", line)
-				p.Stdout.WriteString(line)
-				p.Stdout.WriteRune('\n')
+				if len(trimmedLine) > 0 {
+					TracePipeStdout("%s", line)
+					p.Stdout.WriteString(line)
+					p.Stdout.WriteRune('\n')
+				}
 			}
-		}
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

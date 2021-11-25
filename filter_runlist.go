@@ -46,22 +46,25 @@ import (
 // RunList allows you to call one list from another.
 //
 // Use this to execute reusable lists.
-func RunList(pl *List) Command {
+func RunList(pl *List, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// get our parameters
-		params := getParamsFromEnv(p.Env)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// get our parameters
+			params := getParamsFromEnv(p.Env)
 
-		// run our sub-list w/ our parameters
-		pl.Exec(params...)
+			// run our sub-list w/ our parameters
+			pl.Exec(params...)
 
-		// append the sub-list's stdout to our own
-		io.Copy(p.Stdout, pl.Pipe.Stdout)
+			// append the sub-list's stdout to our own
+			io.Copy(p.Stdout, pl.Pipe.Stdout)
 
-		// append the sub-list's stderr to our own
-		io.Copy(p.Stderr, pl.Pipe.Stderr)
+			// append the sub-list's stderr to our own
+			io.Copy(p.Stderr, pl.Pipe.Stderr)
 
-		// all done
-		return pl.StatusError()
-	}
+			// all done
+			return pl.StatusError()
+		},
+		opts...,
+	)
 }

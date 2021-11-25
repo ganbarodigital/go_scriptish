@@ -48,31 +48,34 @@ import (
 // It removes the last element from each filepath.
 //
 // If a line is blank, XargsDirname returns a '.'
-func XargsDirname() Command {
+func XargsDirname(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("XargsDirname()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("XargsDirname()")
 
-		for line := range p.Stdin.ReadLines() {
-			// special case:
-			//
-			// filepath.Dir() does not handle trailing slashes correctly
-			// we have to strip the trailing slash ourselves
-			if len(line) > 1 {
-				line = strings.TrimSuffix(line, "/")
+			for line := range p.Stdin.ReadLines() {
+				// special case:
+				//
+				// filepath.Dir() does not handle trailing slashes correctly
+				// we have to strip the trailing slash ourselves
+				if len(line) > 1 {
+					line = strings.TrimSuffix(line, "/")
+				}
+
+				// ask the stdlib to strip the final element from the filepath
+				dirname := filepath.Dir(line)
+
+				// pass it on
+				TracePipeStdout("%s", dirname)
+				p.Stdout.WriteString(dirname)
+				p.Stdout.WriteRune('\n')
 			}
 
-			// ask the stdlib to strip the final element from the filepath
-			dirname := filepath.Dir(line)
-
-			// pass it on
-			TracePipeStdout("%s", dirname)
-			p.Stdout.WriteString(dirname)
-			p.Stdout.WriteRune('\n')
-		}
-
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

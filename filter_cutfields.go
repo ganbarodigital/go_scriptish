@@ -44,43 +44,46 @@ import (
 )
 
 // CutFields emulates `cut -f`
-func CutFields(spec string) Command {
+func CutFields(spec string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("CutFields(%#v)", spec)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("CutFields(%#v)", spec)
 
-		// which columns do we want?
-		columnsSpec, err := ParseRangeSpec(spec)
-		if err != nil {
-			return StatusNotOkay, err
-		}
-
-		// go and get those columns
-		for line := range p.Stdin.ReadLines() {
-			// this will hold our final line
-			var buf []string
-
-			for index, column := range strings.Fields(line) {
-				// adjust for zero-index programming language,
-				// one-index range spec
-				index++
-
-				for _, singleRange := range columnsSpec {
-					if index >= singleRange.Lo && index <= singleRange.Hi {
-						buf = append(buf, column)
-					}
-				}
+			// which columns do we want?
+			columnsSpec, err := ParseRangeSpec(spec)
+			if err != nil {
+				return StatusNotOkay, err
 			}
 
-			finalLine := strings.Join(buf, " ")
+			// go and get those columns
+			for line := range p.Stdin.ReadLines() {
+				// this will hold our final line
+				var buf []string
 
-			TracePipeStdout("%s", finalLine)
-			p.Stdout.WriteString(finalLine)
-			p.Stdout.WriteString("\n")
-		}
+				for index, column := range strings.Fields(line) {
+					// adjust for zero-index programming language,
+					// one-index range spec
+					index++
 
-		// all done
-		return StatusOkay, nil
-	}
+					for _, singleRange := range columnsSpec {
+						if index >= singleRange.Lo && index <= singleRange.Hi {
+							buf = append(buf, column)
+						}
+					}
+				}
+
+				finalLine := strings.Join(buf, " ")
+
+				TracePipeStdout("%s", finalLine)
+				p.Stdout.WriteString(finalLine)
+				p.Stdout.WriteString("\n")
+			}
+
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

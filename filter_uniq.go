@@ -40,27 +40,30 @@
 package scriptish
 
 // Uniq removes duplicated lines from the pipeline
-func Uniq() Command {
+func Uniq(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("Uniq()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Uniq()")
 
-		// keep track of which lines we have already seen
-		var seen = make(map[string]bool)
+			// keep track of which lines we have already seen
+			var seen = make(map[string]bool)
 
-		// do the filtering
-		for line := range p.Stdin.ReadLines() {
-			// have we seen this line before?
-			if !seen[line] {
-				seen[line] = true
-				TracePipeStdout("%s", line)
-				p.Stdout.WriteString(line)
-				p.Stdout.WriteRune('\n')
+			// do the filtering
+			for line := range p.Stdin.ReadLines() {
+				// have we seen this line before?
+				if !seen[line] {
+					seen[line] = true
+					TracePipeStdout("%s", line)
+					p.Stdout.WriteString(line)
+					p.Stdout.WriteRune('\n')
+				}
 			}
-		}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

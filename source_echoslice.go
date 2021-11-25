@@ -48,27 +48,30 @@ import (
 //
 // it DOES perform string expansion. If you want to avoid that, use the
 // EchoSliceRaw() filter instead
-func EchoSlice(input []string) Command {
+func EchoSlice(input []string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("EchoSlice(%#v)", input)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("EchoSlice(%#v)", input)
 
-		// send the slice to the pipe
-		for _, line := range input {
-			// expand our input
-			expLine := p.Env.Expand(line)
+			// send the slice to the pipe
+			for _, line := range input {
+				// expand our input
+				expLine := p.Env.Expand(line)
 
-			TracePipeStdout("%s", expLine)
-			p.Stdout.WriteString(expLine)
+				TracePipeStdout("%s", expLine)
+				p.Stdout.WriteString(expLine)
 
-			// does the string already end with an EOL?
-			if !strings.HasSuffix(expLine, "\n") {
-				p.Stdout.WriteRune('\n')
+				// does the string already end with an EOL?
+				if !strings.HasSuffix(expLine, "\n") {
+					p.Stdout.WriteRune('\n')
+				}
 			}
-		}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

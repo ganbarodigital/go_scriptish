@@ -49,28 +49,31 @@ import (
 // Permissions are in the form '-rwxrwxrwx'.
 //
 // It ignores the contents of the pipeline.
-func Lsmod(filepath string) Command {
+func Lsmod(filepath string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilepath := p.Env.Expand(filepath)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilepath := p.Env.Expand(filepath)
 
-		// debugging support
-		Tracef("Lsmod(%#v)", filepath)
-		Tracef("=> Lsmod(%#v)", expFilepath)
+			// debugging support
+			Tracef("Lsmod(%#v)", filepath)
+			Tracef("=> Lsmod(%#v)", expFilepath)
 
-		fileInfo, err := os.Stat(expFilepath)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			fileInfo, err := os.Stat(expFilepath)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// write it to the pipe
-		mode := fileInfo.Mode().String()
-		TracePipeStdout("%s", mode)
-		p.Stdout.WriteString(mode)
-		p.Stdout.WriteRune('\n')
+			// write it to the pipe
+			mode := fileInfo.Mode().String()
+			TracePipeStdout("%s", mode)
+			p.Stdout.WriteString(mode)
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

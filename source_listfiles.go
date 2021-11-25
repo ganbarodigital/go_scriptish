@@ -54,31 +54,34 @@ import (
 //
 // If `path` contains wildcards, ListFiles writes any files that matches
 // to the pipeline's stdout.
-func ListFiles(path string) Command {
+func ListFiles(path string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("ListFiles(%#v)", path)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("ListFiles(%#v)", path)
 
-		// special case: user wants a list of files that match a wildcard
-		if strings.ContainsAny(path, "[]^*?\\{}!") {
-			return globFiles(p, path)
-		}
+			// special case: user wants a list of files that match a wildcard
+			if strings.ContainsAny(path, "[]^*?\\{}!") {
+				return globFiles(p, path)
+			}
 
-		// general case: user has given us a path with no wildcards
-		info, err := os.Stat(path)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			// general case: user has given us a path with no wildcards
+			info, err := os.Stat(path)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// what are we looking at?
-		if info.IsDir() {
-			return listFolder(p, path)
-		}
+			// what are we looking at?
+			if info.IsDir() {
+				return listFolder(p, path)
+			}
 
-		// if we get here, then `path` maps onto a single file
-		return listFile(p, path)
-	}
+			// if we get here, then `path` maps onto a single file
+			return listFile(p, path)
+		},
+		opts...,
+	)
 }
 
 func globFiles(p *Pipe, path string) (int, error) {

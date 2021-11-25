@@ -49,30 +49,33 @@ import (
 //
 // Each filepath is written to the pipeline's stdout, for use by the next
 // operation in the pipeline.
-func XargsTruncateFiles() Command {
+func XargsTruncateFiles(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("XargsTruncateFiles()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("XargsTruncateFiles()")
 
-		for line := range p.Stdin.ReadLines() {
-			// open / create the file
-			fh, err := os.OpenFile(line, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
-			if err != nil {
-				return StatusNotOkay, err
+			for line := range p.Stdin.ReadLines() {
+				// open / create the file
+				fh, err := os.OpenFile(line, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+
+				// we're done here
+				fh.Close()
+
+				// write the filename back to the pipeline, in case anyone else
+				// can make use of it
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
 			}
 
-			// we're done here
-			fh.Close()
-
-			// write the filename back to the pipeline, in case anyone else
-			// can make use of it
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
-
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

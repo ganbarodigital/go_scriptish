@@ -51,7 +51,7 @@ func ListController(sq *Sequence) SequenceController {
 		// execute everything in our pipeline
 		for _, step := range sq.Steps {
 			// run the next step
-			sq.Pipe.RunCommand(step)
+			step.RunStep(sq.Pipe)
 
 			// debugging support
 			statusCode := sq.StatusCode()

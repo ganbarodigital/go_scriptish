@@ -2,6 +2,12 @@
 
 ## develop
 
+### B/C Breaks
+
+* Pipelines and Lists now take a SequenceStep, not a Command
+  - allows us to implement Redirects
+* `scriptish.Exec()` now requires a `[]string`.
+
 ### Dependencies
 
 * Moved to go_pipe v6
@@ -12,6 +18,7 @@
 * Added new category Redirects
   - added `RedirectStderrToDevNull()`
   - added `RedirectStdoutToDevNull()`
+* All builtins, sources, filters and sinks now support Redirects
 
 ### Fixes
 

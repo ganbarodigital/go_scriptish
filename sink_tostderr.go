@@ -46,19 +46,22 @@ import (
 
 // ToStderr writes the contents of the pipeline's stdin to
 // the program's stderr
-func ToStderr() Command {
+func ToStderr(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("ToStderr()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("ToStderr()")
 
-		// send everything to stderr
-		for line := range getSinkReader(p) {
-			TraceOsStderr("%s", line)
-			fmt.Fprintf(os.Stderr, "%s\n", line)
-		}
+			// send everything to stderr
+			for line := range getSinkReader(p) {
+				TraceOsStderr("%s", line)
+				fmt.Fprintf(os.Stderr, "%s\n", line)
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

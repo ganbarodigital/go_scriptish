@@ -40,16 +40,19 @@
 package scriptish
 
 // Return terminates the pipeline with the given status code.
-func Return(statusCode int) Command {
+func Return(statusCode int, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("Return(%d)", statusCode)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Return(%d)", statusCode)
 
-		// make sure we don't lose anything in stdin
-		p.DrainStdinToStdout()
+			// make sure we don't lose anything in stdin
+			p.DrainStdinToStdout()
 
-		// all done
-		return statusCode, nil
-	}
+			// all done
+			return statusCode, nil
+		},
+		opts...,
+	)
 }

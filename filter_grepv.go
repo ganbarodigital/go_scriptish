@@ -44,32 +44,35 @@ import (
 )
 
 // GrepV filters out lines which do match the given regex
-func GrepV(regex string) Command {
+func GrepV(regex string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expRegex := p.Env.Expand(regex)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expRegex := p.Env.Expand(regex)
 
-		// debugging support
-		Tracef("GrepV(%#v)", regex)
-		Tracef("=> GrepV(%#v)", expRegex)
+			// debugging support
+			Tracef("GrepV(%#v)", regex)
+			Tracef("=> GrepV(%#v)", expRegex)
 
-		// do we have a valid regex?
-		re, err := regexp.Compile(expRegex)
-		if err != nil {
-			return StatusNotOkay, err
-		}
-
-		// let's apply it
-		for line := range p.Stdin.ReadLines() {
-			if !re.MatchString(line) {
-				TracePipeStdout("%s", line)
-				p.Stdout.WriteString(line)
-				p.Stdout.WriteRune('\n')
+			// do we have a valid regex?
+			re, err := regexp.Compile(expRegex)
+			if err != nil {
+				return StatusNotOkay, err
 			}
-		}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// let's apply it
+			for line := range p.Stdin.ReadLines() {
+				if !re.MatchString(line) {
+					TracePipeStdout("%s", line)
+					p.Stdout.WriteString(line)
+					p.Stdout.WriteRune('\n')
+				}
+			}
+
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -45,16 +45,20 @@ import "os"
 //
 // It does *NOT* flush the pipe's Stdout or Stderr to your Golang's
 // os.Stdout / os.Stderr first.
-func Exit(statusCode int) Command {
+//
+// NOTE: it does *NOT* support StepOptions
+func Exit(statusCode int) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("Exit(%d)", statusCode)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Exit(%d)", statusCode)
 
-		// all done
-		os.Exit(statusCode)
+			// all done
+			os.Exit(statusCode)
 
-		// this is unreachable, but added to keep the compiler happy
-		return statusCode, nil
-	}
+			// this is unreachable, but added to keep the compiler happy
+			return statusCode, nil
+		},
+	)
 }

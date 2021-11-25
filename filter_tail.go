@@ -44,49 +44,55 @@ import (
 )
 
 // Tail copies the last N lines from the pipeline's Stdin to its Stdout
-func Tail(n int) Command {
+func Tail(n int, opts ...*StepOption) *SequenceStep {
 	// special case - deal with horrible values of n
 	if n < 1 {
-		return func(p *Pipe) (int, error) {
-			// debugging support
-			Tracef("Tail(%d)", n)
+		return NewSequenceStep(
+			func(p *Pipe) (int, error) {
+				// debugging support
+				Tracef("Tail(%d)", n)
 
-			// do nothing
-			return StatusOkay, nil
-		}
+				// do nothing
+				return StatusOkay, nil
+			},
+			opts...,
+		)
 	}
 
 	// general case
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("Tail(%d)", n)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Tail(%d)", n)
 
-		// we'll use the ring buffer for this
-		buf := ring.New(n)
+			// we'll use the ring buffer for this
+			buf := ring.New(n)
 
-		// we write everything to the ring buffer, and let it throw away
-		// everything but the requested number of lines :)
-		for line := range p.Stdin.ReadLines() {
-			buf.Value = line
-			buf = buf.Next()
-		}
-
-		// at this point, the ring buffer contains (up to) the right number
-		// of lines
-		buf.Do(func(line interface{}) {
-			// did we fill the buffer up?
-			if line == nil {
-				// no, we did not
-				return
+			// we write everything to the ring buffer, and let it throw away
+			// everything but the requested number of lines :)
+			for line := range p.Stdin.ReadLines() {
+				buf.Value = line
+				buf = buf.Next()
 			}
 
-			// if we get here, we have a line to preserve
-			TracePipeStdout("%s", line.(string))
-			p.Stdout.WriteString(line.(string))
-			p.Stdout.WriteRune('\n')
-		})
+			// at this point, the ring buffer contains (up to) the right number
+			// of lines
+			buf.Do(func(line interface{}) {
+				// did we fill the buffer up?
+				if line == nil {
+					// no, we did not
+					return
+				}
 
-		// all done
-		return StatusOkay, nil
-	}
+				// if we get here, we have a line to preserve
+				TracePipeStdout("%s", line.(string))
+				p.Stdout.WriteString(line.(string))
+				p.Stdout.WriteRune('\n')
+			})
+
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

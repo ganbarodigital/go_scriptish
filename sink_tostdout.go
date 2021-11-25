@@ -44,19 +44,22 @@ import (
 )
 
 // ToStdout writes the contents of the pipeline's stdin to the program's stdout
-func ToStdout() Command {
+func ToStdout(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("ToStdout()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("ToStdout()")
 
-		// send everything to stdout
-		for line := range getSinkReader(p) {
-			TraceOsStdout("%s", line)
-			fmt.Printf("%s\n", line)
-		}
+			// send everything to stdout
+			for line := range getSinkReader(p) {
+				TraceOsStdout("%s", line)
+				fmt.Printf("%s\n", line)
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

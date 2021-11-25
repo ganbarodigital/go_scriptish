@@ -44,26 +44,29 @@ import (
 )
 
 // EchoToStderr writes a string to the pipeline's stderr
-func EchoToStderr(input string) Command {
+func EchoToStderr(input string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expInput := p.Env.Expand(input)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expInput := p.Env.Expand(input)
 
-		// debugging support
-		Tracef("EchoToStderr(%#v)", input)
-		Tracef("=> EchoToStderr(%#v)", expInput)
+			// debugging support
+			Tracef("EchoToStderr(%#v)", input)
+			Tracef("=> EchoToStderr(%#v)", expInput)
 
-		// write it
-		TracePipeStderr("%s", expInput)
-		p.Stderr.WriteString(expInput)
+			// write it
+			TracePipeStderr("%s", expInput)
+			p.Stderr.WriteString(expInput)
 
-		// make sure we don't accidentally create a blank line
-		if !strings.HasSuffix(input, "\n") {
-			p.Stderr.WriteRune('\n')
-		}
+			// make sure we don't accidentally create a blank line
+			if !strings.HasSuffix(input, "\n") {
+				p.Stderr.WriteRune('\n')
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -45,21 +45,24 @@ import (
 
 // CountLines counts the number of lines in the pipeline's stdin, and writes
 // the overall count to the pipeline's stdout
-func CountLines() Command {
+func CountLines(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("CountLines()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("CountLines()")
 
-		count := 0
-		for range p.Stdin.ReadLines() {
-			count++
-		}
+			count := 0
+			for range p.Stdin.ReadLines() {
+				count++
+			}
 
-		TracePipeStdout("%d", count)
-		p.Stdout.WriteString(strconv.Itoa(count))
-		p.Stdout.WriteRune('\n')
+			TracePipeStdout("%d", count)
+			p.Stdout.WriteString(strconv.Itoa(count))
+			p.Stdout.WriteRune('\n')
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

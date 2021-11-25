@@ -56,7 +56,7 @@ func TestExecReadsFromPipelineStdin(t *testing.T) {
 	expectedResult := "hello world\n"
 	pipeline := NewPipeline(
 		Echo("hello world"),
-		Exec("/usr/bin/env", "cat"),
+		Exec([]string{"/usr/bin/env", "cat"}),
 	)
 
 	// ----------------------------------------------------------------
@@ -81,7 +81,7 @@ func TestExecWritesToStdout(t *testing.T) {
 
 	expectedResult := "hello world\n"
 	pipeline := NewPipeline(
-		Exec("/usr/bin/env", "bash", "-c", "echo \"hello world\""),
+		Exec([]string{"/usr/bin/env", "bash", "-c", "echo \"hello world\""}),
 	)
 
 	// ----------------------------------------------------------------
@@ -106,7 +106,7 @@ func TestExecWritesToStderr(t *testing.T) {
 
 	expectedResult := "hello world\n"
 	pipeline := NewPipeline(
-		Exec("/usr/bin/env", "bash", "-c", "echo \"hello world\" 1>&2"),
+		Exec([]string{"/usr/bin/env", "bash", "-c", "echo \"hello world\" 1>&2"}),
 	)
 
 	// ----------------------------------------------------------------
@@ -131,7 +131,7 @@ func TestExecCapturesTheStatusCode(t *testing.T) {
 
 	expectedResult := 5
 	pipeline := NewPipeline(
-		Exec("/usr/bin/env", "bash", "-c", "exit 5"),
+		Exec([]string{"/usr/bin/env", "bash", "-c", "exit 5"}),
 	)
 
 	// ----------------------------------------------------------------
@@ -159,7 +159,7 @@ func TestExecSetsErrorIfCommandCannotBeRun(t *testing.T) {
 
 	expectedResult := 1
 	pipeline := NewPipeline(
-		Exec("/does/not/exist"),
+		Exec([]string{"/does/not/exist"}),
 	)
 
 	// ----------------------------------------------------------------
@@ -199,7 +199,7 @@ func TestExecWritesToTheTraceOutput(t *testing.T) {
 
 	pipeline := NewPipeline(
 		Echo("hello world"),
-		Exec("/usr/bin/env", "$1"),
+		Exec([]string{"/usr/bin/env", "$1"}),
 	)
 
 	// ----------------------------------------------------------------

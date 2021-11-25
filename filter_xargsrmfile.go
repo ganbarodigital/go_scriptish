@@ -50,26 +50,29 @@ import (
 //
 // Each successfully-deleted filepath is written to the pipeline's stdout,
 // for use by the next command in the pipeline.
-func XargsRmFile() Command {
+func XargsRmFile(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("XargsRmFile()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("XargsRmFile()")
 
-		for line := range p.Stdin.ReadLines() {
-			err := os.Remove(line)
-			if err != nil {
-				return StatusNotOkay, err
+			for line := range p.Stdin.ReadLines() {
+				err := os.Remove(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+
+				// pass it on, in case the next item in the pipeline
+				// can use it
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
 			}
 
-			// pass it on, in case the next item in the pipeline
-			// can use it
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
-
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -250,21 +250,25 @@ func TestListExecRunsAllStepsInOrder(t *testing.T) {
 	// setup your test
 
 	expectedResult := "hello world\nhave a nice day\n"
-	op1 := func(p *Pipe) (int, error) {
-		p.Stdout.WriteString("hello world")
-		p.Stdout.WriteRune('\n')
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			p.Stdout.WriteString("hello world")
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return 0, nil
-	}
-	op2 := func(p *Pipe) (int, error) {
-		// add our own content
-		p.Stdout.WriteString("have a nice day")
-		p.Stdout.WriteRune('\n')
+			// all done
+			return 0, nil
+		},
+	)
+	op2 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// add our own content
+			p.Stdout.WriteString("have a nice day")
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	list := NewList(op1, op2)
 	list.Exec()
@@ -289,22 +293,26 @@ func TestListExecContinuesWhenAStepReportsAnError(t *testing.T) {
 
 	expectedStdout := "hello world\nhave a nice day\n"
 	expectedStderr := "alfred the great\n"
-	op1 := func(p *Pipe) (int, error) {
-		p.Stdout.WriteString("hello world")
-		p.Stdout.WriteRune('\n')
-		p.Stderr.WriteString(expectedStderr)
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			p.Stdout.WriteString("hello world")
+			p.Stdout.WriteRune('\n')
+			p.Stderr.WriteString(expectedStderr)
 
-		// all done
-		return 0, errors.New("stop at step 1")
-	}
-	op2 := func(p *Pipe) (int, error) {
-		// add our own content
-		p.Stdout.WriteString("have a nice day")
-		p.Stdout.WriteRune('\n')
+			// all done
+			return 0, errors.New("stop at step 1")
+		},
+	)
+	op2 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// add our own content
+			p.Stdout.WriteString("have a nice day")
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	list := NewList(op1, op2)
 	list.Exec()
@@ -338,13 +346,17 @@ func TestListExecReturnsLastCommandsStatusCodeAndError(t *testing.T) {
 	expectedStatus := 100
 	expectedError := errors.New("this is an error")
 
-	op1 := func(p *Pipe) (int, error) {
-		// fail, but without an error to say why
-		return StatusNotOkay, nil
-	}
-	op2 := func(p *Pipe) (int, error) {
-		return expectedStatus, expectedError
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// fail, but without an error to say why
+			return StatusNotOkay, nil
+		},
+	)
+	op2 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			return expectedStatus, expectedError
+		},
+	)
 
 	list := NewList(op1, op2)
 
@@ -371,13 +383,17 @@ func TestExecListRunsAListOfSteps(t *testing.T) {
 	expectedStatus := 100
 	expectedError := errors.New("this is an error")
 
-	op1 := func(p *Pipe) (int, error) {
-		// fail, but without an error to say why
-		return StatusNotOkay, nil
-	}
-	op2 := func(p *Pipe) (int, error) {
-		return expectedStatus, expectedError
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// fail, but without an error to say why
+			return StatusNotOkay, nil
+		},
+	)
+	op2 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			return expectedStatus, expectedError
+		},
+	)
 
 	list := ExecList(op1, op2)
 
@@ -403,13 +419,17 @@ func TestNewListFuncReturnsAListAsAFunction(t *testing.T) {
 	expectedStatus := 100
 	expectedError := errors.New("this is an error")
 
-	op1 := func(p *Pipe) (int, error) {
-		// fail, but without an error to say why
-		return StatusNotOkay, nil
-	}
-	op2 := func(p *Pipe) (int, error) {
-		return expectedStatus, expectedError
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// fail, but without an error to say why
+			return StatusNotOkay, nil
+		},
+	)
+	op2 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			return expectedStatus, expectedError
+		},
+	)
 
 	listFunc := NewListFunc(op1, op2)
 	list := listFunc()
@@ -452,13 +472,15 @@ func TestExecutingListDoesNotHaveThePipelineContextFlagSet(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	op := func(p *Pipe) (int, error) {
-		if p.Flags&contextIsPipeline != 0 {
-			return StatusNotOkay, errors.New("pipeline context flag is set")
-		}
+	op := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			if p.Flags&contextIsPipeline != 0 {
+				return StatusNotOkay, errors.New("pipeline context flag is set")
+			}
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+	)
 	list := NewList(op)
 
 	// ----------------------------------------------------------------

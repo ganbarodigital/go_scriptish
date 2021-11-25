@@ -44,23 +44,26 @@ import (
 )
 
 // Rsort sorts the contents of the pipeline into descending alphabetical order
-func Rsort() Command {
+func Rsort(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("Rsort()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Rsort()")
 
-		lines := p.Stdin.Strings()
-		var strSlice sort.StringSlice = lines
-		sort.Sort(sort.Reverse(strSlice))
+			lines := p.Stdin.Strings()
+			var strSlice sort.StringSlice = lines
+			sort.Sort(sort.Reverse(strSlice))
 
-		for _, line := range strSlice {
-			TracePipeStdout("%s", line)
+			for _, line := range strSlice {
+				TracePipeStdout("%s", line)
 
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
+			}
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -45,13 +45,18 @@ import "github.com/ganbarodigital/go-ioextra/v2"
 // ioextra.TextDevNull.
 //
 // It is an emulation of UNIX shell scripting's `> /dev/null`.
-func RedirectStdoutToDevNull(p *Pipe) (int, error) {
-	// debugging support
-	Tracef("RedirectStdoutToDevNull()")
+func RedirectStdoutToDevNull() *StepOption {
+	return NewStepOption(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("RedirectStdoutToDevNull()")
 
-	// replace the existing Stdout with a new one
-	p.Stdout = ioextra.NewTextDevNull()
+			// replace the existing Stdout with a new one
+			p.Stdout = ioextra.NewTextDevNull()
 
-	// all done
-	return StatusOkay, nil
+			// all done
+			return StatusOkay, nil
+		},
+		nil,
+	)
 }

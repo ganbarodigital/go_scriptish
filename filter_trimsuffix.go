@@ -46,24 +46,27 @@ import (
 // TrimSuffix removes the given suffix from each line of the pipeline.
 //
 // Use it to emulate basename(1)'s `[suffix]` parameter.
-func TrimSuffix(ext string) Command {
+func TrimSuffix(ext string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expExt := p.Env.Expand(ext)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expExt := p.Env.Expand(ext)
 
-		// debugging support
-		Tracef("TrimSuffix(%#v)", ext)
-		Tracef("=> TrimSuffix(%#v)", expExt)
+			// debugging support
+			Tracef("TrimSuffix(%#v)", ext)
+			Tracef("=> TrimSuffix(%#v)", expExt)
 
-		for line := range p.Stdin.ReadLines() {
-			newPath := strings.TrimSuffix(line, expExt)
+			for line := range p.Stdin.ReadLines() {
+				newPath := strings.TrimSuffix(line, expExt)
 
-			TracePipeStdout("%s", newPath)
-			p.Stdout.WriteString(newPath)
-			p.Stdout.WriteRune('\n')
-		}
+				TracePipeStdout("%s", newPath)
+				p.Stdout.WriteString(newPath)
+				p.Stdout.WriteRune('\n')
+			}
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

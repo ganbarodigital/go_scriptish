@@ -46,35 +46,38 @@ import (
 
 // XargsCat treats each line in the pipeline's stdin as a filepath.
 // It reads each file, and writes them to the pipeline's stdout.
-func XargsCat() Command {
+func XargsCat(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("XargsCat()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("XargsCat()")
 
-		// treat each line as a valid filepath
-		for line := range p.Stdin.ReadLines() {
-			Tracef("reading from file %#v", line)
+			// treat each line as a valid filepath
+			for line := range p.Stdin.ReadLines() {
+				Tracef("reading from file %#v", line)
 
-			// can we read the file?
-			contents, err := ioutil.ReadFile(line)
-			if err != nil {
-				return StatusNotOkay, err
+				// can we read the file?
+				contents, err := ioutil.ReadFile(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+
+				// add the file contents to the pipeline
+				fileContents := string(contents)
+				TracePipeStdout("%s", fileContents)
+				p.Stdout.WriteString(fileContents)
+
+				// we don't want content from two files ending up on
+				// the very same line
+				if !strings.HasSuffix(fileContents, "\n") {
+					p.Stdout.WriteRune('\n')
+				}
 			}
 
-			// add the file contents to the pipeline
-			fileContents := string(contents)
-			TracePipeStdout("%s", fileContents)
-			p.Stdout.WriteString(fileContents)
-
-			// we don't want content from two files ending up on
-			// the very same line
-			if !strings.HasSuffix(fileContents, "\n") {
-				p.Stdout.WriteRune('\n')
-			}
-		}
-
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -47,57 +47,60 @@ import (
 // SwapExtensions treats every line in the pipeline as a filepath.
 //
 // It replaces every old extension with the corresponding new one.
-func SwapExtensions(old []string, new []string) Command {
+func SwapExtensions(old []string, new []string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("SwapExtensions(%#v, %#v)", old, new)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("SwapExtensions(%#v, %#v)", old, new)
 
-		// special case - we want to replace *every extension* in old with
-		// whatever is in new
-		if len(old) > 1 && len(new) == 1 {
-			for i := 1; i < len(old); i++ {
-				new = append(new, new[0])
+			// special case - we want to replace *every extension* in old with
+			// whatever is in new
+			if len(old) > 1 && len(new) == 1 {
+				for i := 1; i < len(old); i++ {
+					new = append(new, new[0])
+				}
+			} else if len(old) != len(new) {
+				// we don't know what to do
+				return StatusNotOkay, ErrMismatchedInputs{"old", len(old), "new", len(new)}
 			}
-		} else if len(old) != len(new) {
-			// we don't know what to do
-			return StatusNotOkay, ErrMismatchedInputs{"old", len(old), "new", len(new)}
-		}
 
-		for line := range p.Stdin.ReadLines() {
-			// what extension does this filepath have?
-			fileExt := filepath.Ext(line)
-			swapped := false
+			for line := range p.Stdin.ReadLines() {
+				// what extension does this filepath have?
+				fileExt := filepath.Ext(line)
+				swapped := false
 
-			for i := range old {
-				if fileExt == old[i] {
-					// remove it
-					newFilepath := strings.TrimSuffix(line, fileExt) + new[i]
+				for i := range old {
+					if fileExt == old[i] {
+						// remove it
+						newFilepath := strings.TrimSuffix(line, fileExt) + new[i]
 
-					// pass it on
-					TracePipeStdout("%s", newFilepath)
-					p.Stdout.WriteString(newFilepath)
+						// pass it on
+						TracePipeStdout("%s", newFilepath)
+						p.Stdout.WriteString(newFilepath)
+						p.Stdout.WriteRune('\n')
+
+						// this helps us make sure that we do not output
+						// the same filepath twice
+						swapped = true
+
+						// once an extension has been swapped, we do not want
+						// to try and swap it a second time
+						break
+					}
+				}
+
+				// did we swap anything over?
+				if !swapped {
+					TracePipeStdout("%s", line)
+					p.Stdout.WriteString(line)
 					p.Stdout.WriteRune('\n')
-
-					// this helps us make sure that we do not output
-					// the same filepath twice
-					swapped = true
-
-					// once an extension has been swapped, we do not want
-					// to try and swap it a second time
-					break
 				}
 			}
 
-			// did we swap anything over?
-			if !swapped {
-				TracePipeStdout("%s", line)
-				p.Stdout.WriteString(line)
-				p.Stdout.WriteRune('\n')
-			}
-		}
-
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

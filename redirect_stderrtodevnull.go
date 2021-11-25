@@ -45,14 +45,19 @@ import "github.com/ganbarodigital/go-ioextra/v2"
 // ioextra.TextDevNull.
 //
 // It is an emulation of UNIX shell scripting's `2> /dev/null`.
-func RedirectStderrToDevNull(p *Pipe) (int, error) {
-	// debugging support
-	Tracef("RedirectStderrToDevNull()")
+func RedirectStderrToDevNull() *StepOption {
+	return NewStepOption(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("RedirectStderrToDevNull()")
 
-	// replace the existing Stderr with one that throws everything
-	// away
-	p.Stderr = ioextra.NewTextDevNull()
+			// replace the existing Stderr with one that throws everything
+			// away
+			p.Stderr = ioextra.NewTextDevNull()
 
-	// all done
-	return StatusOkay, nil
+			// all done
+			return StatusOkay, nil
+		},
+		nil,
+	)
 }

@@ -290,24 +290,28 @@ func TestPipelineExecRunsAllStepsInOrder(t *testing.T) {
 	// setup your test
 
 	expectedResult := "hello world\nhave a nice day\n"
-	op1 := func(p *Pipe) (int, error) {
-		p.Stdout.WriteString("hello world")
-		p.Stdout.WriteRune('\n')
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			p.Stdout.WriteString("hello world")
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return 0, nil
-	}
-	op2 := func(p *Pipe) (int, error) {
-		// copy what op1 did first
-		p.DrainStdinToStdout()
+			// all done
+			return 0, nil
+		},
+	)
+	op2 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// copy what op1 did first
+			p.DrainStdinToStdout()
 
-		// add our own content
-		p.Stdout.WriteString("have a nice day")
-		p.Stdout.WriteRune('\n')
+			// add our own content
+			p.Stdout.WriteString("have a nice day")
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	pipeline := NewPipeline(op1, op2)
 	pipeline.Exec()
@@ -332,24 +336,28 @@ func TestPipelineExecStopsWhenAStepReportsAnError(t *testing.T) {
 
 	expectedStdout := "hello world\n"
 	expectedStderr := "alfred the great\n"
-	op1 := func(p *Pipe) (int, error) {
-		p.Stdout.WriteString(expectedStdout)
-		p.Stderr.WriteString(expectedStderr)
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			p.Stdout.WriteString(expectedStdout)
+			p.Stderr.WriteString(expectedStderr)
 
-		// all done
-		return 0, errors.New("stop at step 1")
-	}
-	op2 := func(p *Pipe) (int, error) {
-		// copy what op1 did first
-		p.DrainStdinToStdout()
+			// all done
+			return 0, errors.New("stop at step 1")
+		},
+	)
+	op2 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// copy what op1 did first
+			p.DrainStdinToStdout()
 
-		// add our own content
-		p.Stdout.WriteString("have a nice day")
-		p.Stdout.WriteRune('\n')
+			// add our own content
+			p.Stdout.WriteString("have a nice day")
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	pipeline := NewPipeline(op1, op2)
 	pipeline.Exec()
@@ -381,10 +389,12 @@ func TestPipelineExecSetsErrWhenOpReturnsNonZeroStatusCodeAndNilErr(t *testing.T
 	// ----------------------------------------------------------------
 	// setup your test
 
-	op1 := func(p *Pipe) (int, error) {
-		// fail, but without an error to say why
-		return StatusNotOkay, nil
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// fail, but without an error to say why
+			return StatusNotOkay, nil
+		},
+	)
 
 	pipeline := NewPipeline(op1)
 
@@ -427,13 +437,15 @@ func TestExecutingPipelineHasTheContextFlagSet(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	op := func(p *Pipe) (int, error) {
-		if p.Flags&contextIsPipeline == 0 {
-			return StatusNotOkay, errors.New("context flag not set")
-		}
+	op := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			if p.Flags&contextIsPipeline == 0 {
+				return StatusNotOkay, errors.New("context flag not set")
+			}
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+	)
 	pipeline := NewPipeline(op)
 
 	// ----------------------------------------------------------------

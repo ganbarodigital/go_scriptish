@@ -153,12 +153,15 @@ func TestNewSequenceCreatesSequenceWithGivenSequenceOperations(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	op1 := func(p *Pipe) (int, error) { return 0, nil }
-	op2 := func(p *Pipe) (int, error) { return 1, nil }
+	op1 := NewSequenceStep(func(p *Pipe) (int, error) { return 0, nil })
+	op2 := NewSequenceStep(func(p *Pipe) (int, error) { return 1, nil })
 
 	// we can't compare functions directly in Go, but we can execute them
 	// and compare their output
-	expectedResult := []testOpResult{{0, nil}, {1, nil}}
+	expectedResult := []testOpResult{
+		{0, nil},
+		{1, ErrNonZeroStatusCode{SequenceType: "command", StatusCode: 1}},
+	}
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -167,7 +170,7 @@ func TestNewSequenceCreatesSequenceWithGivenSequenceOperations(t *testing.T) {
 
 	sequence := NewSequence(op1, op2)
 	for _, step := range sequence.Steps {
-		statusCode, err := step(sequence.Pipe)
+		statusCode, err := step.RunStep(sequence.Pipe)
 		actualResult = append(actualResult, testOpResult{statusCode, err})
 	}
 
@@ -249,16 +252,18 @@ func TestSequenceFlushWritesTheContents(t *testing.T) {
 
 	expectedStdout := "hello world\nhave a nice day\n"
 	expectedStderr := "this is the stderr content\nit should be different to the stdout content\n"
-	op1 := func(p *Pipe) (int, error) {
-		p.Stdout.WriteString(expectedStdout)
-		p.Stderr.WriteString(expectedStderr)
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			p.Stdout.WriteString(expectedStdout)
+			p.Stderr.WriteString(expectedStderr)
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -323,19 +328,21 @@ func TestSequenceBytesReturnsContentsOfStdoutWhenNoError(t *testing.T) {
 	// setup your test
 
 	expectedResult := "hello world\nhave a nice day\n"
-	op1 := func(p *Pipe) (int, error) {
-		// this is the content we want
-		p.Stdout.WriteString(expectedResult)
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// this is the content we want
+			p.Stdout.WriteString(expectedResult)
 
-		// we don't want to see this in our final output
-		p.Stderr.WriteString("we do not want this")
+			// we don't want to see this in our final output
+			p.Stderr.WriteString("we do not want this")
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -357,19 +364,21 @@ func TestSequenceBytesReturnsContentsOfStdoutWhenError(t *testing.T) {
 	// setup your test
 
 	expectedResult := "hello world\nhave a nice day\n"
-	op1 := func(p *Pipe) (int, error) {
-		// this is the content we want
-		p.Stdout.WriteString(expectedResult)
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// this is the content we want
+			p.Stdout.WriteString(expectedResult)
 
-		// we don't want to see this in our final output
-		p.Stderr.WriteString("we do not want this")
+			// we don't want to see this in our final output
+			p.Stderr.WriteString("we do not want this")
 
-		// all done
-		return 0, errors.New("an error occurred")
-	}
+			// all done
+			return 0, errors.New("an error occurred")
+		},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -428,14 +437,16 @@ func TestSequenceErrorReturnsErrProperty(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	op1 := func(p *Pipe) (int, error) {
-		// all done
-		return 0, errors.New("this is an error")
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// all done
+			return 0, errors.New("this is an error")
+		},
+	)
 	expectedResult := errors.New("this is an error")
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -494,13 +505,15 @@ func TestSequenceOkayReturnsFalseWhenSequenceErrorHappens(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	op1 := func(p *Pipe) (int, error) {
-		// all done
-		return StatusNotOkay, errors.New("this is an error")
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// all done
+			return StatusNotOkay, errors.New("this is an error")
+		},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -562,18 +575,20 @@ func TestSequenceParseIntConvertsContentsOfStdoutWhenNoError(t *testing.T) {
 	// setup your test
 
 	expectedResult := 100
-	op1 := func(p *Pipe) (int, error) {
-		p.Stdout.WriteString("100\n")
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			p.Stdout.WriteString("100\n")
 
-		// we don't want to see this in our final output
-		p.Stderr.WriteString("we do not want this")
+			// we don't want to see this in our final output
+			p.Stderr.WriteString("we do not want this")
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	sequence := NewSequence(op1)
-	op1(sequence.Pipe)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -594,17 +609,19 @@ func TestSequenceParseIntReturnsZeroWhenError(t *testing.T) {
 	// setup your test
 
 	expectedResult := 0
-	op1 := func(p *Pipe) (int, error) {
-		// we don't want to see this in our final output
-		p.Stdout.WriteString("we do not want this")
-		p.Stderr.WriteString("not a number")
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// we don't want to see this in our final output
+			p.Stdout.WriteString("we do not want this")
+			p.Stderr.WriteString("not a number")
 
-		// all done
-		return 0, errors.New("an error occurred")
-	}
+			// all done
+			return 0, errors.New("an error occurred")
+		},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -787,19 +804,21 @@ func TestSequenceStringReturnsContentsOfStdoutWhenNoError(t *testing.T) {
 	// setup your test
 
 	expectedResult := "hello world\nhave a nice day\n"
-	op1 := func(p *Pipe) (int, error) {
-		// this is the content we want
-		p.Stdout.WriteString(expectedResult)
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// this is the content we want
+			p.Stdout.WriteString(expectedResult)
 
-		// we don't want to see this in our final output
-		p.Stderr.WriteString("we do not want this")
+			// we don't want to see this in our final output
+			p.Stderr.WriteString("we do not want this")
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	sequence := NewSequence(op1)
-	op1(sequence.Pipe)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -820,7 +839,7 @@ func TestSequenceStringReturnsContentsOfStdoutWhenError(t *testing.T) {
 	// setup your test
 
 	expectedResult := "hello world\nhave a nice day\n"
-	op1 := func(p *Pipe) (int, error) {
+	op1 := NewSequenceStep(func(p *Pipe) (int, error) {
 		// this is the content we want
 		p.Stdout.WriteString(expectedResult)
 
@@ -829,10 +848,11 @@ func TestSequenceStringReturnsContentsOfStdoutWhenError(t *testing.T) {
 
 		// all done
 		return 0, errors.New("an eccor occurred")
-	}
+	},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -895,21 +915,23 @@ func TestSequenceStringsReturnsContentsOfStdoutWhenNoError(t *testing.T) {
 	// setup your test
 
 	expectedResult := []string{"hello world", "have a nice day"}
-	op1 := func(p *Pipe) (int, error) {
-		for _, line := range expectedResult {
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			for _, line := range expectedResult {
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
+			}
 
-		// we don't want to see this in our final output
-		p.Stderr.WriteString("we do not want this")
+			// we don't want to see this in our final output
+			p.Stderr.WriteString("we do not want this")
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -930,21 +952,23 @@ func TestSequenceStringsReturnsContentsOfStdoutWhenError(t *testing.T) {
 	// setup your test
 
 	expectedResult := []string{"hello world", "have a nice day"}
-	op1 := func(p *Pipe) (int, error) {
-		for _, line := range expectedResult {
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			for _, line := range expectedResult {
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
+			}
 
-		// we don't want to see this in our final output
-		p.Stderr.WriteString("we do not want this")
+			// we don't want to see this in our final output
+			p.Stderr.WriteString("we do not want this")
 
-		// all done
-		return 0, errors.New("an error occurred")
-	}
+			// all done
+			return 0, errors.New("an error occurred")
+		},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -1009,19 +1033,21 @@ func TestSequenceTrimmedStringReturnsContentsOfStdoutWhenNoError(t *testing.T) {
 	testData := "   hello world\nhave a nice day\n\n\n"
 	expectedResult := "hello world\nhave a nice day"
 
-	op1 := func(p *Pipe) (int, error) {
-		// this is the content we want
-		p.Stdout.WriteString(testData)
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// this is the content we want
+			p.Stdout.WriteString(testData)
 
-		// we don't want to see this in our final output
-		p.Stderr.WriteString("we do not want this")
+			// we don't want to see this in our final output
+			p.Stderr.WriteString("we do not want this")
 
-		// all done
-		return 0, nil
-	}
+			// all done
+			return 0, nil
+		},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -1043,7 +1069,7 @@ func TestSequenceTrimmedStringReturnsContentsOfStdoutWhenError(t *testing.T) {
 
 	testData := "   hello world\nhave a nice day\n\n\n"
 	expectedResult := "hello world\nhave a nice day"
-	op1 := func(p *Pipe) (int, error) {
+	op1 := NewSequenceStep(func(p *Pipe) (int, error) {
 		// this is the content we want
 		p.Stdout.WriteString(testData)
 
@@ -1052,10 +1078,11 @@ func TestSequenceTrimmedStringReturnsContentsOfStdoutWhenError(t *testing.T) {
 
 		// all done
 		return 0, errors.New("an error occurred")
-	}
+	},
+	)
 
 	sequence := NewSequence(op1)
-	sequence.Pipe.RunCommand(op1)
+	op1.RunStep(sequence.Pipe)
 
 	// ----------------------------------------------------------------
 	// perform the change

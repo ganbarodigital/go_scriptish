@@ -135,7 +135,7 @@ func TestAppendToFileDoesNothingWhenReadFromPipelineStdinFails(t *testing.T) {
 	// perform the change
 
 	op := AppendToFile(tmpFilename)
-	statusCode, err := op(singlePipe)
+	statusCode, err := op.RunStep(singlePipe)
 	actualResult := singlePipe.Stdout.TrimmedString()
 
 	// ----------------------------------------------------------------

@@ -45,22 +45,25 @@ import (
 
 // CatStdin writes the contents of the program's stdin to
 // the pipeline's stdout
-func CatStdin() Command {
+func CatStdin(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("CatStdin()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("CatStdin()")
 
-		// attach the program's stdin to our pipe
-		p.Stdin = NewTextFile(os.Stdin)
+			// attach the program's stdin to our pipe
+			p.Stdin = NewTextFile(os.Stdin)
 
-		for line := range p.Stdin.ReadLines() {
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
+			for line := range p.Stdin.ReadLines() {
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

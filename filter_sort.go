@@ -44,22 +44,25 @@ import (
 )
 
 // Sort sorts the contents of the pipeline into ascending alphabetical order
-func Sort() Command {
+func Sort(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("Sort()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Sort()")
 
-		lines := p.Stdin.Strings()
-		sort.Strings(lines)
+			lines := p.Stdin.Strings()
+			sort.Strings(lines)
 
-		for _, line := range lines {
-			TracePipeStdout("%s", line)
+			for _, line := range lines {
+				TracePipeStdout("%s", line)
 
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
+			}
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

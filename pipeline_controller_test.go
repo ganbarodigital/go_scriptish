@@ -57,9 +57,11 @@ func TestPipelineControllerWritesNothingToTheTraceOutputIfStatusCodeIsZero(t *te
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
 
-	op1 := func(p *Pipe) (int, error) {
-		return StatusOkay, nil
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			return StatusOkay, nil
+		},
+	)
 
 	expectedResult := ""
 
@@ -89,9 +91,11 @@ func TestPipelineControllerWritesNonZeroStatusCodesToTheTraceOutput(t *testing.T
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
 
-	op1 := func(p *Pipe) (int, error) {
-		return StatusNotOkay, nil
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			return StatusNotOkay, nil
+		},
+	)
 
 	expectedResult := `+ status code: 1
 + error: command exited with non-zero status code 1
@@ -123,9 +127,11 @@ func TestPipelineControllerWritesErrorsToTheTraceOutput(t *testing.T) {
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
 
-	op1 := func(p *Pipe) (int, error) {
-		return StatusNotOkay, errors.New("this is a test error")
-	}
+	op1 := NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			return StatusNotOkay, errors.New("this is a test error")
+		},
+	)
 
 	expectedResult := `+ status code: 1
 + error: this is a test error

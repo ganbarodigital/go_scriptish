@@ -45,21 +45,24 @@ import (
 
 // CountWords counts the number of words in the pipe's stdin, and writes
 // the overall count to the pipe's stdout
-func CountWords() Command {
+func CountWords(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("CountWords()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("CountWords()")
 
-		count := 0
-		for range p.Stdin.ReadWords() {
-			count++
-		}
+			count := 0
+			for range p.Stdin.ReadWords() {
+				count++
+			}
 
-		TracePipeStdout("%d", count)
-		p.Stdout.WriteString(strconv.Itoa(count))
-		p.Stdout.WriteRune('\n')
+			TracePipeStdout("%d", count)
+			p.Stdout.WriteString(strconv.Itoa(count))
+			p.Stdout.WriteRune('\n')
 
-		return StatusOkay, nil
-	}
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

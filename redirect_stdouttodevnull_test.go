@@ -50,7 +50,7 @@ func TestStdoutToDevNullEmptiesThePipesStdout(t *testing.T) {
 	// setup your test
 
 	pipeline := NewPipeline(
-		Echo("this is a test", RedirectStdoutToDevNull),
+		Echo("this is a test", RedirectStdoutToDevNull()),
 	)
 
 	// ----------------------------------------------------------------
@@ -82,7 +82,7 @@ func TestStdoutToDevNullWritesToTheTraceOutput(t *testing.T) {
 	defer GetShellOptions().DisableTrace()
 
 	pipeline := NewPipeline(
-		Echo("this is a test", RedirectStdoutToDevNull),
+		Echo("this is a test", RedirectStdoutToDevNull()),
 	)
 
 	// ----------------------------------------------------------------

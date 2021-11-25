@@ -48,33 +48,36 @@ import (
 // the input. It writes the result to the pipeline's `Stdout`.
 //
 // If the input is blank, Dirname returns a '.'
-func Dirname(input string) Command {
+func Dirname(input string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expInput := p.Env.Expand(input)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expInput := p.Env.Expand(input)
 
-		// debugging support
-		Tracef("Dirname(%#v)", input)
-		Tracef("=> Dirname(%#v)", expInput)
+			// debugging support
+			Tracef("Dirname(%#v)", input)
+			Tracef("=> Dirname(%#v)", expInput)
 
-		// special case:
-		//
-		// filepath.Dir() does not handle trailing slashes correctly
-		// we have to strip the trailing slash ourselves
-		if len(expInput) > 1 {
-			expInput = strings.TrimSuffix(expInput, "/")
-		}
+			// special case:
+			//
+			// filepath.Dir() does not handle trailing slashes correctly
+			// we have to strip the trailing slash ourselves
+			if len(expInput) > 1 {
+				expInput = strings.TrimSuffix(expInput, "/")
+			}
 
-		// ask the stdlib to strip the final element from the filepath
-		dirname := filepath.Dir(expInput)
+			// ask the stdlib to strip the final element from the filepath
+			dirname := filepath.Dir(expInput)
 
-		// pass it on
-		TracePipeStdout("%s", dirname)
-		p.Stdout.WriteString(dirname)
-		p.Stdout.WriteRune('\n')
+			// pass it on
+			TracePipeStdout("%s", dirname)
+			p.Stdout.WriteString(dirname)
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -48,24 +48,27 @@ import (
 // one argument per line
 //
 // We do not perform string expansion on the arguments.
-func EchoArgs() Command {
+func EchoArgs(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("EchoArgs()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("EchoArgs()")
 
-		// send the slice to the pipe
-		for _, line := range os.Args[1:] {
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
+			// send the slice to the pipe
+			for _, line := range os.Args[1:] {
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
 
-			// does the string already end with an EOL?
-			if !strings.HasSuffix(line, "\n") {
-				p.Stdout.WriteRune('\n')
+				// does the string already end with an EOL?
+				if !strings.HasSuffix(line, "\n") {
+					p.Stdout.WriteRune('\n')
+				}
 			}
-		}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -45,29 +45,32 @@ import (
 
 // MkTempDir creates a temporary directory, and writes the filepath to
 // the pipeline's stdout.
-func MkTempDir(dir string, prefix string) Command {
+func MkTempDir(dir string, prefix string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our inputs
-		expDir := p.Env.Expand(dir)
-		expPrefix := p.Env.Expand(prefix)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our inputs
+			expDir := p.Env.Expand(dir)
+			expPrefix := p.Env.Expand(prefix)
 
-		// debugging support
-		Tracef("MkTempDir(%#v, %#v)", dir, prefix)
-		Tracef("=> MkTempDir(%#v, %#v)", expDir, expPrefix)
+			// debugging support
+			Tracef("MkTempDir(%#v, %#v)", dir, prefix)
+			Tracef("=> MkTempDir(%#v, %#v)", expDir, expPrefix)
 
-		// create the file
-		name, err := ioutil.TempDir(expDir, expPrefix)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			// create the file
+			name, err := ioutil.TempDir(expDir, expPrefix)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// write the file's name out
-		TracePipeStdout("%s", name)
-		p.Stdout.WriteString(name)
-		p.Stdout.WriteRune('\n')
+			// write the file's name out
+			TracePipeStdout("%s", name)
+			p.Stdout.WriteString(name)
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -127,7 +127,8 @@ func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing
 	// perform the change
 
 	op := AppendToTempFile(os.TempDir(), "scriptish-appendtotempfile-*")
-	statusCode, err := op(singlePipe)
+	op.RunStep(singlePipe)
+	statusCode, err := singlePipe.StatusError()
 	actualResult := singlePipe.Stdout.TrimmedString()
 
 	// clean up after ourselves

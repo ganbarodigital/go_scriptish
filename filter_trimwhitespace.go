@@ -44,21 +44,24 @@ import (
 )
 
 // TrimWhitespace removes any whitespace from the front and end of each line
-func TrimWhitespace() Command {
+func TrimWhitespace(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("TrimWhitespace()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("TrimWhitespace()")
 
-		for line := range p.Stdin.ReadLines() {
-			newLine := strings.TrimSpace(line)
+			for line := range p.Stdin.ReadLines() {
+				newLine := strings.TrimSpace(line)
 
-			TracePipeStdout("%s", newLine)
-			p.Stdout.WriteString(newLine)
-			p.Stdout.WriteRune('\n')
-		}
+				TracePipeStdout("%s", newLine)
+				p.Stdout.WriteString(newLine)
+				p.Stdout.WriteRune('\n')
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

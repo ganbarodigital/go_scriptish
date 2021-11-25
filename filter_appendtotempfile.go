@@ -48,50 +48,53 @@ import (
 // the pipeline's stdout.
 //
 // If the file does not exist, it is created.
-func AppendToTempFile(dir string, pattern string) Command {
+func AppendToTempFile(dir string, pattern string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our inputs
-		expDir := p.Env.Expand(dir)
-		expPattern := p.Env.Expand(pattern)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our inputs
+			expDir := p.Env.Expand(dir)
+			expPattern := p.Env.Expand(pattern)
 
-		// debugging support
-		Tracef("AppendToTempFile(%#v, %#v)", dir, pattern)
-		Tracef("=> AppendToTempFile(%#v, %#v)", expDir, expPattern)
+			// debugging support
+			Tracef("AppendToTempFile(%#v, %#v)", dir, pattern)
+			Tracef("=> AppendToTempFile(%#v, %#v)", expDir, expPattern)
 
-		// create the temporary file
-		fh, err := ioutil.TempFile(expDir, expPattern)
-		if err != nil {
-			return StatusNotOkay, err
-		}
-
-		// debugging support
-		Tracef("AppendToTempFile(): created file %#v", fh.Name())
-
-		// remember to automatically close the file when we've finished
-		// in here
-		defer func() {
-			fh.Close()
-
-			// write the temporary file's filename out last
-			p.Stdout.WriteString(fh.Name())
-			p.Stdout.WriteRune('\n')
-		}()
-
-		// write to the file
-		for line := range getSinkReader(p) {
-			TraceOutput("tempfile", "%s", line)
-			_, err = fh.WriteString(line)
+			// create the temporary file
+			fh, err := ioutil.TempFile(expDir, expPattern)
 			if err != nil {
 				return StatusNotOkay, err
 			}
-			_, err = fh.WriteString("\n")
-			if err != nil {
-				return StatusNotOkay, err
-			}
-		}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// debugging support
+			Tracef("AppendToTempFile(): created file %#v", fh.Name())
+
+			// remember to automatically close the file when we've finished
+			// in here
+			defer func() {
+				fh.Close()
+
+				// write the temporary file's filename out last
+				p.Stdout.WriteString(fh.Name())
+				p.Stdout.WriteRune('\n')
+			}()
+
+			// write to the file
+			for line := range getSinkReader(p) {
+				TraceOutput("tempfile", "%s", line)
+				_, err = fh.WriteString(line)
+				if err != nil {
+					return StatusNotOkay, err
+				}
+				_, err = fh.WriteString("\n")
+				if err != nil {
+					return StatusNotOkay, err
+				}
+			}
+
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

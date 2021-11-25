@@ -47,27 +47,30 @@ import (
 // the command's path is written to the pipeline's stdout.
 //
 // It ignores the contents of the pipeline.
-func Which(cmd string) Command {
+func Which(cmd string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expCmd := p.Env.Expand(cmd)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expCmd := p.Env.Expand(cmd)
 
-		// debugging support
-		Tracef("Which(%#v)", cmd)
-		Tracef("=> Which(%#v)", expCmd)
+			// debugging support
+			Tracef("Which(%#v)", cmd)
+			Tracef("=> Which(%#v)", expCmd)
 
-		filepath, err := exec.LookPath(expCmd)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			filepath, err := exec.LookPath(expCmd)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// success!
-		TracePipeStdout("%s", filepath)
-		p.Stdout.WriteString(filepath)
-		p.Stdout.WriteRune('\n')
+			// success!
+			TracePipeStdout("%s", filepath)
+			p.Stdout.WriteString(filepath)
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -72,7 +72,7 @@ func findGitBinary() (string, error) {
 
 func gitCurrentBranch(gitPath string) (string, error) {
 	pipeline := scriptish.NewPipeline(
-		scriptish.Exec(gitPath, "branch", "--no-color"),
+		scriptish.Exec([]string{gitPath, "branch", "--no-color"}),
 		scriptish.Grep("^\\\\* "),
 		scriptish.GrepV("no branch"),
 		scriptish.CutFields("2"),

@@ -51,6 +51,46 @@ import (
 // flag we set if we are executing commands in a pipeline
 const contextIsPipeline = 1
 
+// SequenceStep bundles up both a Command to run, and the options to apply
+// to the pipe when that command runs
+type SequenceStep struct {
+	Command Command
+	Opts    []*StepOption
+}
+
+// NewSequenceStep creates a new runnable step for a pipeline or list
+func NewSequenceStep(command Command, opts ...*StepOption) *SequenceStep {
+	return &SequenceStep{
+		Command: command,
+		Opts:    opts,
+	}
+}
+
+// RunStep uses the given Pipe to run this step.
+//
+// We run any StepOption setup phases first. If any setup phase fails,
+// we skip the Command, but do run the teardown phases (so that we can
+// clean up after ourselves).
+func (st *SequenceStep) RunStep(p *Pipe) (int, error) {
+	// do any per-command setup, such as redirects
+	//
+	// if the setup fails, we bail, and do not attempt to run
+	// the command itself ... but we will run the teardown phases,
+	// so that we can clean up after ourselves
+	_, err := ApplySetupPhasesToPipe(p, st.Opts...)
+
+	if err == nil {
+		// run the next step
+		p.RunCommand(st.Command)
+	}
+
+	// do any post-command teardown, such as closing open files
+	ApplyTeardownPhasesToPipe(p, st.Opts...)
+
+	// for convenience
+	return p.StatusError()
+}
+
 // Sequence is a set of commands to be executed.
 //
 // Provide your own logic to do the actual command execution.
@@ -59,7 +99,7 @@ type Sequence struct {
 	Pipe *Pipe
 
 	// keep track of the steps that belong to this sequence
-	Steps []Command
+	Steps []*SequenceStep
 
 	// How we will run the sequence
 	Controller SequenceController
@@ -72,7 +112,7 @@ type Sequence struct {
 }
 
 // NewSequence creates a sequence that's ready to run
-func NewSequence(steps ...Command) *Sequence {
+func NewSequence(steps ...*SequenceStep) *Sequence {
 	sq := Sequence{
 		Steps:     steps,
 		LocalVars: envish.NewLocalEnv(),

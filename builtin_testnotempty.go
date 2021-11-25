@@ -42,22 +42,25 @@ package scriptish
 import "strings"
 
 // TestNotEmpty returns 1 if the given input string (after expansion) is empty
-func TestNotEmpty(input string) Command {
+func TestNotEmpty(input string, opts ...*StepOption) *SequenceStep {
 	// built our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expInput := p.Env.Expand(input)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expInput := p.Env.Expand(input)
 
-		// debugging support
-		Tracef("TestNotEmpty(%#v)", input)
-		Tracef("=> TestNotEmpty(%#v)", expInput)
+			// debugging support
+			Tracef("TestNotEmpty(%#v)", input)
+			Tracef("=> TestNotEmpty(%#v)", expInput)
 
-		// is it empty?
-		if len(strings.TrimSpace(expInput)) == 0 {
-			return StatusNotOkay, nil
-		}
+			// is it empty?
+			if len(strings.TrimSpace(expInput)) == 0 {
+				return StatusNotOkay, nil
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

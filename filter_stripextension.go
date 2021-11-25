@@ -46,26 +46,29 @@ import (
 
 // StripExtension treats every line in the pipeline as a filepath.
 // It removes the extension from each filepath.
-func StripExtension() Command {
+func StripExtension(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("StripExtension()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("StripExtension()")
 
-		for line := range p.Stdin.ReadLines() {
-			// what extension does this filepath have?
-			fileExt := filepath.Ext(line)
+			for line := range p.Stdin.ReadLines() {
+				// what extension does this filepath have?
+				fileExt := filepath.Ext(line)
 
-			// remove it
-			newFilepath := strings.TrimSuffix(line, fileExt)
+				// remove it
+				newFilepath := strings.TrimSuffix(line, fileExt)
 
-			// pass it on
-			TracePipeStdout("%s", newFilepath)
-			p.Stdout.WriteString(newFilepath)
-			p.Stdout.WriteRune('\n')
-		}
+				// pass it on
+				TracePipeStdout("%s", newFilepath)
+				p.Stdout.WriteString(newFilepath)
+				p.Stdout.WriteRune('\n')
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

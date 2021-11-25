@@ -54,8 +54,8 @@ func PipelineController(sq *Sequence) SequenceController {
 			// stdin
 			preparePipeForNextCommand(sq.Pipe)
 
-			// run the next step
-			sq.Pipe.RunCommand(step)
+			// run the command
+			step.RunStep(sq.Pipe)
 
 			// we stop executing the moment something goes wrong
 			err := sq.Pipe.Error()

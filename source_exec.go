@@ -47,60 +47,63 @@ import (
 // the pipeline's Stdout and Stderr.
 //
 // The command's status code is stored in the pipeline.StatusCode.
-func Exec(args ...string) Command {
+func Exec(args []string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expArgs := make([]string, len(args))
-		for i := 0; i < len(args); i++ {
-			expArgs[i] = p.Env.Expand(args[i])
-		}
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expArgs := make([]string, len(args))
+			for i := 0; i < len(args); i++ {
+				expArgs[i] = p.Env.Expand(args[i])
+			}
 
-		// debugging support
-		Tracef("Exec(%#v)", args)
-		Tracef("=> Exec(%#v)", expArgs)
+			// debugging support
+			Tracef("Exec(%#v)", args)
+			Tracef("=> Exec(%#v)", expArgs)
 
-		// build our command
-		cmd := exec.Command(expArgs[0], expArgs[1:]...)
+			// build our command
+			cmd := exec.Command(expArgs[0], expArgs[1:]...)
 
-		// attach all of our inputs and outputs
-		stdout := NewTextBuffer()
-		stderr := NewTextBuffer()
-		cmd.Stdin = p.Stdin
-		cmd.Stdout = stdout
-		cmd.Stderr = stderr
+			// attach all of our inputs and outputs
+			stdout := NewTextBuffer()
+			stderr := NewTextBuffer()
+			cmd.Stdin = p.Stdin
+			cmd.Stdout = stdout
+			cmd.Stderr = stderr
 
-		// let's do it
-		err := cmd.Start()
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			// let's do it
+			err := cmd.Start()
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// wait for it to finish
-		err = cmd.Wait()
+			// wait for it to finish
+			err = cmd.Wait()
 
-		// copy the output to our pipe
-		//
-		// it's not ideal, because we can't preserve the original mixed
-		// order of the command's output atm
-		//
-		// at some point, we'll need a new version of pipe that does
-		// support preserving mixed order output!
-		for line := range stdout.ReadLines() {
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
-		for line := range stderr.ReadLines() {
-			TracePipeStderr("%s", line)
-			p.Stderr.WriteString(line)
-			p.Stderr.WriteRune('\n')
-		}
+			// copy the output to our pipe
+			//
+			// it's not ideal, because we can't preserve the original mixed
+			// order of the command's output atm
+			//
+			// at some point, we'll need a new version of pipe that does
+			// support preserving mixed order output!
+			for line := range stdout.ReadLines() {
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
+			}
+			for line := range stderr.ReadLines() {
+				TracePipeStderr("%s", line)
+				p.Stderr.WriteString(line)
+				p.Stderr.WriteRune('\n')
+			}
 
-		// we want the process's status code
-		statusCode := cmd.ProcessState.ExitCode()
+			// we want the process's status code
+			statusCode := cmd.ProcessState.ExitCode()
 
-		// all done
-		return statusCode, err
-	}
+			// all done
+			return statusCode, err
+		},
+		opts...,
+	)
 }

@@ -49,36 +49,39 @@ import "io"
 // with the StatusCode() and Error().
 //
 // It is an emulation of UNIX shell scripting's `list1 && command`
-func And(sq *Sequence) Command {
+func And(sq *Sequence, opts ...*StepOption) *SequenceStep {
 	// we're going to wrap our sequences up as a Scriptish Command
-	return func(p *Pipe) (int, error) {
-		// do we need to do anything?
-		statusCode, err := p.StatusError()
-		if err != nil {
-			// debugging support
-			Tracef("And(): not executing the given sequence")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// do we need to do anything?
+			statusCode, err := p.StatusError()
+			if err != nil {
+				// debugging support
+				Tracef("And(): not executing the given sequence")
 
-			// make sure we do not lose the output of the sequence so far
-			p.DrainStdinToStdout()
+				// make sure we do not lose the output of the sequence so far
+				p.DrainStdinToStdout()
+
+				// all done
+				return statusCode, err
+			}
+
+			// debugging support
+			Tracef("And(): executing the given sequence")
+
+			// get our parameters
+			params := getParamsFromEnv(p.Env)
+
+			// run it
+			sq.Exec(params...)
+
+			// copy the results into our pipe
+			io.Copy(p.Stdout, sq.Pipe.Stdout)
+			io.Copy(p.Stderr, sq.Pipe.Stderr)
 
 			// all done
-			return statusCode, err
-		}
-
-		// debugging support
-		Tracef("And(): executing the given sequence")
-
-		// get our parameters
-		params := getParamsFromEnv(p.Env)
-
-		// run it
-		sq.Exec(params...)
-
-		// copy the results into our pipe
-		io.Copy(p.Stdout, sq.Pipe.Stdout)
-		io.Copy(p.Stderr, sq.Pipe.Stderr)
-
-		// all done
-		return sq.StatusCode(), sq.Error()
-	}
+			return sq.StatusCode(), sq.Error()
+		},
+		opts...,
+	)
 }

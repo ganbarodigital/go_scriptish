@@ -242,7 +242,7 @@ Scriptish works the same way. You create a pipeline of Scriptish commands:
 
 ```go
 pipeline := scriptish.NewPipeline(
-    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Exec([]string{"git", "branch", "--no-color"}),
     scriptish.Grep("^[* ]"),
     scriptish.Tr([]string{"* "}, []string{""}),
 )
@@ -370,7 +370,7 @@ You can re-use the function as often as you want.
 
 ```go
 getCurrentBranch := scriptish.NewPipelineFunc(
-    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Exec([]string{"git", "branch", "--no-color"}),
     scriptish.Grep("^[* ]"),
     scriptish.Tr([]string{"* "}, []string{""}),
 )
@@ -478,13 +478,13 @@ filterSelectedBranch := scriptish.NewPipeline(
 
 // which local branch are we working on?
 localBranch, err := scriptish.NewPipeline(
-    scriptish.Exec("git branch --no-color"),
+    scriptish.Exec([]string{"git branch --no-color"}),
     scriptish.RunPipeline(filterSelectedBranch),
 ).Exec().TrimmedString()
 
 // what's the tracking branch?
 remoteBranch, err := scriptish.NewPipeline(
-    scriptish.Exec("git branch -av --no-color"),
+    scriptish.Exec([]string{"git", "branch", "-av", "--no-color"}),
     scriptish.RunPipeline(filterSelectedBranch),
 ).Exec().TrimmedString()
 ```
@@ -703,11 +703,11 @@ UNIX shell scripts can be broken up into functions to make them easier to mainta
 ```golang
 // this will fetch the latest changes from the upstream Git repo
 fetch_changes_from_origin := scriptish.NewList(
-    scriptish.Exec("git", "remote", "update", "$ORIGIN"),
+    scriptish.Exec([]string{"git", "remote", "update", "$ORIGIN"}),
     scriptish.Or(dieFunc("Unable to get list of changes from '$ORIGIN'")),
-    scriptish.Exec("git", "fetch", "$ORIGIN"),
+    scriptish.Exec([]string{"git", "fetch", "$ORIGIN"}),
     scriptish.Or(dieFunc("Unable to fetch latest changes from '$ORIGIN'")),
-    scriptish.Exec("git", "fetch", "--tags"),
+    scriptish.Exec([]string{"git", "fetch", "--tags"}),
     scriptish.Or(dieFunc("Unable to fetch latest tags from '$ORIGIN'")),
 )
 
@@ -757,11 +757,11 @@ Every `Pipeline` and `List` struct comes with a `LocalVars` member. You can call
 ```golang
 // create a reusable List
 fetch_changes_from_remote := scriptish.NewList(
-    scriptish.Exec("git", "remote", "update", "$REMOTE"),
+    scriptish.Exec([]string{"git", "remote", "update", "$REMOTE"}),
     scriptish.Or(dieFunc("Unable to get list of changes from '$REMOTE'")),
-    scriptish.Exec("git", "fetch", "$REMOTE"),
+    scriptish.Exec([]string{"git", "fetch", "$REMOTE"}),
     scriptish.Or(dieFunc("Unable to fetch latest changes from '$REMOTE'")),
-    scriptish.Exec("git", "fetch", "--tags"),
+    scriptish.Exec([]string{"git", "fetch", "--tags"}),
     scriptish.Or(dieFunc("Unable to fetch latest tags from '$REMOTE'")),
 )
 
@@ -942,7 +942,7 @@ The command's status code will be stored in the pipeline's `StatusCode`.
 
 ```go
 localBranch, err := scriptish.ExecPipeline(
-    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Exec([]string{"git", "branch", "--no-color"}),
     scriptish.Grep("^[* ]"),
     scriptish.Tr([]string{"* "}, []string{""}),
 ).TrimmedString()
@@ -951,7 +951,7 @@ localBranch, err := scriptish.ExecPipeline(
 Use the [`.Okay()`](#okay) capture method if you simply want to know if the command worked or not:
 
 ```go
-success := scriptish.ExecPipeline(scriptish.Exec("git", "push")).Okay()
+success := scriptish.ExecPipeline(scriptish.Exec([]string{"git", "push"})).Okay()
 ```
 
 Golang will set `err` to an [`exec.ExitError`](https://golang.org/pkg/os/exec/#ExitError) if the command's status code is not 0 (zero).
@@ -1544,7 +1544,7 @@ It's must useful when running external commands that produce output that you're 
 ```golang
 pipeline := scriptish.NewPipeline(
     // run an external command, and throw away the output you do not need
-    scriptish.Exec('some-noisy-command', scriptish.RedirectStderrToDevNull)
+    scriptish.Exec([]string{"some-noisy-command"}, scriptish.RedirectStderrToDevNull())
 ).Exec()
 ```
 
@@ -1561,7 +1561,7 @@ It's most useful when running external commands that produce a lot of output tha
 pipeline := scriptish.NewPipeline(
     // write text to the pipeline's stdout
     // but redirect the pipeline's stdout to /dev/null
-    scriptish.Echo("this is a test", scriptish.RedirectStdoutToDevNull),
+    scriptish.Echo("this is a test", scriptish.RedirectStdoutToDevNull()),
 )
 pipeline.Exec()
 
@@ -1781,11 +1781,11 @@ err := scriptish.ExecPipeline(scriptish.RmFile("/path/to/file")).Error()
 Use `os.Stdout` and `os.Stderr` to send the output to your program's terminal.
 
 ```golang
-scriptish.NewPipeline(
+pipeline := scriptish.NewPipeline(
     scriptish.Echo("usage: simpleca <command>"),
 )
 
-scriptish.Exec().Flush(os.Stdout, os.Stderr)
+pipeline.Exec().Flush(os.Stdout, os.Stderr)
 ```
 
 ### Okay()
@@ -1793,7 +1793,7 @@ scriptish.Exec().Flush(os.Stdout, os.Stderr)
 `Okay()` returns `true|false` depending on the pipeline's current UNIX status code.
 
 ```go
-success := scriptish.ExecPipeline(scriptish.Exec("git push")).Okay()
+success := scriptish.ExecPipeline(scriptish.Exec([]string{"git", "push"})).Okay()
 ```
 
 `success` is a `bool`:
@@ -1806,7 +1806,7 @@ All Scriptish commands set the pipeline's `StatusCode`, so it's safe to use `Oka
 It's mostly there if you want to call a pipeline in a Golang `if` statement:
 
 ```go
-if !scriptish.ExecPipeline(scriptish.Exec("git", "push")).Okay() {
+if !scriptish.ExecPipeline(scriptish.Exec([]string{"git", "push"})).Okay() {
     // push failed, do something about it
 }
 ```
@@ -1865,7 +1865,7 @@ If the pipeline didn't execute successfully, the contents of the pipeline's `Std
 
 ```go
 localBranch, err := scriptish.ExecPipeline(
-    scriptish.Exec("git", "branch", "--no-color"),
+    scriptish.Exec([]string{"git", "branch", "--no-color"}),
     scriptish.Grep("^[* ]"),
     scriptish.Tr([]string{"* "}, []string{""}),
 ).TrimmedString()
@@ -1923,11 +1923,11 @@ __NOTE that `And()` only works when run inside a List__:
 
 ```golang
 scriptish.ExecList(
-    scriptish.Exec("git", "fetch"),
+    scriptish.Exec([]string{"git", "fetch"}),
     // if `git fetch` fails, do not attempt the merge
     scriptish.And(
         scriptish.NewList(
-            scriptish.Exec("git", "merge")
+            scriptish.Exec([]string{"git", "merge"})
         )
     )
 )

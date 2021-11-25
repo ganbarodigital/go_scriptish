@@ -49,22 +49,25 @@ import (
 //
 // It ignores the file's file permissions, because the underlying
 // Golang os.Remove() behaves that way.
-func RmDir(filepath string) Command {
+func RmDir(filepath string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilepath := p.Env.Expand(filepath)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilepath := p.Env.Expand(filepath)
 
-		// debugging support
-		Tracef("RmDir(%#v)", filepath)
-		Tracef("=> RmDir(%#v)", expFilepath)
+			// debugging support
+			Tracef("RmDir(%#v)", filepath)
+			Tracef("=> RmDir(%#v)", expFilepath)
 
-		err := os.Remove(expFilepath)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			err := os.Remove(expFilepath)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

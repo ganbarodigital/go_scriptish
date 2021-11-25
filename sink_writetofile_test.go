@@ -176,7 +176,7 @@ func TestWriteToFileDoesNothingReadFromPipelineStdinFails(t *testing.T) {
 	// perform the change
 
 	op := WriteToFile(tmpFilename)
-	statusCode, err := op(singlePipe)
+	statusCode, err := op.RunStep(singlePipe)
 
 	// ----------------------------------------------------------------
 	// test the results

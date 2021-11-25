@@ -46,31 +46,34 @@ import (
 
 // XargsBasename treats every line in the pipe as a filepath.
 // It removes any parent elements from the line.
-func XargsBasename() Command {
+func XargsBasename(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("XargsBasename()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("XargsBasename()")
 
-		// process each filepath in the pipeline
-		for line := range p.Stdin.ReadLines() {
-			var basename string
+			// process each filepath in the pipeline
+			for line := range p.Stdin.ReadLines() {
+				var basename string
 
-			if len(strings.TrimSpace(line)) > 0 {
-				// let's get our basename
-				basename = filepath.Base(line)
-			} else {
-				// special case - preserve blank lines
-				basename = ""
+				if len(strings.TrimSpace(line)) > 0 {
+					// let's get our basename
+					basename = filepath.Base(line)
+				} else {
+					// special case - preserve blank lines
+					basename = ""
+				}
+
+				// send what we've got
+				TracePipeStdout("%s", basename)
+				p.Stdout.WriteString(basename)
+				p.Stdout.WriteRune('\n')
 			}
 
-			// send what we've got
-			TracePipeStdout("%s", basename)
-			p.Stdout.WriteString(basename)
-			p.Stdout.WriteRune('\n')
-		}
-
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

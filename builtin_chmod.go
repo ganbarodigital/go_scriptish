@@ -49,22 +49,25 @@ import (
 //
 // On success, it returns the status code `StatusOkay`. On failure,
 // it returns the status code `StatusNotOkay`.
-func Chmod(filepath string, mode os.FileMode) Command {
+func Chmod(filepath string, mode os.FileMode, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our input
-		expFilepath := p.Env.Expand(filepath)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our input
+			expFilepath := p.Env.Expand(filepath)
 
-		// debugging support
-		Tracef("Chmod(%#v, 0%o)", filepath, mode)
-		Tracef("=> Chmod(%#v, 0%o)", expFilepath, mode)
+			// debugging support
+			Tracef("Chmod(%#v, 0%o)", filepath, mode)
+			Tracef("=> Chmod(%#v, 0%o)", expFilepath, mode)
 
-		err := os.Chmod(expFilepath, mode)
-		if err != nil {
-			return StatusNotOkay, err
-		}
+			err := os.Chmod(expFilepath, mode)
+			if err != nil {
+				return StatusNotOkay, err
+			}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -50,28 +50,31 @@ import (
 //
 // It does not care what the filepath points at (file, folder, named pipe,
 // and so on).
-func XargsTestFilepathExists() Command {
+func XargsTestFilepathExists(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("XargsTestFilepathExists()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("XargsTestFilepathExists()")
 
-		for line := range p.Stdin.ReadLines() {
-			// does the file exist?
-			_, err := os.Stat(line)
-			if err != nil {
-				// skip to the next
-				continue
+			for line := range p.Stdin.ReadLines() {
+				// does the file exist?
+				_, err := os.Stat(line)
+				if err != nil {
+					// skip to the next
+					continue
+				}
+
+				// write the filepath to the pipeline, in case the next item
+				// can make use of it
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
 			}
 
-			// write the filepath to the pipeline, in case the next item
-			// can make use of it
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
-
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

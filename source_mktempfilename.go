@@ -46,32 +46,35 @@ import (
 
 // MkTempFilename generates a temporary filename, and writes the filename to
 // the pipeline's stdout.
-func MkTempFilename(dir string, pattern string) Command {
+func MkTempFilename(dir string, pattern string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// expand our inputs
-		expDir := p.Env.Expand(dir)
-		expPattern := p.Env.Expand(pattern)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// expand our inputs
+			expDir := p.Env.Expand(dir)
+			expPattern := p.Env.Expand(pattern)
 
-		// debugging support
-		Tracef("MkTempFilename(%#v, %#v)", dir, pattern)
-		Tracef("=> MkTempFilename(%#v, %#v)", expDir, expPattern)
+			// debugging support
+			Tracef("MkTempFilename(%#v, %#v)", dir, pattern)
+			Tracef("=> MkTempFilename(%#v, %#v)", expDir, expPattern)
 
-		// We have to generate an actual temporary file, delete it,
-		// and then use that filename
-		fh, err := ioutil.TempFile(expDir, expPattern)
-		if err != nil {
-			return StatusNotOkay, err
-		}
-		fh.Close()
-		os.Remove(fh.Name())
+			// We have to generate an actual temporary file, delete it,
+			// and then use that filename
+			fh, err := ioutil.TempFile(expDir, expPattern)
+			if err != nil {
+				return StatusNotOkay, err
+			}
+			fh.Close()
+			os.Remove(fh.Name())
 
-		// write the file's name out
-		TracePipeStdout("%s", fh.Name())
-		p.Stdout.WriteString(fh.Name())
-		p.Stdout.WriteRune('\n')
+			// write the file's name out
+			TracePipeStdout("%s", fh.Name())
+			p.Stdout.WriteString(fh.Name())
+			p.Stdout.WriteRune('\n')
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

@@ -40,7 +40,7 @@
 package scriptish
 
 // NewPipeline creates a pipeline that's ready to run
-func NewPipeline(steps ...Command) *Sequence {
+func NewPipeline(steps ...*SequenceStep) *Sequence {
 	// build our pipeline
 	retval := NewSequence(steps...)
 
@@ -59,7 +59,7 @@ func NewPipeline(steps ...Command) *Sequence {
 
 // NewPipelineFunc creates a pipeline, and wraps it in a function to make
 // it easier to call.
-func NewPipelineFunc(steps ...Command) func(...string) *Pipeline {
+func NewPipelineFunc(steps ...*SequenceStep) func(...string) *Pipeline {
 	newPipe := NewPipeline(steps...)
 	return func(params ...string) *Pipeline {
 		return newPipe.Exec(params...)
@@ -68,7 +68,7 @@ func NewPipelineFunc(steps ...Command) func(...string) *Pipeline {
 
 // ExecPipeline creates and runs a pipeline. Use this for short, throwaway
 // actions.
-func ExecPipeline(steps ...Command) *Pipeline {
+func ExecPipeline(steps ...*SequenceStep) *Pipeline {
 	pipeline := NewPipeline(steps...).Exec()
 	return pipeline
 }

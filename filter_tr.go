@@ -44,39 +44,42 @@ import (
 )
 
 // Tr replaces all occurances of one string with another
-func Tr(old []string, new []string) Command {
+func Tr(old []string, new []string, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("Tr(%#v, %#v)", old, new)
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("Tr(%#v, %#v)", old, new)
 
-		// special case - we want to replace *everything* in old with
-		// whatever is in new
-		if len(old) > 1 && len(new) == 1 {
-			for i := 1; i < len(old); i++ {
-				new = append(new, new[0])
+			// special case - we want to replace *everything* in old with
+			// whatever is in new
+			if len(old) > 1 && len(new) == 1 {
+				for i := 1; i < len(old); i++ {
+					new = append(new, new[0])
+				}
+			} else if len(old) != len(new) {
+				// we don't know what to do
+				return StatusNotOkay, ErrMismatchedInputs{"old", len(old), "new", len(new)}
 			}
-		} else if len(old) != len(new) {
-			// we don't know what to do
-			return StatusNotOkay, ErrMismatchedInputs{"old", len(old), "new", len(new)}
-		}
 
-		// let's get the replacement done
-		for line := range p.Stdin.ReadLines() {
-			for i := range old {
-				// expand our inputs
-				expOld := p.Env.Expand(old[i])
-				expNew := p.Env.Expand(new[i])
+			// let's get the replacement done
+			for line := range p.Stdin.ReadLines() {
+				for i := range old {
+					// expand our inputs
+					expOld := p.Env.Expand(old[i])
+					expNew := p.Env.Expand(new[i])
 
-				// do the replacement
-				line = strings.ReplaceAll(line, expOld, expNew)
+					// do the replacement
+					line = strings.ReplaceAll(line, expOld, expNew)
+				}
+				TracePipeStdout("%s", line)
+				p.Stdout.WriteString(line)
+				p.Stdout.WriteRune('\n')
 			}
-			TracePipeStdout("%s", line)
-			p.Stdout.WriteString(line)
-			p.Stdout.WriteRune('\n')
-		}
 
-		// all done
-		return StatusOkay, nil
-	}
+			// all done
+			return StatusOkay, nil
+		},
+		opts...,
+	)
 }

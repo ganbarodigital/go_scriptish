@@ -44,39 +44,42 @@ import "io"
 // If executes the body if (and only if) the expr completes without an error.
 //
 // It is an emulation of UNIX shell scripting's `if expr ; then body`
-func If(expr, body *Sequence) Command {
+func If(expr, body *Sequence, opts ...*StepOption) *SequenceStep {
 	// build our Scriptish Command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("If()")
+	return NewSequenceStep(
+		func(p *Pipe) (int, error) {
+			// debugging support
+			Tracef("If()")
 
-		// get our parameters
-		params := getParamsFromEnv(p.Env)
+			// get our parameters
+			params := getParamsFromEnv(p.Env)
 
-		// run the test expression first
-		expr.Exec(params...)
+			// run the test expression first
+			expr.Exec(params...)
 
-		// copy the output over to our pipe
-		io.Copy(p.Stdout, expr.Pipe.Stdout)
-		io.Copy(p.Stderr, expr.Pipe.Stderr)
+			// copy the output over to our pipe
+			io.Copy(p.Stdout, expr.Pipe.Stdout)
+			io.Copy(p.Stderr, expr.Pipe.Stderr)
 
-		// can we proceed?
-		statusCode, err := expr.StatusError()
-		if err != nil {
-			return statusCode, err
-		}
+			// can we proceed?
+			statusCode, err := expr.StatusError()
+			if err != nil {
+				return statusCode, err
+			}
 
-		// debugging support
-		Tracef("If() passed ... executing the body sequence")
+			// debugging support
+			Tracef("If() passed ... executing the body sequence")
 
-		// yes we can!
-		body.Exec(params...)
+			// yes we can!
+			body.Exec(params...)
 
-		// copy the output over to our pipe
-		io.Copy(p.Stdout, body.Pipe.Stdout)
-		io.Copy(p.Stderr, body.Pipe.Stderr)
+			// copy the output over to our pipe
+			io.Copy(p.Stdout, body.Pipe.Stdout)
+			io.Copy(p.Stderr, body.Pipe.Stderr)
 
-		// all done
-		return body.StatusError()
-	}
+			// all done
+			return body.StatusError()
+		},
+		opts...,
+	)
 }
