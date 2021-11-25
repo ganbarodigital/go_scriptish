@@ -121,8 +121,6 @@ result, err := scriptish.NewPipeline(
   - [Mkdir()](#mkdir)
   - [RmDir()](#rmdir)
   - [RmFile()](#rmfile)
-  - [StderrToDevNull()](#stderrtodevnull)
-  - [StdoutToDevNull()](#stdouttodevnull)
   - [TestEmpty()](#testempty)
   - [TestFilepathExists()](#testfilepathexists)
   - [TestNotEmpty()](#testnotempty)
@@ -1621,36 +1619,6 @@ It ignores the file's file permissions, because the underlying Golang os.Remove(
 err := scriptish.NewPipeline(
     scriptish.RmFile("/path/to/file"),
 ).Exec().Error()
-```
-
-### StderrToDevNull()
-
-`StderrToDevNull()` throws away the contents of the pipeline's `Stderr`. It preserves the pipeline's previous `Stdout`.
-
-It is the equivalent of `run-noisy-command 2>/dev/null`.
-
-```go
-result, err := scriptish.NewPipeline(
-    scriptish.Exec("run-noisy-command"),
-    scriptish.StderrToDevNull(),
-    // the next command in the pipeline still has access to
-    // whatever run-noisy-command wrote to stdout
-).Exec().TrimmedString()
-```
-
-### StdoutToDevNull()
-
-`StdoutToDevNull()` throws away the contents of the pipeline's `Stdin`.
-
-It is the equivalent of `run-noisy-command >/dev/null`.
-
-```go
-result, err := scriptish.NewPipeline(
-    scriptish.Exec("run-noisy-command"),
-    scriptish.StdoutToDevNull(),
-).Exec().TrimmedString()
-
-// result now contains an empty string
 ```
 
 ### TestEmpty()
