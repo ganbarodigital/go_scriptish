@@ -70,13 +70,13 @@ func TestStdoutToDevNullWritesToTheTraceOutput(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	expectedResult := `+ StdoutToDevNull()
+	expectedResult := `+ RedirectStdoutToDevNull()
 + Echo("this is a test")
 + => Echo("this is a test")
 + p.Stdout> this is a test
 `
-	dest := NewTextBuffer()
-	GetShellOptions().EnableTrace(dest)
+	traceBuf := NewTextBuffer()
+	GetShellOptions().EnableTrace(traceBuf)
 
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
@@ -89,7 +89,7 @@ func TestStdoutToDevNullWritesToTheTraceOutput(t *testing.T) {
 	// perform the change
 
 	pipeline.Exec()
-	actualResult := dest.String()
+	actualResult := traceBuf.String()
 
 	// ----------------------------------------------------------------
 	// test the results
