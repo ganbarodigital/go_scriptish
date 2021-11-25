@@ -5,7 +5,7 @@
 // - http://labix.org/pipe
 // - https://github.com/bitfield/script
 //
-// Copyright 2019-present Ganbaro Digital Ltd
+// Copyright 2021-present Ganbaro Digital Ltd
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -39,19 +39,60 @@
 
 package scriptish
 
-// StdoutToDevNull deletes the current contents of the pipeline's Stdout.
-//
-// It is an emulation of UNIX shell scripting's `> /dev/null`.
-func StdoutToDevNull() Command {
-	// build our Scriptish command
-	return func(p *Pipe) (int, error) {
-		// debugging support
-		Tracef("StdoutToDevNull()")
+import (
+	"testing"
 
-		// replace the existing Stdout with a new one
-		p.SetNewStdout()
+	"github.com/stretchr/testify/assert"
+)
 
-		// all done
-		return StatusOkay, nil
-	}
+func TestStdoutToDevNullEmptiesThePipesStdout(t *testing.T) {
+	// ----------------------------------------------------------------
+	// setup your test
+
+	pipeline := NewPipeline(
+		Echo("this is a test", RedirectStdoutToDevNull),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Nil(t, pipeline.Error())
+	assert.Equal(t, "", pipeline.Pipe.Stdout.String())
+}
+
+func TestStdoutToDevNullWritesToTheTraceOutput(t *testing.T) {
+
+	// ----------------------------------------------------------------
+	// setup your test
+
+	expectedResult := `+ StdoutToDevNull()
++ Echo("this is a test")
++ => Echo("this is a test")
++ p.Stdout> this is a test
+`
+	dest := NewTextBuffer()
+	GetShellOptions().EnableTrace(dest)
+
+	// clean up after ourselves
+	defer GetShellOptions().DisableTrace()
+
+	pipeline := NewPipeline(
+		Echo("this is a test", RedirectStdoutToDevNull),
+	)
+
+	// ----------------------------------------------------------------
+	// perform the change
+
+	pipeline.Exec()
+	actualResult := dest.String()
+
+	// ----------------------------------------------------------------
+	// test the results
+
+	assert.Equal(t, expectedResult, actualResult)
 }

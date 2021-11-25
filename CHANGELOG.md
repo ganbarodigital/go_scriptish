@@ -9,8 +9,8 @@
 
 ### New
 
-* Added `StderrToDevNull()`
-* Added `StdoutToDevNull()`
+* Added new category Redirects
+  - added `RedirectStdoutToDevNull()`
 
 ### Fixes
 

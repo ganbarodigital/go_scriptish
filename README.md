@@ -1502,10 +1502,10 @@ n/a | [AppendStderrToTextWriter](#appendstderrtotextwriter) | Anything written t
 To use a redirect, simply pass it as a parameter to any of the [sources](#sources) or [filters](#filters). For example:
 
 ```golang
-pipeline := NewPipeline(
+pipeline := scriptish.NewPipeline(
     // write text to the pipeline's stdout
     // but redirect the pipeline's stdout to /dev/null
-    Echo("this is a test", RedirectStdoutToDevNull),
+    scriptish.Echo("this is a test", scriptish.RedirectStdoutToDevNull),
 )
 pipeline.Exec()
 
@@ -1538,6 +1538,25 @@ output := pipeline.String()
 ### RedirectStderrToDevNull
 ### RedirectStderrToTmpfile
 ### RedirectStdoutToDevNull
+
+`RedirectStdoutToDevNull()` replaces the pipe's Stdout with an ioextra.TextDevNull *before* the command runs.
+
+It is an emulation of UNIX shell scripting's `> /dev/null`.
+
+It's most useful when running external commands that produce a lot of output that you're just not interested in. You can avoid Golang having to allocate any memory to store that output. The [Exec() command](#exec) will make sure that the external command's writes to stdout are just thrown away.
+
+```golang
+pipeline := scriptish.NewPipeline(
+    // write text to the pipeline's stdout
+    // but redirect the pipeline's stdout to /dev/null
+    scriptish.Echo("this is a test", scriptish.RedirectStdoutToDevNull),
+)
+pipeline.Exec()
+
+// output will be empty
+output := pipeline.String()
+```
+
 ### RedirectStdoutToStderr
 ### RedirectStdoutToTmpfile
 
