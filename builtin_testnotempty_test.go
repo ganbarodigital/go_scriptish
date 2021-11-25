@@ -144,7 +144,7 @@ func TestTestNotEmptyWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := `+ TestNotEmpty("$1")
 + => TestNotEmpty("this is an expanded string")
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -177,7 +177,7 @@ func TestTestNotEmptyErrorsAppearInTheTraceOutput(t *testing.T) {
 + status code: 1
 + error: command exited with non-zero status code 1
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

@@ -95,7 +95,7 @@ func TestStripExtensionWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> /path/to/three
 + p.Stdout> /path/to/four
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

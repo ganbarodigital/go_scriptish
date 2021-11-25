@@ -46,7 +46,6 @@ import (
 	"strings"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -104,6 +103,7 @@ func TestAppendToTempFileSetsErrorWhenTempFileCannotBeCreated(t *testing.T) {
 }
 
 type brokenReader struct {
+	TextBuffer
 }
 
 func (r brokenReader) Read(buf []byte) (int, error) {
@@ -115,11 +115,11 @@ func TestAppendToTempFileWritesNoOutputWhenReadFromPipelineStdinFails(t *testing
 	// setup your test
 
 	// we can't use a full pipeline to trigger this branch of the code
-	singlePipe := pipe.NewPipe()
+	singlePipe := NewPipe()
 
 	// we need to replace the pipeline's normal Stdin with our own
 	// broken version
-	singlePipe.Stdin = pipe.NewSourceFromReader(brokenReader{})
+	singlePipe.Stdin = &brokenReader{}
 
 	expectedPrefix := filepath.Join(os.TempDir(), "scriptish-appendtotempfile-")
 
@@ -148,7 +148,7 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -201,7 +201,7 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

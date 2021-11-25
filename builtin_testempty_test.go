@@ -144,7 +144,7 @@ func TestTestEmptyWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := `+ TestEmpty("$1")
 + => TestEmpty("")
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -177,7 +177,7 @@ func TestTestEmptyErrorsAppearInTheTraceOutput(t *testing.T) {
 + status code: 1
 + error: command exited with non-zero status code 1
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

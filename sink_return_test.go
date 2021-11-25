@@ -97,7 +97,7 @@ func TestReturnWritesToTheTraceOutput(t *testing.T) {
 + status code: 3
 + error: command exited with non-zero status code 3
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

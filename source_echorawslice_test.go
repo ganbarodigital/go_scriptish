@@ -102,7 +102,7 @@ func TestEchoRawSliceWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> hello world
 + p.Stdout> have a nice day
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

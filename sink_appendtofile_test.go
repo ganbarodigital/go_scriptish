@@ -43,7 +43,7 @@ import (
 	"os"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe/v5"
+	pipe "github.com/ganbarodigital/go_pipe/v6"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -129,7 +129,7 @@ func TestAppendToFileDoesNothingWhenReadFromPipelineStdinFails(t *testing.T) {
 
 	// we need to replace the pipeline's normal Stdin with our own
 	// broken version
-	singlePipe.Stdin = pipe.NewSourceFromReader(brokenReader{})
+	singlePipe.Stdin = &brokenReader{}
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -176,7 +176,7 @@ func TestAppendToFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 + file> ` + "" + `
 + file> We copy the contents of this file to other files, as part of our testing.
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -227,7 +227,7 @@ func TestAppendToFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 + file> ` + "" + `
 + file> We copy the contents of this file to other files, as part of our testing.
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

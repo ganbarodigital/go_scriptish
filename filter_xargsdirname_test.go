@@ -150,7 +150,7 @@ func TestXargsDirnameWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> /path/to/one
 + p.Stdout> /path/to/two
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

@@ -43,7 +43,6 @@ import (
 	"errors"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -382,7 +381,7 @@ func TestPipelineExecSetsErrWhenOpReturnsNonZeroStatusCodeAndNilErr(t *testing.T
 	// ----------------------------------------------------------------
 	// setup your test
 
-	op1 := func(p *pipe.Pipe) (int, error) {
+	op1 := func(p *Pipe) (int, error) {
 		// fail, but without an error to say why
 		return StatusNotOkay, nil
 	}
@@ -399,7 +398,7 @@ func TestPipelineExecSetsErrWhenOpReturnsNonZeroStatusCodeAndNilErr(t *testing.T
 
 	// pipeline.Err should have been set by Exec()
 	assert.NotNil(t, pipeline.Error())
-	_, ok := pipeline.Error().(pipe.ErrNonZeroStatusCode)
+	_, ok := pipeline.Error().(ErrNonZeroStatusCode)
 	assert.True(t, ok)
 }
 

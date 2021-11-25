@@ -171,7 +171,7 @@ func TestTrWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> sith is the first line of trout data
 + p.Stdout> sith is the second line of trout data
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

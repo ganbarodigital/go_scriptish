@@ -91,7 +91,7 @@ func TestListControllerWritesNothingToTheTraceOutputIfStatusCodeIsZero(t *testin
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -123,7 +123,7 @@ func TestListControllerWritesNonZeroStatusCodesToTheTraceOutput(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -157,7 +157,7 @@ func TestListControllerWritesErrorsToTheTraceOutput(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

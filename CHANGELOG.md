@@ -2,6 +2,11 @@
 
 ## develop
 
+### Dependencies
+
+* Moved to go_pipe v6
+* Added go-ioextra v2
+
 ### New
 
 * Added `StderrToDevNull()`

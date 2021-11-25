@@ -119,7 +119,7 @@ func TestXargsBasenameWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> one.file
 + p.Stdout> two.file
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

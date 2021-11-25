@@ -215,7 +215,7 @@ func TestListFilesWritesToTheTraceOutputIfPathToFolder(t *testing.T) {
 + p.Stdout> testdata/listfiles/three.yaml
 + p.Stdout> testdata/listfiles/two.txt
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -247,7 +247,7 @@ func TestListFilesWritesToTheTraceOutputIfGlobbing(t *testing.T) {
 + p.Stdout> testdata/listfiles/three.yaml
 + p.Stdout> testdata/listfiles/two.txt
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

@@ -126,7 +126,7 @@ func TestDirnameWritesToTheTraceOutput(t *testing.T) {
 + => Dirname("/path/to/folder/or/file")
 + p.Stdout> /path/to/folder/or
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

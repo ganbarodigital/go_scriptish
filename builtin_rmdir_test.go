@@ -153,7 +153,7 @@ func TestRmDirWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := `+ RmDir("$1")
 + => RmDir("` + tmpDir + `")
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

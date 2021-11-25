@@ -154,7 +154,7 @@ func TestXargsRmFileWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> ` + testData[0] + `
 + p.Stdout> ` + testData[1] + `
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

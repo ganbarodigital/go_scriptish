@@ -40,22 +40,15 @@
 package scriptish
 
 import (
-	pipe "github.com/ganbarodigital/go_pipe/v5"
+	ioextra "github.com/ganbarodigital/go-ioextra/v2"
+	pipe "github.com/ganbarodigital/go_pipe/v6"
 )
 
 // Command is an alias for the underlying pipe library's Command
 //
 // It just saves us having to import the pipe library into every single
 // file in the project.
-type Command = pipe.Command
-
-// Dest is an alias for the underlying pipe library's Dest
-type Dest = pipe.Dest
-
-// NewDest creates a new pipe.Dest struct
-func NewDest() *Dest {
-	return pipe.NewDest()
-}
+type Command = pipe.PipeCommand
 
 // List is an alias for a Sequence
 type List = Sequence
@@ -66,19 +59,11 @@ type List = Sequence
 // file in the project.
 type Pipe = pipe.Pipe
 
+// NewPipe is an alias for the underlying pipe library's NewPipe()
+var NewPipe = pipe.NewPipe
+
 // Pipeline is an alias for a Sequence
 type Pipeline = Sequence
-
-// Source is an alias for the underlying pipe library's Source
-type Source = pipe.Source
-
-// NewSourceFromReader is an alias for the underlying pipe library's
-// NewSourceFromReader()
-var NewSourceFromReader = pipe.NewSourceFromReader
-
-// NewSourceFromString is an alias for the underlying pipe library's
-// NewSourceFromString()
-var NewSourceFromString = pipe.NewSourceFromString
 
 // StatusOkay is an alias for the underlying pipe library's StatusOkay
 //
@@ -91,3 +76,27 @@ const StatusOkay = pipe.StatusOkay
 // It just saves us having to import the pipe library into every single
 // file in the project.
 const StatusNotOkay = pipe.StatusNotOkay
+
+// ErrNonZeroStatusCode is an alias for the underlying pipe library's
+// ErrNonZeroStatusCode
+type ErrNonZeroStatusCode = pipe.ErrNonZeroStatusCode
+
+var AttachOsStdin = pipe.AttachOsStdin
+
+// TextFile is an alias for the underlying ioextra library's TextFile
+type TextFile = ioextra.TextFile
+
+// TextBuffer is an alias for the underlying ioextra library's TextBuffer
+type TextBuffer = ioextra.TextBuffer
+
+// TextReader is an alias for the underlying ioextra library's TextReader
+type TextReader = ioextra.TextReader
+
+// TextWriter is an alias for the underlying ioextra library's TextWriter
+type TextWriter = ioextra.TextWriter
+
+// NewTextBuffer is an alias for the underlying ioextra library's NewTextBuffer
+var NewTextBuffer = ioextra.NewTextBuffer
+
+// NewTextFile is an alias for the underlying ioextra library's NewTextFile
+var NewTextFile = ioextra.NewTextFile

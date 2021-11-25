@@ -108,7 +108,7 @@ func TestCatFileWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> ` + "" + `
 + p.Stdout> It contains three lines.
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

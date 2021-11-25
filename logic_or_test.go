@@ -218,7 +218,7 @@ func TestOrWritesToTheTraceOutputWhenExecutingTheOrBranch(t *testing.T) {
 + => Echo("this is the 'or' option")
 + p.Stdout> this is the 'or' option
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -253,7 +253,7 @@ func TestOrWritesToTheTraceOutputWhenNotExecutingTheOrBranch(t *testing.T) {
 	expectedResult := `+ Return(0)
 + Or(): not executing the given sequence
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

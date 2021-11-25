@@ -106,7 +106,7 @@ func TestXargsTestFilepathExistsWritesToTheTraceOutput(t *testing.T) {
 + XargsTestFilepathExists()
 + p.Stdout> ` + filename + `
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

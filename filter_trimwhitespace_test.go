@@ -93,7 +93,7 @@ func TestTrimWhitespaceWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> this is the first line of test data
 + p.Stdout> this is the second line of test data
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

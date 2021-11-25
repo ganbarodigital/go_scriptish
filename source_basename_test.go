@@ -100,7 +100,7 @@ func TestBasenameWritesToTheTraceOutput(t *testing.T) {
 + => Basename("/path/to/one.file")
 + p.Stdout> one.file
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

@@ -185,7 +185,7 @@ func TestTailWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> this is the fourth line of test data
 + p.Stdout> this is the fifth line of test data
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

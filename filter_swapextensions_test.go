@@ -158,7 +158,7 @@ func TestSwapExtensionsWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> /path/to/three
 + p.Stdout> /path/to/four.trout
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

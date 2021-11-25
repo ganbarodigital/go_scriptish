@@ -95,7 +95,7 @@ func TestCatStdinWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := `+ CatStdin()
 + p.Stdout> hello world
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

@@ -137,7 +137,7 @@ func TestXargsTruncateFilesWritesToTheTraceOutput(t *testing.T) {
 + XargsTruncateFiles()
 + p.Stdout> ` + tmpFilename + `
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

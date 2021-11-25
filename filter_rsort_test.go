@@ -107,7 +107,7 @@ func TestRsortWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> this is the fifth line of test data
 ` + "+ p.Stdout> \n"
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

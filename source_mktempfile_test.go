@@ -100,7 +100,7 @@ func TestMkTempFileWritesToTheTraceOutput(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

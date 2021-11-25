@@ -121,7 +121,7 @@ func TestGrepVWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> this is the first line
 + p.Stdout> and this is the fourth line
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

@@ -254,7 +254,7 @@ func TestLogicAndWritesToTheTraceOutputIfNotExecutingNextSequence(t *testing.T) 
 + status code: 1
 + error: command exited with non-zero status code 1
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -292,7 +292,7 @@ func TestLogicAndWritesToTheTraceOutputIfExecutingNextSequence(t *testing.T) {
 + => Echo("hello world")
 + p.Stdout> hello world
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

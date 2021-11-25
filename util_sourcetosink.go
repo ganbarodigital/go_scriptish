@@ -39,7 +39,7 @@
 
 package scriptish
 
-func sourceToSink(in *Pipe, out *Dest) {
+func sourceToSink(in *Pipe, out TextWriter) {
 	for line := range getSinkReader(in) {
 		TracePipeStdout("%s", line)
 		out.WriteString(line)

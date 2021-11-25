@@ -191,7 +191,7 @@ func TestExecWritesToTheTraceOutput(t *testing.T) {
 + => Exec([]string{"/usr/bin/env", "cat"})
 + p.Stdout> hello world
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

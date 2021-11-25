@@ -84,7 +84,7 @@ func TestCountLinesWritesToTheTraceOutput(t *testing.T) {
 + CountLines()
 + p.Stdout> 2
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

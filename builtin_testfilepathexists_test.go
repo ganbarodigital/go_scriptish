@@ -100,7 +100,7 @@ func TestTestFilepathExistsWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := `+ TestFilepathExists("$1")
 + => TestFilepathExists("./builtin_testfilepathexists_test.go")
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -133,7 +133,7 @@ func TestTestFilepathExistsErrorsAppearInTheTraceOutput(t *testing.T) {
 + status code: 1
 + error: stat ./does/not/exist: no such file or directory
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

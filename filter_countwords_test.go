@@ -83,7 +83,7 @@ func TestCountWordsWritesToTheTraceOutput(t *testing.T) {
 + CountWords()
 + p.Stdout> 6
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

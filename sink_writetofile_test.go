@@ -43,7 +43,6 @@ import (
 	"os"
 	"testing"
 
-	pipe "github.com/ganbarodigital/go_pipe/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -167,11 +166,11 @@ func TestWriteToFileDoesNothingReadFromPipelineStdinFails(t *testing.T) {
 	defer ExecPipeline(RmFile(tmpFilename))
 
 	// we can't use a full pipeline to trigger this branch of the code
-	singlePipe := pipe.NewPipe()
+	singlePipe := NewPipe()
 
 	// we need to replace the pipeline's normal Stdin with our own
 	// broken version
-	singlePipe.Stdin = pipe.NewSourceFromReader(brokenReader{})
+	singlePipe.Stdin = &brokenReader{}
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -208,7 +207,7 @@ func TestWriteToFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 + file> ` + "" + `
 + file> We copy the contents of this file to other files, as part of our testing.
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -253,7 +252,7 @@ func TestWriteToFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 + file> ` + "" + `
 + file> We copy the contents of this file to other files, as part of our testing.
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

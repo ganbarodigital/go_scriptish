@@ -120,7 +120,7 @@ func TestChmodWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := `+ Chmod("$1", 0644)
 + => Chmod("./builtin_chmod_test.go", 0644)
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -153,7 +153,7 @@ func TestChmodErrorsAppearInTheTraceOutput(t *testing.T) {
 + status code: 1
 + error: chmod ./does/not/exist: no such file or directory
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

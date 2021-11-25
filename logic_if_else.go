@@ -59,8 +59,8 @@ func IfElse(expr, body, elseBlock *Sequence) Command {
 		expr.Exec(params...)
 
 		// copy the output over to our pipe
-		io.Copy(p.Stdout, expr.Pipe.Stdout.NewReader())
-		io.Copy(p.Stderr, expr.Pipe.Stderr.NewReader())
+		io.Copy(p.Stdout, expr.Pipe.Stdout)
+		io.Copy(p.Stderr, expr.Pipe.Stderr)
 
 		// can we proceed?
 		err := expr.Error()
@@ -72,8 +72,8 @@ func IfElse(expr, body, elseBlock *Sequence) Command {
 			body.Exec(params...)
 
 			// copy the output over to our pipe
-			io.Copy(p.Stdout, body.Pipe.Stdout.NewReader())
-			io.Copy(p.Stderr, body.Pipe.Stderr.NewReader())
+			io.Copy(p.Stdout, body.Pipe.Stdout)
+			io.Copy(p.Stderr, body.Pipe.Stderr)
 
 			// all done
 			return body.StatusError()
@@ -86,8 +86,8 @@ func IfElse(expr, body, elseBlock *Sequence) Command {
 		elseBlock.Exec()
 
 		// copy the output over to our pipe
-		io.Copy(p.Stdout, elseBlock.Pipe.Stdout.NewReader())
-		io.Copy(p.Stderr, elseBlock.Pipe.Stderr.NewReader())
+		io.Copy(p.Stdout, elseBlock.Pipe.Stdout)
+		io.Copy(p.Stderr, elseBlock.Pipe.Stderr)
 
 		// all done
 		return elseBlock.StatusError()

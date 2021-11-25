@@ -120,7 +120,7 @@ five six seven
 + => Grep("one|two")
 + p.Stdout> one two
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

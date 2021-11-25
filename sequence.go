@@ -46,7 +46,6 @@ import (
 	"os"
 
 	envish "github.com/ganbarodigital/go_envish/v3"
-	pipe "github.com/ganbarodigital/go_pipe/v5"
 )
 
 // flag we set if we are executing commands in a pipeline
@@ -57,7 +56,7 @@ const contextIsPipeline = 1
 // Provide your own logic to do the actual command execution.
 type Sequence struct {
 	// our commands read from / write to this pipe
-	Pipe *pipe.Pipe
+	Pipe *Pipe
 
 	// keep track of the steps that belong to this sequence
 	Steps []Command
@@ -108,7 +107,7 @@ func (sq *Sequence) Bytes() ([]byte, error) {
 	}
 
 	// return what we have
-	retval, _ := ioutil.ReadAll(sq.Pipe.Stdout.NewReader())
+	retval, _ := ioutil.ReadAll(sq.Pipe.Stdout)
 	return retval, sq.Pipe.Error()
 }
 
@@ -183,7 +182,7 @@ func (sq *Sequence) Okay() bool {
 // it's useful in some way.
 func (sq *Sequence) NewPipe() {
 	// we start with a new Pipe
-	sq.Pipe = pipe.NewPipe()
+	sq.Pipe = NewPipe()
 
 	// the new pipe needs a new environment establishing
 	sq.Pipe.Env = envish.NewOverlayEnv(

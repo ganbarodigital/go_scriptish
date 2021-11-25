@@ -57,8 +57,8 @@ func If(expr, body *Sequence) Command {
 		expr.Exec(params...)
 
 		// copy the output over to our pipe
-		io.Copy(p.Stdout, expr.Pipe.Stdout.NewReader())
-		io.Copy(p.Stderr, expr.Pipe.Stderr.NewReader())
+		io.Copy(p.Stdout, expr.Pipe.Stdout)
+		io.Copy(p.Stderr, expr.Pipe.Stderr)
 
 		// can we proceed?
 		statusCode, err := expr.StatusError()
@@ -73,8 +73,8 @@ func If(expr, body *Sequence) Command {
 		body.Exec(params...)
 
 		// copy the output over to our pipe
-		io.Copy(p.Stdout, body.Pipe.Stdout.NewReader())
-		io.Copy(p.Stderr, body.Pipe.Stderr.NewReader())
+		io.Copy(p.Stdout, body.Pipe.Stdout)
+		io.Copy(p.Stderr, body.Pipe.Stderr)
 
 		// all done
 		return body.StatusError()

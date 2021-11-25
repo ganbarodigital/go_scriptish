@@ -64,8 +64,8 @@ func Exec(args ...string) Command {
 		cmd := exec.Command(expArgs[0], expArgs[1:]...)
 
 		// attach all of our inputs and outputs
-		stdout := NewDest()
-		stderr := NewDest()
+		stdout := NewTextBuffer()
+		stderr := NewTextBuffer()
 		cmd.Stdin = p.Stdin
 		cmd.Stdout = stdout
 		cmd.Stderr = stderr

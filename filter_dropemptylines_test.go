@@ -99,7 +99,7 @@ func TestDropEmptyLinesWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout>     and this one too
 + p.Stdout> and this should be the forth line now
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

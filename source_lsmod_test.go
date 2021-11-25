@@ -116,7 +116,7 @@ func TestLsmodWritesToTheTraceOutput(t *testing.T) {
 + => Lsmod("` + tmpFile + `")
 + p.Stdout> -rw-------
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

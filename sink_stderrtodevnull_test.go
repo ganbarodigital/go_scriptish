@@ -71,7 +71,7 @@ func TestStderrToDevNullPreservesStdoutInAPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -79,7 +79,7 @@ func TestStderrToDevNullPreservesStdoutInAPipeline(t *testing.T) {
 
 	expectedResult := "this is a test\n"
 	pipeline := NewPipeline(
-		Echo("this content should disappear"),
+		Echo("this content should not disappear"),
 		StderrToDevNull(),
 		Echo(expectedResult),
 		StderrToDevNull(),
@@ -107,9 +107,8 @@ func TestStderrToDevNullWritesToTheTraceOutput(t *testing.T) {
 + => Echo("this is a test")
 + p.Stdout> this is a test
 + StderrToDevNull()
-+ p.Stdout> this is a test
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

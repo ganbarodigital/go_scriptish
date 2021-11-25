@@ -99,7 +99,7 @@ func TestToStdoutWritesToTheTraceOutputWhenInList(t *testing.T) {
 + ToStdout()
 + os.Stdout> hello world
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -141,7 +141,7 @@ func TestToStdoutWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 + ToStdout()
 + os.Stdout> hello world
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

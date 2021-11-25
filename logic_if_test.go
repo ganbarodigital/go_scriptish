@@ -184,7 +184,7 @@ func TestIfWritesToTheTraceOutputWhenExecutingThenBranch(t *testing.T) {
 + => Echo("this is the 'then' branch")
 + p.Stdout> this is the 'then' branch
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

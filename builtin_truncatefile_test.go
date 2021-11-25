@@ -137,7 +137,7 @@ func TestTruncateFileWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := `+ TruncateFile("$1")
 + => TruncateFile("` + tmpFilename + `")
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

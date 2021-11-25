@@ -74,7 +74,7 @@ func RunPipeline(pl *Pipeline) Command {
 		pl.Controller()
 
 		// copy our pipeline's stdout to become the pipe's next stdin
-		io.Copy(p.Stdout, pl.Pipe.Stdout.NewReader())
+		io.Copy(p.Stdout, pl.Pipe.Stdout)
 
 		// all done
 		return pl.StatusError()

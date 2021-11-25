@@ -133,7 +133,7 @@ func TestIfElseWritesToTheTraceOutputWhenExecutingThenBranch(t *testing.T) {
 + => Echo("this is the 'then' branch")
 + p.Stdout> this is the 'then' branch
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -182,7 +182,7 @@ func TestIfElseWritesToTheTraceOutputWhenExecutingElseBranch(t *testing.T) {
 + => Echo("this is the 'else' branch")
 + p.Stdout> this is the 'else' branch
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

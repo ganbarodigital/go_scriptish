@@ -104,7 +104,7 @@ func TestEchoWritesToTheTraceOutput(t *testing.T) {
 + => Echo("this is an expanded string")
 + p.Stdout> this is an expanded string
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

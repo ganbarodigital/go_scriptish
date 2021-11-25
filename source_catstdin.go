@@ -41,8 +41,6 @@ package scriptish
 
 import (
 	"os"
-
-	pipe "github.com/ganbarodigital/go_pipe/v5"
 )
 
 // CatStdin writes the contents of the program's stdin to
@@ -54,7 +52,7 @@ func CatStdin() Command {
 		Tracef("CatStdin()")
 
 		// attach the program's stdin to our pipe
-		p.Stdin = pipe.NewSourceFromReader(os.Stdin)
+		p.Stdin = NewTextFile(os.Stdin)
 
 		for line := range p.Stdin.ReadLines() {
 			TracePipeStdout("%s", line)

@@ -124,7 +124,7 @@ eight nine ten eleven
 + p.Stdout> two three four six
 + p.Stdout> nine ten eleven
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

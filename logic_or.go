@@ -75,8 +75,8 @@ func Or(sq *Sequence) Command {
 		sq.Exec(params...)
 
 		// copy the results into our pipe
-		io.Copy(p.Stdout, sq.Pipe.Stdout.NewReader())
-		io.Copy(p.Stderr, sq.Pipe.Stderr.NewReader())
+		io.Copy(p.Stdout, sq.Pipe.Stdout)
+		io.Copy(p.Stderr, sq.Pipe.Stderr)
 
 		// all done
 		return sq.StatusCode(), sq.Error()

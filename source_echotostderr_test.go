@@ -102,7 +102,7 @@ func TestEchoToStderrWritesToTheTraceOutput(t *testing.T) {
 + => EchoToStderr("this is an error message")
 + p.Stderr> this is an error message
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

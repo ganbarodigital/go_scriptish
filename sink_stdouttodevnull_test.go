@@ -76,7 +76,7 @@ func TestStdoutToDevNullWritesToTheTraceOutput(t *testing.T) {
 + p.Stdout> this is a test
 + StdoutToDevNull()
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

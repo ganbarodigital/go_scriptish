@@ -42,7 +42,7 @@ package scriptish
 import (
 	"os"
 
-	pipe "github.com/ganbarodigital/go_pipe/v5"
+	"github.com/ganbarodigital/go-ioextra/v2"
 )
 
 // CatFile writes the contents of a file to the pipeline's stdout
@@ -63,7 +63,7 @@ func CatFile(filename string) Command {
 		}
 
 		// copy the file into our pipeline
-		p.Stdin = pipe.NewSourceFromReadCloser(f)
+		p.Stdin = ioextra.NewTextFile(f)
 		for line := range p.Stdin.ReadLines() {
 			TracePipeStdout("%s", line)
 			p.Stdout.WriteString(line)

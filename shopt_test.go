@@ -75,7 +75,7 @@ func TestShoptTracingCanBeEnabled(t *testing.T) {
 	// ----------------------------------------------------------------
 	// perform the change
 
-	GetShellOptions().EnableTrace(NewDest())
+	GetShellOptions().EnableTrace(NewTextBuffer())
 
 	// clean up after ourselves
 	defer GetShellOptions().DisableTrace()
@@ -96,7 +96,7 @@ func TestShoptTracingCanBeDisabled(t *testing.T) {
 	// setup your test
 
 	expectedResult := false
-	GetShellOptions().EnableTrace(NewDest())
+	GetShellOptions().EnableTrace(NewTextBuffer())
 
 	// ----------------------------------------------------------------
 	// perform the change
@@ -120,7 +120,7 @@ func TestShoptTracefWritesToTheTraceOutput(t *testing.T) {
 
 	testData := "this is my test output"
 	expectedResult := "+ " + testData + "\n"
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -145,7 +145,7 @@ func TestShoptTraceOutputWritesToTheTraceOutput(t *testing.T) {
 
 	testData := "this is my test output"
 	expectedResult := "+ test> " + testData + "\n"
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -170,7 +170,7 @@ func TestShoptTraceOsStderrWritesToTheTraceOutput(t *testing.T) {
 
 	testData := "this is my test output"
 	expectedResult := "+ os.Stderr> " + testData + "\n"
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -195,7 +195,7 @@ func TestShoptTraceOsStdoutWritesToTheTraceOutput(t *testing.T) {
 
 	testData := "this is my test output"
 	expectedResult := "+ os.Stdout> " + testData + "\n"
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -220,7 +220,7 @@ func TestShoptTracePipeStderrWritesToTheTraceOutput(t *testing.T) {
 
 	testData := "this is my test output"
 	expectedResult := "+ p.Stderr> " + testData + "\n"
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -245,7 +245,7 @@ func TestShoptTracePipeStdoutWritesToTheTraceOutput(t *testing.T) {
 
 	testData := "this is my test output"
 	expectedResult := "+ p.Stdout> " + testData + "\n"
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

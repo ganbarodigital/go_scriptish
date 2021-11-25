@@ -159,7 +159,7 @@ func TestRmFileWritesToTheTraceOutput(t *testing.T) {
 	expectedResult := `+ RmFile("$1")
 + => RmFile("` + tmpFilename + `")
 `
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves

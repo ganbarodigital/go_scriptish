@@ -56,10 +56,10 @@ func RunList(pl *List) Command {
 		pl.Exec(params...)
 
 		// append the sub-list's stdout to our own
-		io.Copy(p.Stdout, pl.Pipe.Stdout.NewReader())
+		io.Copy(p.Stdout, pl.Pipe.Stdout)
 
 		// append the sub-list's stderr to our own
-		io.Copy(p.Stderr, pl.Pipe.Stderr.NewReader())
+		io.Copy(p.Stderr, pl.Pipe.Stderr)
 
 		// all done
 		return pl.StatusError()

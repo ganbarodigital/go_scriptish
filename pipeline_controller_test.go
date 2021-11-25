@@ -51,7 +51,7 @@ func TestPipelineControllerWritesNothingToTheTraceOutputIfStatusCodeIsZero(t *te
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -83,7 +83,7 @@ func TestPipelineControllerWritesNonZeroStatusCodesToTheTraceOutput(t *testing.T
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
@@ -117,7 +117,7 @@ func TestPipelineControllerWritesErrorsToTheTraceOutput(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	dest := NewDest()
+	dest := NewTextBuffer()
 	GetShellOptions().EnableTrace(dest)
 
 	// clean up after ourselves
