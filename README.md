@@ -28,7 +28,7 @@ result, err := scriptish.NewPipeline(
   - [What Is A Pipeline?](#what-is-a-pipeline)
   - [What Happens When A Pipeline Runs?](#what-happens-when-a-pipeline-runs)
   - [How Are Errors Handled?](#how-are-errors-handled)
-  - [Sources, Filters, Sinks, Logic and Capture Methods](#sources-filters-sinks-logic-and-capture-methods)
+  - [Sources, Filters, Sinks, Logic, Redirects and Capture Methods](#sources-filters-sinks-logic-redirects-and-capture-methods)
 - [Creating A Pipeline](#creating-a-pipeline)
   - [NewPipeline()](#newpipeline)
   - [NewPipelineFunc()](#newpipelinefunc)
@@ -101,6 +101,21 @@ result, err := scriptish.NewPipeline(
   - [ToStderr()](#tostderr)
   - [ToStdout()](#tostdout)
   - [WriteToFile()](#writetofile)
+- [Redirects](#redirects)
+  - [What Are Redirects?](#what-are-redirects)
+  - [How Do We Use Redirects?](#how-do-we-use-redirects)
+  - [AppendStdoutToFilename](#appendstdouttofilename)
+  - [AppendStderrToFilename](#appendstderrtofilename)
+  - [AppendStdoutToTextWriter](#appendstdouttotextwriter)
+  - [AppendStderrToTextWriter](#appendstderrtotextwriter)
+  - [OverwriteFilenameWithStdout](#overwritefilenamewithstdout)
+  - [OverwriteFilenameWithStderr](#overwritefilenamewithstderr)
+  - [RedirectStderrToStdout](#redirectstderrtostdout)
+  - [RedirectStderrToDevNull](#redirectstderrtodevnull)
+  - [RedirectStderrToTmpfile](#redirectstderrtotmpfile)
+  - [RedirectStdoutToDevNull](#redirectstdouttodevnull)
+  - [RedirectStdoutToStderr](#redirectstdouttostderr)
+  - [RedirectStdoutToTmpfile](#redirectstdouttotmpfile)
 - [Builtins](#builtins)
   - [Chmod()](#chmod)
   - [Mkdir()](#mkdir)
@@ -280,14 +295,15 @@ You might not be aware of it, but by default, a pipeline in a UNIX shell script 
 
 Philosophically, we believe that good software engineering practices are more important than UNIX shell compatibility.
 
-### Sources, Filters, Sinks, Logic and Capture Methods
+### Sources, Filters, Sinks, Logic, Redirects and Capture Methods
 
-Scriptish commands fall into one of four categories:
+Scriptish commands fall into one of five categories:
 
 * [Sources](#sources) create content in the pipeline, e.g. `scriptish.CatFile()`. They ignore whatever's already in the pipeline.
 * [Filters](#filters) do something with (or to) the pipeline's content, and they write the results back into the pipeline. These results form the input content for the next pipeline command.
 * [Sinks](#sinks) do something with (or two) the pipeline's content, and don't write any new content back into the pipeline.
 * [Logic](#logic-calls) implement support for `if`-like statements directly in Scriptish.
+* [Redirects](#redirects) allow you to send output to somewhere else, such as a temporary file or /dev/null.
 
 A pipeline normally:
 
@@ -1459,6 +1475,71 @@ err := scriptish.NewPipeline(
     scriptish.WriteToFile("/path/to/new_file.txt"),
 ).Exec().Error()
 ```
+
+## Redirects
+
+### What Are Redirects?
+
+Many UNIX shell scripts send the output of individual commands (or even whole pipelines) to somewhere else. We've created equivalent functionality for Scriptish users:
+
+Shell Redirect   | Scriptish Equiv | Description
+-----------------|---------------|--------------
+`>&2`            | [RedirectStdoutToStderr](#redirectstdouttostderr) | Anything written to stdout goes to stderr instead.
+`2>&1`           | [RedirectStderrToStdout](#redirectstderrtostdout) | Anything written to stderr goes to stdout instead.
+`2>/dev/null`    | [RedirectStderrToDevNull](#redirectstderrtodevnull) | Anything written to stderr is thrown away.
+`> /dev/null`    | [RedirectStdoutToDevNull](#redirectstdouttodevnull) | Anything written to stdout is thrown away.
+`> <filename>`   | [OverwriteFilenameWithStdout](#overwritefilenamewithstderr) | Anything written to stdout is written to the given file instead, replacing the file's existing contents.
+`2> <filename>`  | [OverwriteFilenameWithStderr](#overwritefilenamewithstderr) | Anything written to stderr is written to the given file instead, replacing the file's existing contents.
+`>> <filename>`  | [AppendStdoutToFilename](#appendstdouttofilename) | Anything written to stdout is appended to the given file instead.
+`2>> <filename>` | [AppendStderrToFilename](#appendstderrtofilename) | Anything written to stderr is appended to the given file instead.
+`TMPFILE=$(mktemp /tmp/foo.XXXX) ; echo "output" > $TMPFILE` | [RedirectStdoutToTmpfile](#redirectstdouttotmpfile) | Anything written to stdout is written to a temporary file instead.
+`TMPFILE=$(mktemp /tmp/foo.XXXX) ; echo "output" 2> $TMPFILE` | [RedirectStderrToTmpfile](#redirectstderrtotmpfile) | Anything written to stderr is written to a temporary file instead.
+n/a | [AppendStdoutToTextWriter](#appendstdouttotextwriter) | Anything written to pipe.Stdout is written to the given Golang file instead.
+n/a | [AppendStderrToTextWriter](#appendstderrtotextwriter) | Anything written to pipe.Stderr is written to the given Golang file instead.
+
+### How Do We Use Redirects?
+
+To use a redirect, simply pass it as a parameter to any of the [sources](#sources) or [filters](#filters). For example:
+
+```golang
+pipeline := NewPipeline(
+    // write text to the pipeline's stdout
+    // but redirect the pipeline's stdout to /dev/null
+    Echo("this is a test", RedirectStdoutToDevNull),
+)
+pipeline.Exec()
+
+// output will be empty
+output := pipeline.String()
+```
+
+You can pass more than one redirect in, too:
+
+```golang
+pipeline := NewPipeline(
+    // write text to the pipeline's stderr
+    // but redirect the pipeline's stderr to the pipeline's stdout
+    // and redirect the pipeline's stdout to /dev/null
+    EchoToStderr("this is a test", RedirectStdoutToDevNull, RedirectStderrToStdout)
+)
+pipeline.Exec()
+
+// output will be empty
+output := pipeline.String()
+```
+
+### AppendStdoutToFilename
+### AppendStderrToFilename
+### AppendStdoutToTextWriter
+### AppendStderrToTextWriter
+### OverwriteFilenameWithStdout
+### OverwriteFilenameWithStderr
+### RedirectStderrToStdout
+### RedirectStderrToDevNull
+### RedirectStderrToTmpfile
+### RedirectStdoutToDevNull
+### RedirectStdoutToStderr
+### RedirectStdoutToTmpfile
 
 ## Builtins
 
