@@ -56,11 +56,8 @@ func RedirectStdoutToStderr() *StepOption {
 			return StatusOkay, nil
 		},
 		func(p *Pipe) (int, error) {
-			// put the old Stdout back
-			//
-			// this makes sure that any reads from Stdout do not move
-			// the read offset in Stderr
-			p.PopStdout()
+			// put the old Stdout back, but leave Stderr alone!
+			p.PopStdoutOnly()
 
 			// all done
 			return StatusOkay, nil
