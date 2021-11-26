@@ -17,6 +17,7 @@
 
 * Added new category Redirects
   - added `AppendStdoutToFilename()`
+  - added `AppendStderrToFilename()`
   - added `RedirectStderrToDevNull()`
   - added `RedirectStdoutToDevNull()`
   - added `RedirectStdoutToStderr()`

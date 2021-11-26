@@ -1548,6 +1548,22 @@ ExecPipeline(
 ```
 
 ### AppendStderrToFilename
+
+`AppendStderrToFilename()` redirects the pipe's Stderr to the given filename.
+
+Anything written to the pipe's Stderr is appended to the named file. If the file does not exist, it is created.
+
+It is an emulation of UNIX shell scripting's `2>> <filename>`.
+
+```golang
+pipeline := scriptish.NewPipeline(
+    scriptish.Exec(
+        []string{"go", "test"},
+        scriptish.AppendStderrToFilename("test.err"),
+    )
+)
+```
+
 ### AppendStdoutToTextWriter
 ### AppendStderrToTextWriter
 ### OverwriteFilenameWithStdout
@@ -1593,9 +1609,7 @@ output := pipeline.String()
 
 `RedirectStdoutToStderr()` makes all output to the pipe's Stdout go to the pipe's Stderr instead.
 
-It is an emulation of UNIX shell scripting's `>&2`.
-
-It's mostly been added for completeness.
+It is an emulation of UNIX shell scripting's `>&2`. It's mostly been added for completeness.
 
 ```golang
 pipeline := scriptish.NewPipeline(
