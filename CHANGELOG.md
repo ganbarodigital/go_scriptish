@@ -16,6 +16,7 @@
 ### New
 
 * Added new category Redirects
+  - added `AppendStdoutToFilename()`
   - added `RedirectStderrToDevNull()`
   - added `RedirectStdoutToDevNull()`
 * All builtins, sources, filters and sinks now support Redirects

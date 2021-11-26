@@ -1503,7 +1503,7 @@ To use a redirect, simply pass it as a parameter to any of the [sources](#source
 pipeline := scriptish.NewPipeline(
     // write text to the pipeline's stdout
     // but redirect the pipeline's stdout to /dev/null
-    scriptish.Echo("this is a test", scriptish.RedirectStdoutToDevNull),
+    scriptish.Echo("this is a test", scriptish.RedirectStdoutToDevNull()),
 )
 pipeline.Exec()
 
@@ -1518,7 +1518,11 @@ pipeline := NewPipeline(
     // write text to the pipeline's stderr
     // but redirect the pipeline's stderr to the pipeline's stdout
     // and redirect the pipeline's stdout to /dev/null
-    EchoToStderr("this is a test", RedirectStdoutToDevNull, RedirectStderrToStdout)
+    scriptish.EchoToStderr(
+        "this is a test",
+        scriptish.RedirectStdoutToDevNull(),
+        scriptish.RedirectStderrToStdout(),
+    )
 )
 pipeline.Exec()
 
@@ -1527,6 +1531,22 @@ output := pipeline.String()
 ```
 
 ### AppendStdoutToFilename
+
+`AppendStdoutToFilename()` redirects the pipe's stdout to the given filename.
+
+Anything written to the pipe's stdout is appended to the named file. If the file does not exist, it is created.
+
+It is an emulation of UNIX shell scripting's `>> <filename>`.
+
+```golang
+ExecPipeline(
+    scriptish.Exec(
+        []string{"go", "test"},
+        scriptish.AppendStdoutToFilename("test.out"),
+    )
+)
+```
+
 ### AppendStderrToFilename
 ### AppendStdoutToTextWriter
 ### AppendStderrToTextWriter
