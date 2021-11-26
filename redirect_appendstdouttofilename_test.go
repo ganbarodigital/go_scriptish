@@ -50,7 +50,7 @@ func TestAppendStdoutToFilenameWritesPipelineToGivenFile(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile-*")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendsdouttofilename-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -118,7 +118,7 @@ func TestAppendStdoutToFilenameWritesToTheTraceOutputWhenInList(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile-*")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendstdouttofilename-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -168,7 +168,7 @@ func TestAppendStdoutToFilenameWritesToTheTraceOutputWhenInPipeline(t *testing.T
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile-*")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendstdouttofilename-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -215,7 +215,7 @@ func TestAppendStdoutToFilenameEmptiesThePipeWhenInList(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile-*")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendstdouttofilename-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
@@ -252,7 +252,7 @@ func TestAppendStdoutToFilenameEmptiesThePipeWhenInPipeline(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
-	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendtofile-*")).TrimmedString()
+	tmpFilename, err := ExecPipeline(MkTempFile(os.TempDir(), "scriptish-appendstdouttofilename-*")).TrimmedString()
 	assert.Nil(t, err)
 
 	// clean up after ourselves
