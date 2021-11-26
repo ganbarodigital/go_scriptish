@@ -19,6 +19,7 @@
   - added `AppendStdoutToFilename()`
   - added `RedirectStderrToDevNull()`
   - added `RedirectStdoutToDevNull()`
+  - added `RedirectStdoutToStderr()`
 * All builtins, sources, filters and sinks now support Redirects
 
 ### Fixes

@@ -1590,6 +1590,28 @@ output := pipeline.String()
 ```
 
 ### RedirectStdoutToStderr
+
+`RedirectStdoutToStderr()` makes all output to the pipe's Stdout go to the pipe's Stderr instead.
+
+It is an emulation of UNIX shell scripting's `>&2`.
+
+It's mostly been added for completeness.
+
+```golang
+pipeline := scriptish.NewPipeline(
+    // write text to the pipeline's Stdout
+    // but redirect Stdout to Stderr
+    scriptish.Echo("this is a test", scriptish.RedirectStdoutToStderr()),
+)
+pipeline.Exec()
+
+// stdout will be empty
+stdout := pipeline.Stdout.String()
+
+// stderr will contain "this is a test"
+stderr := pipeline.Stderr.String()
+```
+
 ### RedirectStdoutToTmpfile
 
 ## Builtins
