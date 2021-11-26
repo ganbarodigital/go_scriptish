@@ -72,7 +72,7 @@ func AppendStdoutToFilename(filename string) *StepOption {
 			}
 
 			// make sure the pipe's stdout points at our open file
-			p.Stdout = NewTextFile(fh)
+			p.PushStdout(NewTextFile(fh))
 
 			// all done
 			return StatusOkay, nil
@@ -83,9 +83,10 @@ func AppendStdoutToFilename(filename string) *StepOption {
 				fh.Close()
 			}
 
-			// now that the file is closed, users should see an empty stdout
-			p.SetNewStdout()
+			// go back to the pipe's previous Stdout
+			p.PopStdout()
 
+			// all done
 			return StatusOkay, nil
 		},
 	)

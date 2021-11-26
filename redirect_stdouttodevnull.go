@@ -52,11 +52,19 @@ func RedirectStdoutToDevNull() *StepOption {
 			Tracef("RedirectStdoutToDevNull()")
 
 			// replace the existing Stdout with a new one
-			p.Stdout = ioextra.NewTextDevNull()
+			p.PushStdout(ioextra.NewTextDevNull())
 
 			// all done
 			return StatusOkay, nil
 		},
-		nil,
+		func(p *Pipe) (int, error) {
+			// put the old Stdout back
+			//
+			// this makes sure that any list works as it should
+			p.PopStdout()
+
+			// all done
+			return StatusOkay, nil
+		},
 	)
 }

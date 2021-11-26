@@ -53,11 +53,19 @@ func RedirectStderrToDevNull() *StepOption {
 
 			// replace the existing Stderr with one that throws everything
 			// away
-			p.Stderr = ioextra.NewTextDevNull()
+			p.PushStderr(ioextra.NewTextDevNull())
 
 			// all done
 			return StatusOkay, nil
 		},
-		nil,
+		func(p *Pipe) (int, error) {
+			// put the old Stderr back
+			//
+			// this makes sure that any list works as it should
+			p.PopStderr()
+
+			// all done
+			return StatusOkay, nil
+		},
 	)
 }
