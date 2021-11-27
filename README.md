@@ -1650,6 +1650,23 @@ pipeline := scriptish.NewPipeline(
 
 ### RedirectStderrToTextReaderWriter()
 
+RedirectStderrToTextReaderWriter makes all output to the pipe's Stderr go to the given `ioextra.TextReaderWriter` instead.
+
+It gives you a Golang-native way to redirect the output to wherever you need it to.
+
+There's no direct equivalent in UNIX shell script programming.
+
+```golang
+func captureTestErrors(dest *os.File) (string, error) {
+    pipeline := scriptish.NewPipeline(
+        scriptish.Exec(
+            []string{"npm", "test"},
+            RedirectStderrToTextReaderWriter(NewTextFile(dest)),
+        ),
+    )
+    return pipeline.Exec().String()
+}
+```
 
 ### RedirectStdoutToDevNull()
 
