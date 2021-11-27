@@ -46,13 +46,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCatStdinReadsFromProgramStdin(t *testing.T) {
+func TestCatOStdinReadsFromProgramStdin(t *testing.T) {
 	// ----------------------------------------------------------------
 	// setup your test
 
 	expectedResult := "hello world\nhave a nice day\n"
 	pipeline := NewPipeline(
-		CatStdin(),
+		CatOsStdin(),
 	)
 
 	r, w, _ := os.Pipe()
@@ -77,7 +77,7 @@ func TestCatStdinReadsFromProgramStdin(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
-func TestCatStdinWritesToTheTraceOutput(t *testing.T) {
+func TestCatOsStdinWritesToTheTraceOutput(t *testing.T) {
 
 	// ----------------------------------------------------------------
 	// setup your test
@@ -92,7 +92,7 @@ func TestCatStdinWritesToTheTraceOutput(t *testing.T) {
 
 	defer func() { os.Stdin = oldStdin }()
 
-	expectedResult := `+ CatStdin()
+	expectedResult := `+ CatOsStdin()
 + p.Stdout> hello world
 `
 	dest := NewTextBuffer()
@@ -102,7 +102,7 @@ func TestCatStdinWritesToTheTraceOutput(t *testing.T) {
 	defer GetShellOptions().DisableTrace()
 
 	pipeline := NewPipeline(
-		CatStdin(),
+		CatOsStdin(),
 	)
 
 	// ----------------------------------------------------------------

@@ -57,7 +57,7 @@ result, err := scriptish.NewPipeline(
   - [Basename()](#basename)
   - [Cat()](#cat)
   - [CatFile()](#catfile)
-  - [CatStdin()](#catstdin)
+  - [CatOsStdin()](#catosstdin)
   - [Dirname()](#dirname)
   - [Echo()](#echo)
   - [EchoArgs()](#echoargs)
@@ -882,13 +882,13 @@ result, err := scriptish.NewPipeline(
 ).Exec().String()
 ```
 
-### CatStdin()
+### CatOsStdin()
 
-`CatStdin()` copies the program's `stdin` (`os.Stdin` in Golang terms) to the pipeline's `Stdout`.
+`CatOsStdin()` copies the program's `stdin` (`os.Stdin` in Golang terms) to the pipeline's `Stdout`.
 
 ```go
 result, err := scriptish.NewPipeline(
-    scriptish.CatStdin(),
+    scriptish.CatOsStdin(),
 ).Exec().String()
 ```
 

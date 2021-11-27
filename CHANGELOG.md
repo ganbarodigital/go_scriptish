@@ -8,6 +8,7 @@ Scriptish v2.0 is driven around adding support for UNIX shell-like IO redirectio
 
 * Pipelines and Lists now take a SequenceStep, not a Command
   - allows us to implement Redirects
+* `scriptish.CatStdin()` is now `scriptish.CatOsStdin()`
 * `scriptish.Exec()` now requires a `[]string`.
 
 ### Dependencies

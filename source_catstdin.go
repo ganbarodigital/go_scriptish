@@ -43,14 +43,14 @@ import (
 	"os"
 )
 
-// CatStdin writes the contents of the program's stdin to
-// the pipeline's stdout
-func CatStdin(opts ...*StepOption) *SequenceStep {
+// CatOsStdin writes the contents of the program's Stdin to
+// the pipeline's Stdout
+func CatOsStdin(opts ...*StepOption) *SequenceStep {
 	// build our Scriptish command
 	return NewSequenceStep(
 		func(p *Pipe) (int, error) {
 			// debugging support
-			Tracef("CatStdin()")
+			Tracef("CatOsStdin()")
 
 			// attach the program's stdin to our pipe
 			p.Stdin = NewTextFile(os.Stdin)
