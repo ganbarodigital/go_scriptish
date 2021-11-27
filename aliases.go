@@ -100,3 +100,6 @@ var NewTextBuffer = ioextra.NewTextBuffer
 
 // NewTextFile is an alias for the underlying ioextra library's NewTextFile
 var NewTextFile = ioextra.NewTextFile
+
+// NewTextIOWrapper is an alias for the underlying ioextra library's NewTextIOWrapper
+var NewTextIOWrapper = ioextra.NewTextIOWrapper
