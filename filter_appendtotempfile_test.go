@@ -86,7 +86,7 @@ func TestAppendToTempFileSetsErrorWhenTempFileCannotBeCreated(t *testing.T) {
 	expectedResult := ""
 
 	pipeline := NewPipeline(
-		AppendToTempFile("/does/not/exist", "scriptish-*"),
+		AppendToTempFile("/does/not/exist", "scriptish-appendtotempfile-*"),
 	)
 
 	// ----------------------------------------------------------------
@@ -168,7 +168,7 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 
 	// clean up after ourselves
 	tempFile, err := list.TrimmedString()
-	if err != nil {
+	if err == nil {
 		ExecPipeline(RmFile(tempFile))
 	}
 
@@ -188,13 +188,8 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInList(t *testing.T) {
 	// ----------------------------------------------------------------
 	// test the results
 
+	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, actualResult)
-
-	// clean up after ourselves
-	tempFile, err = list.TrimmedString()
-	if err == nil {
-		ExecPipeline(RmFile(tempFile))
-	}
 }
 
 func TestAppendToTempFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
@@ -244,7 +239,7 @@ func TestAppendToTempFileWritesToTheTraceOutputWhenInPipeline(t *testing.T) {
 
 	// clean up after ourselves
 	tempFile, err = pipeline.TrimmedString()
-	if err != nil {
+	if err == nil {
 		ExecPipeline(RmFile(tempFile))
 	}
 }
