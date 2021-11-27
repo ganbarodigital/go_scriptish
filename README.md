@@ -105,19 +105,17 @@ result, err := scriptish.NewPipeline(
 - [Redirects](#redirects)
   - [What Are Redirects?](#what-are-redirects)
   - [How Do We Use Redirects?](#how-do-we-use-redirects)
-  - [AppendStdoutToFilename](#appendstdouttofilename)
-  - [AppendStderrToFilename](#appendstderrtofilename)
+  - [AppendStdoutToFilename()](#appendstdouttofilename)
+  - [AppendStderrToFilename()](#appendstderrtofilename)
   - [AppendStdoutToTextWriter](#appendstdouttotextwriter)
   - [AppendStderrToTextWriter](#appendstderrtotextwriter)
-  - [AttachOsStdin](#attachosstdin)
-  - [OverwriteFilenameWithStdout](#overwritefilenamewithstdout)
-  - [OverwriteFilenameWithStderr](#overwritefilenamewithstderr)
-  - [RedirectStderrToStdout](#redirectstderrtostdout)
-  - [RedirectStderrToDevNull](#redirectstderrtodevnull)
-  - [RedirectStderrToTmpfile](#redirectstderrtotmpfile)
-  - [RedirectStdoutToDevNull](#redirectstdouttodevnull)
-  - [RedirectStdoutToStderr](#redirectstdouttostderr)
-  - [RedirectStdoutToTmpfile](#redirectstdouttotmpfile)
+  - [AttachOsStdin()](#attachosstdin)
+  - [OverwriteFilenameWithStdout()](#overwritefilenamewithstdout)
+  - [OverwriteFilenameWithStderr()](#overwritefilenamewithstderr)
+  - [RedirectStderrToStdout()](#redirectstderrtostdout)
+  - [RedirectStderrToDevNull()](#redirectstderrtodevnull)
+  - [RedirectStdoutToDevNull()](#redirectstdouttodevnull)
+  - [RedirectStdoutToStderr()](#redirectstdouttostderr)
 - [Builtins](#builtins)
   - [Chmod()](#chmod)
   - [Mkdir()](#mkdir)
@@ -1499,7 +1497,7 @@ Shell Redirect   | Scriptish Equiv | Description
 `2>&1`           | [RedirectStderrToStdout](#redirectstderrtostdout) | Anything written to stderr goes to stdout instead.
 `2>/dev/null`    | [RedirectStderrToDevNull](#redirectstderrtodevnull) | Anything written to stderr is thrown away.
 `> /dev/null`    | [RedirectStdoutToDevNull](#redirectstdouttodevnull) | Anything written to stdout is thrown away.
-`> <filename>`   | [OverwriteFilenameWithStdout](#overwritefilenamewithstderr) | Anything written to stdout is written to the given file instead, replacing the file's existing contents.
+`> <filename>`   | [OverwriteFilenameWithStdout](#overwritefilenamewithstdout) | Anything written to stdout is written to the given file instead, replacing the file's existing contents.
 `2> <filename>`  | [OverwriteFilenameWithStderr](#overwritefilenamewithstderr) | Anything written to stderr is written to the given file instead, replacing the file's existing contents.
 `>> <filename>`  | [AppendStdoutToFilename](#appendstdouttofilename) | Anything written to stdout is appended to the given file instead.
 `2>> <filename>` | [AppendStderrToFilename](#appendstderrtofilename) | Anything written to stderr is appended to the given file instead.
@@ -1542,7 +1540,7 @@ pipeline.Exec()
 output := pipeline.String()
 ```
 
-### AppendStdoutToFilename
+### AppendStdoutToFilename()
 
 `AppendStdoutToFilename()` redirects the pipe's stdout to the given filename.
 
@@ -1559,7 +1557,7 @@ ExecPipeline(
 )
 ```
 
-### AppendStderrToFilename
+### AppendStderrToFilename()
 
 `AppendStderrToFilename()` redirects the pipe's Stderr to the given filename.
 
@@ -1578,7 +1576,7 @@ pipeline := scriptish.NewPipeline(
 
 ### AppendStdoutToTextWriter
 ### AppendStderrToTextWriter
-### AttachOsStdin
+### AttachOsStdin()
 
 `AttachOsStdin()` sets the pipe's Stdin to read from the program's os.Stdin.
 
@@ -1589,7 +1587,7 @@ pipeline := scriptish.NewPipeline(
 input, err := pipeline.Exec().String()
 ```
 
-### OverwriteFilenameWithStdout
+### OverwriteFilenameWithStdout()
 
 `OverwriteFilenameWithStdout()` redirects the pipe's Stdout to the given filename.
 
@@ -1604,7 +1602,7 @@ copyFile := scriptish.NewPipeline(
 copyFile.Exec("some-input-file", "some-output-file")
 ```
 
-### OverwriteFilenameWithStderr
+### OverwriteFilenameWithStderr()
 
 `OverwriteFilenameWithStderr()` redirects the pipe's Stderr to the given filename.
 
@@ -1622,7 +1620,7 @@ captureTests := scriptish.NewPipeline(
 captureTests.Exec("test.out")
 ```
 
-### RedirectStderrToStdout
+### RedirectStderrToStdout()
 
 `RedirectStderrToStdout()` makes all output to the pipe's Stderr go to the pipe's Stdout instead.
 
@@ -1637,7 +1635,7 @@ pipeline := scriptish.NewPipeline(
 ).Exec()
 ```
 
-### RedirectStderrToDevNull
+### RedirectStderrToDevNull()
 
 `RedirectStderrToDevNull()` replaces the pipe's Stderr with an `ioextra.TextDevNull`.
 
@@ -1652,8 +1650,7 @@ pipeline := scriptish.NewPipeline(
 ).Exec()
 ```
 
-### RedirectStderrToTmpfile
-### RedirectStdoutToDevNull
+### RedirectStdoutToDevNull()
 
 `RedirectStdoutToDevNull()` replaces the pipe's Stdout with an ioextra.TextDevNull *before* the command runs.
 
@@ -1673,7 +1670,7 @@ pipeline.Exec()
 output := pipeline.String()
 ```
 
-### RedirectStdoutToStderr
+### RedirectStdoutToStderr()
 
 `RedirectStdoutToStderr()` makes all output to the pipe's Stdout go to the pipe's Stderr instead.
 
@@ -1693,8 +1690,6 @@ stdout := pipeline.Stdout.String()
 // stderr will contain "this is a test"
 stderr := pipeline.Stderr.String()
 ```
-
-### RedirectStdoutToTmpfile
 
 ## Builtins
 
