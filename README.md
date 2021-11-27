@@ -55,6 +55,7 @@ result, err := scriptish.NewPipeline(
 - [From Bash To Scriptish](#from-bash-to-scriptish)
 - [Sources](#sources)
   - [Basename()](#basename)
+  - [Cat()](#cat)
   - [CatFile()](#catfile)
   - [CatStdin()](#catstdin)
   - [Dirname()](#dirname)
@@ -860,6 +861,17 @@ result, err := scriptish.NewPipeline(
 ).Exec().TrimmedString()
 ```
 
+### Cat()
+
+`Cat()` writes the remaining contents of the pipe's Stdin to the pipe's Stdout.
+
+```go
+result, err := scriptish.NewPipeline(
+    // read from the program's os.Stdin
+    scriptish.Cat(AttachOsStdin()),
+).Exec().String()
+```
+
 ### CatFile()
 
 `CatFile()` writes the contents of a file to the pipeline's `Stdout`.
@@ -1481,7 +1493,7 @@ err := scriptish.NewPipeline(
 Many UNIX shell scripts send the output of individual commands (or even whole pipelines) to somewhere else. We've created equivalent functionality for Scriptish users:
 
 Shell Redirect   | Scriptish Equiv | Description
------------------|---------------|--------------
+-----------------|-----------------|--------------
 `>&2`            | [RedirectStdoutToStderr](#redirectstdouttostderr) | Anything written to stdout goes to stderr instead.
 `2>&1`           | [RedirectStderrToStdout](#redirectstderrtostdout) | Anything written to stderr goes to stdout instead.
 `2>/dev/null`    | [RedirectStderrToDevNull](#redirectstderrtodevnull) | Anything written to stderr is thrown away.
@@ -1494,6 +1506,7 @@ Shell Redirect   | Scriptish Equiv | Description
 `TMPFILE=$(mktemp /tmp/foo.XXXX) ; echo "output" 2> $TMPFILE` | [RedirectStderrToTmpfile](#redirectstderrtotmpfile) | Anything written to stderr is written to a temporary file instead.
 n/a | [AppendStdoutToTextWriter](#appendstdouttotextwriter) | Anything written to pipe.Stdout is written to the given Golang file instead.
 n/a | [AppendStderrToTextWriter](#appendstderrtotextwriter) | Anything written to pipe.Stderr is written to the given Golang file instead.
+n/a | [AttachOsStdin](#attachosstdin) | Read from the program's `os.Stdin`.
 
 ### How Do We Use Redirects?
 

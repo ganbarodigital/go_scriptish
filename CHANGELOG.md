@@ -2,6 +2,8 @@
 
 ## develop
 
+Scriptish v2.0 is driven around adding support for UNIX shell-like IO redirection.
+
 ### B/C Breaks
 
 * Pipelines and Lists now take a SequenceStep, not a Command
@@ -22,6 +24,8 @@
   - added `RedirectStdoutToDevNull()`
   - added `RedirectStdoutToStderr()`
 * All builtins, sources, filters and sinks now support Redirects
+* New source(s):
+  - added `Cat()`
 
 ### Fixes
 
