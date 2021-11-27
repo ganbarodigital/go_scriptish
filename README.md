@@ -1574,7 +1574,7 @@ pipeline := scriptish.NewPipeline(
         []string{"go", "test"},
         scriptish.AppendStderrToFilename("test.err"),
     )
-)
+).Exec()
 ```
 
 ### AppendStdoutToTextWriter
@@ -1582,6 +1582,20 @@ pipeline := scriptish.NewPipeline(
 ### OverwriteFilenameWithStdout
 ### OverwriteFilenameWithStderr
 ### RedirectStderrToStdout
+
+`RedirectStderrToStdout()` makes all output to the pipe's Stderr go to the pipe's Stdout instead.
+
+It is an emulation of UNIX shell scripting's `2>&1`.
+
+```golang
+pipeline := scriptish.NewPipeline(
+    scriptish.Exec(
+        []string{"npm", "test"},
+        scriptish.RedirectStderrToStdout(),
+    )
+).Exec()
+```
+
 ### RedirectStderrToDevNull
 
 `RedirectStderrToDevNull()` replaces the pipe's Stderr with an `ioextra.TextDevNull`.
