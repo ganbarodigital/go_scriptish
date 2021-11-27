@@ -109,6 +109,7 @@ result, err := scriptish.NewPipeline(
   - [AppendStderrToFilename](#appendstderrtofilename)
   - [AppendStdoutToTextWriter](#appendstdouttotextwriter)
   - [AppendStderrToTextWriter](#appendstderrtotextwriter)
+  - [AttachOsStdin](#attachosstdin)
   - [OverwriteFilenameWithStdout](#overwritefilenamewithstdout)
   - [OverwriteFilenameWithStderr](#overwritefilenamewithstderr)
   - [RedirectStderrToStdout](#redirectstderrtostdout)
@@ -1579,6 +1580,17 @@ pipeline := scriptish.NewPipeline(
 
 ### AppendStdoutToTextWriter
 ### AppendStderrToTextWriter
+### AttachOsStdin
+
+`AttachOsStdin()` sets the pipe's Stdin to read from the program's os.Stdin.
+
+```golang
+pipeline := scriptish.NewPipeline(
+    scriptish.Cat(AttachOsStdin())
+)
+input, err := pipeline.Exec().String()
+```
+
 ### OverwriteFilenameWithStdout
 ### OverwriteFilenameWithStderr
 ### RedirectStderrToStdout

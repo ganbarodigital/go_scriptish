@@ -81,8 +81,6 @@ const StatusNotOkay = pipe.StatusNotOkay
 // ErrNonZeroStatusCode
 type ErrNonZeroStatusCode = pipe.ErrNonZeroStatusCode
 
-var AttachOsStdin = pipe.AttachOsStdin
-
 // TextFile is an alias for the underlying ioextra library's TextFile
 type TextFile = ioextra.TextFile
 
