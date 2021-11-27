@@ -22,6 +22,7 @@ Scriptish v2.0 is driven around adding support for UNIX shell-like IO redirectio
   - added `AppendStdoutToFilename()`
   - added `AppendStderrToFilename()`
   - added `AttachOsStdin()`
+  - added `OverwriteFilenameWithStderr()`
   - added `OverwriteFilenameWithStdout()`
   - added `RedirectStderrToDevNull()`
   - added `RedirectStderrToStdout()`

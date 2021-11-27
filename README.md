@@ -1605,6 +1605,23 @@ copyFile.Exec("some-input-file", "some-output-file")
 ```
 
 ### OverwriteFilenameWithStderr
+
+`OverwriteFilenameWithStderr()` redirects the pipe's Stderr to the given filename.
+
+If the file does not exist, it is created. If the file does exist, its contents are replaced.
+
+It is an emulation of UNIX shell scripting's `2> <filename>`.
+
+```golang
+captureTests := scriptish.NewPipeline(
+    scriptish.Exec(
+        []string{"npm", "test"},
+        scriptish.OverwriteFilenameWithStderr("$1")
+    ),
+)
+captureTests.Exec("test.out")
+```
+
 ### RedirectStderrToStdout
 
 `RedirectStderrToStdout()` makes all output to the pipe's Stderr go to the pipe's Stdout instead.
