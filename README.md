@@ -1503,8 +1503,6 @@ Shell Redirect   | Scriptish Equiv | Description
 `2> <filename>`  | [OverwriteFilenameWithStderr](#overwritefilenamewithstderr) | Anything written to stderr is written to the given file instead, replacing the file's existing contents.
 `>> <filename>`  | [AppendStdoutToFilename](#appendstdouttofilename) | Anything written to stdout is appended to the given file instead.
 `2>> <filename>` | [AppendStderrToFilename](#appendstderrtofilename) | Anything written to stderr is appended to the given file instead.
-`TMPFILE=$(mktemp /tmp/foo.XXXX) ; echo "output" > $TMPFILE` | [RedirectStdoutToTmpfile](#redirectstdouttotmpfile) | Anything written to stdout is written to a temporary file instead.
-`TMPFILE=$(mktemp /tmp/foo.XXXX) ; echo "output" 2> $TMPFILE` | [RedirectStderrToTmpfile](#redirectstderrtotmpfile) | Anything written to stderr is written to a temporary file instead.
 n/a | [AppendStdoutToTextWriter](#appendstdouttotextwriter) | Anything written to pipe.Stdout is written to the given Golang file instead.
 n/a | [AppendStderrToTextWriter](#appendstderrtotextwriter) | Anything written to pipe.Stderr is written to the given Golang file instead.
 n/a | [AttachOsStdin](#attachosstdin) | Read from the program's `os.Stdin`.
@@ -1586,12 +1584,26 @@ pipeline := scriptish.NewPipeline(
 
 ```golang
 pipeline := scriptish.NewPipeline(
-    scriptish.Cat(AttachOsStdin())
+    scriptish.Cat(scriptish.AttachOsStdin())
 )
 input, err := pipeline.Exec().String()
 ```
 
 ### OverwriteFilenameWithStdout
+
+`OverwriteFilenameWithStdout()` redirects the pipe's Stdout to the given filename.
+
+If the file does not exist, it is created. If the file does exist, its contents are replaced.
+
+It is an emulation of UNIX shell scripting's `> <filename>`.
+
+```golang
+copyFile := scriptish.NewPipeline(
+    scriptish.CatFile("$1", scriptish.OverwriteFilenameWithStdout("$2")),
+)
+copyFile.Exec("some-input-file", "some-output-file")
+```
+
 ### OverwriteFilenameWithStderr
 ### RedirectStderrToStdout
 
