@@ -93,6 +93,10 @@ type TextReader = ioextra.TextReader
 // TextWriter is an alias for the underlying ioextra library's TextWriter
 type TextWriter = ioextra.TextWriter
 
+// TextReaderWriter is an alias for the underlying ioextra library's
+// TextReaderWriter
+type TextReaderWriter = ioextra.TextReaderWriter
+
 // NewTextBuffer is an alias for the underlying ioextra library's NewTextBuffer
 var NewTextBuffer = ioextra.NewTextBuffer
 

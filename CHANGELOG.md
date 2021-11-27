@@ -28,6 +28,7 @@ Scriptish v2.0 is driven around adding support for UNIX shell-like IO redirectio
   - added `RedirectStderrToStdout()`
   - added `RedirectStdoutToDevNull()`
   - added `RedirectStdoutToStderr()`
+  - added `RedirectStdoutToTextReaderWriter()`
 * All builtins, sources, filters and sinks now support Redirects
 * New source(s):
   - added `Cat()`

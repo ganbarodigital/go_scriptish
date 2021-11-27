@@ -107,15 +107,15 @@ result, err := scriptish.NewPipeline(
   - [How Do We Use Redirects?](#how-do-we-use-redirects)
   - [AppendStdoutToFilename()](#appendstdouttofilename)
   - [AppendStderrToFilename()](#appendstderrtofilename)
-  - [AppendStdoutToTextWriter](#appendstdouttotextwriter)
-  - [AppendStderrToTextWriter](#appendstderrtotextwriter)
   - [AttachOsStdin()](#attachosstdin)
   - [OverwriteFilenameWithStdout()](#overwritefilenamewithstdout)
   - [OverwriteFilenameWithStderr()](#overwritefilenamewithstderr)
   - [RedirectStderrToStdout()](#redirectstderrtostdout)
   - [RedirectStderrToDevNull()](#redirectstderrtodevnull)
+  - [RedirectStderrToTextReaderWriter()](#redirectstderrtotextreaderwriter)
   - [RedirectStdoutToDevNull()](#redirectstdouttodevnull)
   - [RedirectStdoutToStderr()](#redirectstdouttostderr)
+  - [RedirectStdoutToTextReaderWriter()](#redirectstdouttotextreaderwriter)
 - [Builtins](#builtins)
   - [Chmod()](#chmod)
   - [Mkdir()](#mkdir)
@@ -1501,8 +1501,8 @@ Shell Redirect   | Scriptish Equiv | Description
 `2> <filename>`  | [OverwriteFilenameWithStderr](#overwritefilenamewithstderr) | Anything written to stderr is written to the given file instead, replacing the file's existing contents.
 `>> <filename>`  | [AppendStdoutToFilename](#appendstdouttofilename) | Anything written to stdout is appended to the given file instead.
 `2>> <filename>` | [AppendStderrToFilename](#appendstderrtofilename) | Anything written to stderr is appended to the given file instead.
-n/a | [AppendStdoutToTextWriter](#appendstdouttotextwriter) | Anything written to pipe.Stdout is written to the given Golang file instead.
-n/a | [AppendStderrToTextWriter](#appendstderrtotextwriter) | Anything written to pipe.Stderr is written to the given Golang file instead.
+n/a | [RedirectStdoutToTextReaderWriter](#redirectstdouttotextreaderwriter) | Anything written to pipe.Stdout is written to the given Golang file instead.
+n/a | [RedirectStderrToTextReaderWriter](#redirectstderrtotextreaderwriter) | Anything written to pipe.Stderr is written to the given Golang file instead.
 n/a | [AttachOsStdin](#attachosstdin) | Read from the program's `os.Stdin`.
 
 ### How Do We Use Redirects?
@@ -1574,8 +1574,6 @@ pipeline := scriptish.NewPipeline(
 ).Exec()
 ```
 
-### AppendStdoutToTextWriter
-### AppendStderrToTextWriter
 ### AttachOsStdin()
 
 `AttachOsStdin()` sets the pipe's Stdin to read from the program's os.Stdin.
@@ -1650,6 +1648,9 @@ pipeline := scriptish.NewPipeline(
 ).Exec()
 ```
 
+### RedirectStderrToTextReaderWriter()
+
+
 ### RedirectStdoutToDevNull()
 
 `RedirectStdoutToDevNull()` replaces the pipe's Stdout with an ioextra.TextDevNull *before* the command runs.
@@ -1689,6 +1690,25 @@ stdout := pipeline.Stdout.String()
 
 // stderr will contain "this is a test"
 stderr := pipeline.Stderr.String()
+```
+
+### RedirectStdoutToTextReaderWriter()
+
+`RedirectStdoutToTextReaderWriter()` makes all output to the pipe's Stdout go to the given `ioextra.TextReaderWriter` instead.
+
+It gives you a Golang-native way to redirect the output to wherever you need it to.
+
+There's no direct equivalent in UNIX shell script programming.
+
+```golang
+func copyToFile(filename string, dest *os.File) (int, err) {
+    return ExecPipeline(
+        scriptish.CatFile(
+            filename,
+            RedirectStdoutToTextReaderWriter(ioextra.NewTextFile(dest))
+        )
+    ).StatusError()
+}
 ```
 
 ## Builtins
